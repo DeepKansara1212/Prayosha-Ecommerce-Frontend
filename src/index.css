@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-body bg-cream text-deep overflow-x-hidden;
+  }
+
+  /* Custom cursor on pointer-fine (mouse) devices */
+  @media (pointer: fine) {
+    body { cursor: none; }
+  }
+}
+
+@layer utilities {
+  /* ── Scroll reveal ─────────────────────────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 80ms; }
+  .reveal-delay-2 { transition-delay: 160ms; }
+  .reveal-delay-3 { transition-delay: 240ms; }
+
+  /* ── Card overlay gradients ─────────────────────────── */
+  .card-overlay {
+    background: linear-gradient(to top, rgba(28,20,16,0.78) 0%, transparent 60%);
+  }
+  .card-overlay-hover {
+    background: linear-gradient(to top, rgba(28,20,16,0.88) 0%, transparent 52%);
+  }
+
+  /* ── Section padding shorthands ─────────────────────── */
+  .section-px {
+    padding-left: clamp(1.25rem, 5vw, 4rem);
+    padding-right: clamp(1.25rem, 5vw, 4rem);
+  }
+  .section-py {
+    padding-top: clamp(3.5rem, 8vw, 6rem);
+    padding-bottom: clamp(3.5rem, 8vw, 6rem);
+  }
+  .section-p {
+    padding: clamp(3.5rem, 8vw, 6rem) clamp(1.25rem, 5vw, 4rem);
+  }
+
+  /* ── Hide scrollbar (filter bar pills) ──────────────── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── Pointer-fine variants for custom cursor ─────────── */
+  @media (pointer: fine) {
+    .pointer-fine\:block { display: block; }
+  }
+
+  /* ── Drawer transition timing ────────────────────────── */
+  .duration-400 { transition-duration: 400ms; }
+  .duration-500 { transition-duration: 500ms; }
+
+  /* ── Custom select appearance reset ─────────────────── */
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  /* ── Focus-visible ring for accessibility ───────────── */
+  :focus-visible {
+    outline: 2px solid #B8956A;
+    outline-offset: 2px;
+  }
+}
