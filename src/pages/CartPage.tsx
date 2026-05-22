@@ -443,10 +443,9 @@ const CartPage: FC<CartPageProps> = ({
   )
 
   const handleCheckout = useCallback(() => {
-    setCheckedOut(true)
-    onClearCart()
+    window.location.hash = '#/checkout'
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [onClearCart])
+  }, [])
 
   return (
     <>

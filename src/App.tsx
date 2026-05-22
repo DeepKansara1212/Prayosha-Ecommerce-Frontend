@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type FC } from 'react'
+import { useState, useEffect, useMemo, useCallback, type FC } from 'react'
 
 import CustomCursor from '@/components/ui/CustomCursor'
 import Navbar       from '@/components/layout/Navbar'
@@ -17,11 +17,32 @@ import Newsletter       from '@/components/sections/Newsletter'
 // Pages
 import CollectionPage    from '@/pages/CollectionPage'
 import ProductDetailPage from '@/pages/ProductDetailPage'
-import AuthPage          from '@/pages/AuthPage'
 import AboutPage         from '@/pages/AboutPage'
 import ContactPage       from '@/pages/ContactPage'
 import WishlistPage      from '@/pages/WishlistPage'
-import CartPage, { type CartItem } from '@/pages/CartPage'
+import CartPage          from '@/pages/CartPage'
+
+// Auth pages
+import LoginPage          from '@/pages/auth/LoginPage'
+import RegisterPage       from '@/pages/auth/RegisterPage'
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
+import ResetPasswordPage  from '@/pages/auth/ResetPasswordPage'
+
+// Account pages
+import OrdersPage      from '@/pages/account/OrdersPage'
+import OrderDetailPage from '@/pages/account/OrderDetailPage'
+import AddressesPage   from '@/pages/account/AddressesPage'
+import ProfilePage     from '@/pages/account/ProfilePage'
+
+// Checkout pages
+import CheckoutPage        from '@/pages/checkout/CheckoutPage'
+import CheckoutSuccessPage from '@/pages/checkout/CheckoutSuccessPage'
+import CheckoutFailedPage  from '@/pages/checkout/CheckoutFailedPage'
+
+// Stores
+import { useAuthStore }     from '@/store/authStore'
+import { useCartStore }     from '@/store/cartStore'
+import { useWishlistStore } from '@/store/wishlistStore'
 
 // ─── Router ───────────────────────────────────────────────────────────────────
 
@@ -29,31 +50,72 @@ type Page =
   | 'home'
   | 'collection'
   | 'product'
-  | 'auth'
+  | 'auth-login'
+  | 'auth-register'
+  | 'auth-forgot'
+  | 'auth-reset'
   | 'about'
   | 'contact'
   | 'wishlist'
   | 'cart'
+  | 'checkout'
+  | 'checkout-success'
+  | 'checkout-failed'
+  | 'account-orders'
+  | 'account-order-detail'
+  | 'account-addresses'
+  | 'account-profile'
 
-function getPage(): { page: Page; productId: string | null } {
+function getPage(): { page: Page; param: string | null } {
   const hash = window.location.hash
-  if (hash === '#/collection') return { page: 'collection', productId: null }
-  if (hash === '#/auth')       return { page: 'auth',       productId: null }
-  if (hash === '#/about')      return { page: 'about',      productId: null }
-  if (hash === '#/contact')    return { page: 'contact',    productId: null }
-  if (hash === '#/wishlist')   return { page: 'wishlist',   productId: null }
-  if (hash === '#/cart')       return { page: 'cart',       productId: null }
+  if (hash === '#/collection')    return { page: 'collection',    param: null }
+  if (hash === '#/auth/login' || hash === '#/auth')
+                                  return { page: 'auth-login',    param: null }
+  if (hash === '#/auth/register') return { page: 'auth-register', param: null }
+  if (hash === '#/auth/forgot')   return { page: 'auth-forgot',   param: null }
+  if (hash.startsWith('#/auth/reset'))
+                                  return { page: 'auth-reset',    param: null }
+  if (hash === '#/about')         return { page: 'about',         param: null }
+  if (hash === '#/contact')       return { page: 'contact',       param: null }
+  if (hash === '#/wishlist')      return { page: 'wishlist',      param: null }
+  if (hash === '#/cart')              return { page: 'cart',             param: null }
+  if (hash === '#/checkout')          return { page: 'checkout',         param: null }
+  if (hash === '#/checkout/success')  return { page: 'checkout-success', param: null }
+  if (hash === '#/checkout/failed')   return { page: 'checkout-failed',  param: null }
   if (hash.startsWith('#/product/')) {
-    return { page: 'product', productId: hash.replace('#/product/', '') }
+    return { page: 'product', param: hash.replace('#/product/', '') }
   }
-  return { page: 'home', productId: null }
+  if (hash === '#/account' || hash === '#/account/orders') {
+    return { page: 'account-orders',    param: null }
+  }
+  if (hash.startsWith('#/account/orders/')) {
+    return { page: 'account-order-detail', param: hash.replace('#/account/orders/', '') }
+  }
+  if (hash === '#/account/addresses') return { page: 'account-addresses', param: null }
+  if (hash === '#/account/profile')   return { page: 'account-profile',   param: null }
+  return { page: 'home', param: null }
 }
 
 function navigate(page: Page, id?: string) {
   const hashes: Record<Page, string> = {
-    home: '', collection: '#/collection', auth: '#/auth',
-    about: '#/about', contact: '#/contact', wishlist: '#/wishlist', cart: '#/cart',
-    product: `#/product/${id ?? ''}`,
+    home:                   '',
+    collection:             '#/collection',
+    'auth-login':           '#/auth/login',
+    'auth-register':        '#/auth/register',
+    'auth-forgot':          '#/auth/forgot',
+    'auth-reset':           '#/auth/reset',
+    about:                  '#/about',
+    contact:                '#/contact',
+    wishlist:               '#/wishlist',
+    cart:                   '#/cart',
+    checkout:               '#/checkout',
+    'checkout-success':     '#/checkout/success',
+    'checkout-failed':      '#/checkout/failed',
+    product:                `#/product/${id ?? ''}`,
+    'account-orders':       '#/account/orders',
+    'account-order-detail': `#/account/orders/${id ?? ''}`,
+    'account-addresses':    '#/account/addresses',
+    'account-profile':      '#/account/profile',
   }
   window.location.hash = hashes[page]
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -81,53 +143,89 @@ const HomePage: FC = () => (
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 const App: FC = () => {
-  const [{ page, productId }, setRoute] = useState(getPage)
+  const [{ page, param }, setRoute] = useState(getPage)
 
+  // ── Store slices ──────────────────────────────────────────────────────────
+  const fetchMe       = useAuthStore(s => s.fetchMe)
+  const accessToken   = useAuthStore(s => s.accessToken)
+
+  const cartItems     = useCartStore(s => s.items)
+  const fetchCart     = useCartStore(s => s.fetchCart)
+  const addItemStore  = useCartStore(s => s.addItem)
+  const updateItemStore  = useCartStore(s => s.updateItem)
+  const removeItemStore  = useCartStore(s => s.removeItem)
+  const clearCartStore   = useCartStore(s => s.clearCart)
+
+  const wishlistIds_  = useWishlistStore(s => s.productIds)
+  const fetchWishlist = useWishlistStore(s => s.fetchWishlist)
+  const toggleStore   = useWishlistStore(s => s.toggle)
+
+  // ── Derived sets (stable references via useMemo) ──────────────────────────
+  const wishlistIds = useMemo(() => new Set(wishlistIds_), [wishlistIds_])
+  const cartIds     = useMemo(() => new Set(cartItems.map(i => i.productId)), [cartItems])
+
+  // ── Bootstrap session on mount ────────────────────────────────────────────
+  useEffect(() => {
+    // Read current store state without subscribing — avoids re-running on token change
+    if (useAuthStore.getState().accessToken) {
+      void fetchMe()
+      void fetchCart()
+      void fetchWishlist()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Re-fetch when the user logs in during this session (token goes from null → value)
+  useEffect(() => {
+    if (accessToken) {
+      void fetchMe()
+      void fetchCart()
+      void fetchWishlist()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken])
+
+  // ── Hash router ───────────────────────────────────────────────────────────
   useEffect(() => {
     const handler = () => setRoute(getPage())
     window.addEventListener('hashchange', handler)
     return () => window.removeEventListener('hashchange', handler)
   }, [])
 
-  // ── Wishlist ──────────────────────────────────────────────────────────────
-  const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set())
+  // ── Cart actions ──────────────────────────────────────────────────────────
+  const addToCart = useCallback((id: string) => {
+    void addItemStore(id, 1)
+  }, [addItemStore])
 
+  const updateCartQty = useCallback((id: string, qty: number) => {
+    if (qty <= 0) void removeItemStore(id)
+    else void updateItemStore(id, qty)
+  }, [updateItemStore, removeItemStore])
+
+  const removeFromCart = useCallback((id: string) => {
+    void removeItemStore(id)
+  }, [removeItemStore])
+
+  const clearCart = useCallback(() => {
+    void clearCartStore()
+  }, [clearCartStore])
+
+  // ── Wishlist actions ──────────────────────────────────────────────────────
   const toggleWishlist = useCallback((id: string) => {
-    setWishlistIds(prev => {
-      const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s
-    })
-  }, [])
+    void toggleStore(id)
+  }, [toggleStore])
 
+  // removeFromWishlist and moveToWishlist both go through toggle
+  // (toggle removes when the item is already in the list)
   const removeFromWishlist = useCallback((id: string) => {
-    setWishlistIds(prev => { const s = new Set(prev); s.delete(id); return s })
-  }, [])
+    void toggleStore(id)
+  }, [toggleStore])
 
-  // ── Cart ──────────────────────────────────────────────────────────────────
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const cartIds = new Set(cartItems.map(i => i.productId))
+  const moveToWishlist = useCallback((id: string) => {
+    void toggleStore(id)
+  }, [toggleStore])
 
-  const addToCart = useCallback((productId: string) => {
-    setCartItems(prev => {
-      const ex = prev.find(i => i.productId === productId)
-      return ex
-        ? prev.map(i => i.productId === productId ? { ...i, quantity: i.quantity + 1 } : i)
-        : [...prev, { productId, quantity: 1 }]
-    })
-  }, [])
-
-  const updateCartQty = useCallback((productId: string, qty: number) => {
-    setCartItems(prev =>
-      qty <= 0
-        ? prev.filter(i => i.productId !== productId)
-        : prev.map(i => i.productId === productId ? { ...i, quantity: qty } : i),
-    )
-  }, [])
-
-  const removeFromCart  = useCallback((id: string) => setCartItems(p => p.filter(i => i.productId !== id)), [])
-  const clearCart       = useCallback(() => setCartItems([]), [])
-  const moveToWishlist  = useCallback((id: string) => toggleWishlist(id), [toggleWishlist])
-
-  // ── Shared nav helpers ────────────────────────────────────────────────────
+  // ── Nav helpers ───────────────────────────────────────────────────────────
   const goCollection = () => navigate('collection')
   const goCart       = () => navigate('cart')
   const goWishlist   = () => navigate('wishlist')
@@ -138,10 +236,13 @@ const App: FC = () => {
     <>
       <CustomCursor />
 
-      {page === 'home'    && <HomePage />}
-      {page === 'about'   && <AboutPage />}
-      {page === 'contact' && <ContactPage />}
-      {page === 'auth'    && <AuthPage />}
+      {page === 'home'            && <HomePage />}
+      {page === 'about'           && <AboutPage />}
+      {page === 'contact'         && <ContactPage />}
+      {page === 'auth-login'      && <LoginPage />}
+      {page === 'auth-register'   && <RegisterPage />}
+      {page === 'auth-forgot'     && <ForgotPasswordPage />}
+      {page === 'auth-reset'      && <ResetPasswordPage />}
 
       {page === 'collection' && (
         <CollectionPage
@@ -153,9 +254,9 @@ const App: FC = () => {
         />
       )}
 
-      {page === 'product' && productId && (
+      {page === 'product' && param && (
         <ProductDetailPage
-          productId={productId}
+          productId={param}
           wishlistIds={wishlistIds}
           cartIds={cartIds}
           onToggleWishlist={toggleWishlist}
@@ -189,6 +290,15 @@ const App: FC = () => {
           onClearCart={clearCart}
         />
       )}
+
+      {page === 'checkout'         && <CheckoutPage />}
+      {page === 'checkout-success' && <CheckoutSuccessPage />}
+      {page === 'checkout-failed'  && <CheckoutFailedPage />}
+
+      {page === 'account-orders'       && <OrdersPage />}
+      {page === 'account-order-detail' && param && <OrderDetailPage orderNumber={param} />}
+      {page === 'account-addresses'    && <AddressesPage />}
+      {page === 'account-profile'      && <ProfilePage />}
     </>
   )
 }

@@ -1,12 +1,28 @@
-import { useState, useMemo, useCallback, type FC } from 'react'
+import { useState, type FC } from 'react'
 import type { ProductCategory, SortOption } from '@/types'
-import { COLLECTION_PRODUCTS } from '@/data/collection'
+import { useProducts } from '@/hooks/useProducts'
 
 import Navbar         from '@/components/layout/Navbar'
 import Footer         from '@/components/layout/Footer'
 import CollectionHero from '@/components/collection/CollectionHero'
 import FilterBar      from '@/components/collection/FilterBar'
 import ProductGrid    from '@/components/collection/ProductGrid'
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+const SkeletonCard: FC = () => (
+  <div className="animate-pulse bg-cream">
+    <div className="w-full aspect-square bg-warm" />
+    <div className="p-4 border-t border-warm space-y-2.5">
+      <div className="h-2 bg-warm rounded w-2/3" />
+      <div className="h-4 bg-warm rounded w-3/4" />
+      <div className="h-2.5 bg-warm rounded w-1/2" />
+      <div className="h-2 bg-warm rounded w-1/3 mt-3" />
+    </div>
+  </div>
+)
+
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 interface CollectionPageProps {
   wishlistIds: Set<string>
@@ -16,30 +32,22 @@ interface CollectionPageProps {
   onNavigateToProduct: (id: string) => void
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 const CollectionPage: FC<CollectionPageProps> = ({
   wishlistIds,
-  cartIds,
   onToggleWishlist,
-  onAddToCart,
   onNavigateToProduct,
 }) => {
   const [category, setCategory] = useState<ProductCategory>('All')
   const [sort, setSort]         = useState<SortOption>('featured')
 
-  const filteredProducts = useMemo(() => {
-    let list = category === 'All'
-      ? [...COLLECTION_PRODUCTS]
-      : COLLECTION_PRODUCTS.filter(p => p.category === category)
+  const params = {
+    category: category !== 'All' ? category : undefined,
+    sort,
+  }
 
-    switch (sort) {
-      case 'price-asc':  list.sort((a, b) => a.price - b.price);                                     break
-      case 'price-desc': list.sort((a, b) => b.price - a.price);                                     break
-      case 'newest':     list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));                 break
-      case 'name-asc':   list.sort((a, b) => a.name.localeCompare(b.name));                           break
-      default:           list.sort((a, b) => (b.isBestseller ? 1 : 0) - (a.isBestseller ? 1 : 0));   break
-    }
-    return list
-  }, [category, sort])
+  const { products, pagination, isLoading, isError } = useProducts(params)
 
   return (
     <>
@@ -50,18 +58,32 @@ const CollectionPage: FC<CollectionPageProps> = ({
         <FilterBar
           active={category}
           sort={sort}
-          total={filteredProducts.length}
+          total={pagination?.total ?? 0}
           onCategory={setCategory}
           onSort={setSort}
         />
 
         <div style={{ padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)' }}>
-          <ProductGrid
-            products={filteredProducts}
-            onSelect={p => onNavigateToProduct(p.id)}
-            wishlist={wishlistIds}
-            onWishlist={onToggleWishlist}
-          />
+          {isError ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <p className="text-[3rem] mb-4" aria-hidden="true">⚠️</p>
+              <p className="font-display font-light text-[1.4rem] text-bark mb-2">Could not load products</p>
+              <p className="font-body font-extralight text-[0.82rem] text-muted">
+                Please check your connection and try again.
+              </p>
+            </div>
+          ) : isLoading ? (
+            <div className="grid gap-5 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+            </div>
+          ) : (
+            <ProductGrid
+              products={products}
+              onSelect={p => onNavigateToProduct(p.id)}
+              wishlist={wishlistIds}
+              onWishlist={onToggleWishlist}
+            />
+          )}
         </div>
 
         {/* Bottom strip */}

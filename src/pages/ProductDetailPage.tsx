@@ -1,9 +1,11 @@
 import { useState, useCallback, type FC } from 'react'
-import { COLLECTION_PRODUCTS } from '@/data/collection'
 import type { ProductDetail } from '@/types'
+import { useProduct, useRelatedProducts } from '@/hooks/useProducts'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { cn } from '@/lib/utils'
+import ReviewsList from '@/components/product/ReviewsList'
+import ReviewForm from '@/components/product/ReviewForm'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -25,6 +27,37 @@ const CHAKRA_COLOURS: Record<string, string> = {
   Heart: '#3A7A4A', Throat: '#3A6A9A', 'Third Eye': '#4A4A9A', Crown: '#7C5C8A',
 }
 
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+const ProductDetailSkeleton: FC = () => (
+  <div
+    className="animate-pulse"
+    style={{ padding: 'clamp(2rem,5vw,3.5rem) clamp(1.25rem,5vw,4rem)' }}
+  >
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] xl:grid-cols-[1fr_520px] gap-10 xl:gap-16">
+      {/* Image placeholder */}
+      <div className="w-full aspect-square bg-warm" />
+      {/* Info placeholders */}
+      <div className="space-y-4 pt-2">
+        <div className="h-3 bg-warm rounded w-1/3" />
+        <div className="h-8 bg-warm rounded w-3/4" />
+        <div className="h-3 bg-warm rounded w-1/2" />
+        <div className="h-px bg-warm my-5" />
+        <div className="h-10 bg-warm rounded w-1/3" />
+        <div className="h-3 bg-warm rounded w-2/5" />
+        <div className="flex gap-2 mt-2">
+          {[1,2,3].map(i => <div key={i} className="h-7 bg-warm rounded w-20" />)}
+        </div>
+        <div className="h-12 bg-warm rounded mt-6" />
+        <div className="h-12 bg-warm rounded" />
+        <div className="h-10 bg-warm rounded" />
+      </div>
+    </div>
+  </div>
+)
+
+// ─── Star rating ──────────────────────────────────────────────────────────────
+
 const StarRating: FC<{ rating: number; reviewCount: number }> = ({ rating, reviewCount }) => (
   <div className="flex items-center gap-2">
     <div className="flex gap-0.5" aria-label={`${rating} out of 5 stars`}>
@@ -39,12 +72,11 @@ const StarRating: FC<{ rating: number; reviewCount: number }> = ({ rating, revie
   </div>
 )
 
-// ─── Image Gallery panel ──────────────────────────────────────────────────────
+// ─── Image gallery panel ──────────────────────────────────────────────────────
 
 const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
   const [active, setActive] = useState(0)
 
-  // Simulate 3 "views" of the same gem
   const views = [
     { label: 'Front', tint: '' },
     { label: 'Detail', tint: 'brightness-110 saturate-150' },
@@ -81,11 +113,13 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
           'flex-1 aspect-square sm:aspect-[4/3] flex items-center justify-center relative overflow-hidden rounded-sm',
         )}
       >
-        <span className="text-[clamp(6rem,20vw,12rem)] select-none transition-all duration-300" style={{ filter: active === 1 ? 'brightness(1.15) saturate(1.4)' : active === 2 ? 'brightness(0.88)' : 'none' }}>
+        <span
+          className="text-[clamp(6rem,20vw,12rem)] select-none transition-all duration-300"
+          style={{ filter: active === 1 ? 'brightness(1.15) saturate(1.4)' : active === 2 ? 'brightness(0.88)' : 'none' }}
+        >
           {product.emoji}
         </span>
 
-        {/* Badge */}
         {product.badge && (
           <span className={cn(
             'absolute top-4 left-4 font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-1.5',
@@ -99,7 +133,6 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
           </span>
         )}
 
-        {/* View label */}
         <span className="absolute bottom-3 right-3 font-body text-[0.6rem] uppercase tracking-[0.15em] text-cream/60 bg-deep/40 backdrop-blur-sm px-2 py-1">
           {views[active].label} view
         </span>
@@ -108,7 +141,7 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
   )
 }
 
-// ─── Product info panel ───────────────────────────────────────────────────────
+// ─── Quantity selector ────────────────────────────────────────────────────────
 
 const QuantitySelector: FC<{ qty: number; max: number; onChange: (q: number) => void }> = ({ qty, max, onChange }) => (
   <div className="flex items-center border border-warm">
@@ -118,25 +151,16 @@ const QuantitySelector: FC<{ qty: number; max: number; onChange: (q: number) => 
   </div>
 )
 
-// ─── Review card ──────────────────────────────────────────────────────────────
-
-const FAKE_REVIEWS = [
-  { author: 'Priya M.', location: 'Mumbai', stars: 5, date: '12 Mar 2025', text: 'Absolutely breathtaking — the energy in my meditation room has completely transformed. The quality is unparalleled.' },
-  { author: 'Aarav K.', location: 'Bangalore', stars: 5, date: '8 Feb 2025', text: 'Packaging was sacred and beautiful. The stone arrived cleansed and felt incredibly powerful from the first moment.' },
-  { author: 'Nisha R.', location: 'Delhi', stars: 4, date: '22 Jan 2025', text: 'Gorgeous stone and very authentic. Slightly smaller than I expected but the energy is undeniable. Would buy again.' },
-]
-
 // ─── Related products row ─────────────────────────────────────────────────────
 
-const RelatedProducts: FC<{ product: ProductDetail; onNavigate: (id: string) => void }> = ({ product, onNavigate }) => {
-  const related = COLLECTION_PRODUCTS.filter(p => product.relatedIds.includes(p.id)).slice(0, 4)
+const RelatedProducts: FC<{ related: ProductDetail[]; onNavigate: (id: string) => void }> = ({ related, onNavigate }) => {
   if (!related.length) return null
 
   return (
     <div className="mt-12 pt-10 border-t border-warm">
       <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-6">You may also like</p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {related.map(rp => (
+        {related.slice(0, 4).map(rp => (
           <button
             key={rp.id}
             onClick={() => onNavigate(rp.id)}
@@ -167,11 +191,12 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
   onNavigateToProduct,
   onNavigateToCart,
 }) => {
-  const product = COLLECTION_PRODUCTS.find(p => p.id === productId)
+  const { data: product, isLoading, isError } = useProduct(productId)
+  const { data: relatedProducts = [] }        = useRelatedProducts(productId)
 
-  const [qty, setQty]           = useState(1)
-  const [addedToCart, setAddedToCart] = useState(false)
-  const [activeTab, setActiveTab]     = useState<'description'|'details'|'reviews'>('description')
+  const [qty, setQty]               = useState(1)
+  const [addedToCart, setAddedToCart]   = useState(false)
+  const [activeTab, setActiveTab]       = useState<'description'|'details'|'reviews'>('description')
 
   const isWishlisted = wishlistIds.has(productId)
   const isInCart     = cartIds.has(productId)
@@ -184,8 +209,21 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
     setTimeout(() => setAddedToCart(false), 2500)
   }, [product, qty, onAddToCart])
 
-  // Not found
-  if (!product) {
+  // Loading state
+  if (isLoading) {
+    return (
+      <>
+        <Navbar />
+        <main id="main-content" className="min-h-screen bg-cream pt-[88px]">
+          <ProductDetailSkeleton />
+        </main>
+        <Footer />
+      </>
+    )
+  }
+
+  // Error / not found
+  if (isError || !product) {
     return (
       <>
         <Navbar />
@@ -269,7 +307,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
               {/* Rating */}
               <StarRating rating={product.rating} reviewCount={product.reviewCount} />
 
-              {/* Divider */}
               <div className="h-px bg-warm my-5" />
 
               {/* Price */}
@@ -306,7 +343,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                 <span>Sourced from <span className="text-bark">{product.origin}</span></span>
               </div>
 
-              {/* Divider */}
               <div className="h-px bg-warm mb-6" />
 
               {/* Quantity + CTA */}
@@ -316,7 +352,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                   <p className="font-body text-[0.68rem] text-muted">{product.stockCount} units available</p>
                 </div>
 
-                {/* Add to cart */}
                 <button
                   onClick={handleAddToCart}
                   disabled={!product.inStock}
@@ -333,7 +368,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                   {!product.inStock ? 'Out of Stock' : addedToCart ? '✦ Added to Cart' : 'Add to Cart'}
                 </button>
 
-                {/* Buy now */}
                 {product.inStock && (
                   <button
                     onClick={() => { onAddToCart(product.id); onNavigateToCart() }}
@@ -343,7 +377,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                   </button>
                 )}
 
-                {/* Wishlist */}
                 <button
                   onClick={() => onToggleWishlist(product.id)}
                   className={cn(
@@ -359,7 +392,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                   {isWishlisted ? 'Saved to Wishlist' : 'Add to Wishlist'}
                 </button>
 
-                {/* View cart if in cart */}
                 {isInCart && !addedToCart && (
                   <button
                     onClick={onNavigateToCart}
@@ -392,7 +424,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
           {/* ── Tabbed details ── */}
           <div className="mt-14">
-            {/* Tab bar */}
             <div className="flex border-b border-warm gap-0 overflow-x-auto scrollbar-hide" role="tablist">
               {(['description', 'details', 'reviews'] as const).map(tab => (
                 <button
@@ -412,7 +443,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
               ))}
             </div>
 
-            {/* Tab content */}
             <div className="py-8 max-w-3xl">
               {activeTab === 'description' && (
                 <div>
@@ -465,70 +495,15 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
               {activeTab === 'reviews' && (
                 <div>
-                  {/* Summary */}
-                  <div className="flex flex-col sm:flex-row gap-8 mb-8 pb-8 border-b border-warm">
-                    <div className="text-center sm:text-left">
-                      <p className="font-display font-light text-[3.5rem] text-deep leading-none">{product.rating}</p>
-                      <div className="flex justify-center sm:justify-start gap-0.5 my-2">
-                        {[1,2,3,4,5].map(n => (
-                          <svg key={n} viewBox="0 0 12 12" className="w-4 h-4" fill={n <= Math.floor(product.rating) ? '#B8956A' : '#EDE5D8'}>
-                            <path d="M6 1l1.2 3.7H11L8.1 6.6l1.2 3.7L6 8.3 2.7 10.3l1.2-3.7L1 4.7h3.8z" />
-                          </svg>
-                        ))}
-                      </div>
-                      <p className="font-body text-[0.7rem] text-muted">{product.reviewCount} verified reviews</p>
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      {[5,4,3,2,1].map(star => {
-                        const pct = star === 5 ? 72 : star === 4 ? 18 : star === 3 ? 7 : star === 2 ? 2 : 1
-                        return (
-                          <div key={star} className="flex items-center gap-3">
-                            <span className="font-body text-[0.65rem] text-muted w-3 flex-none">{star}</span>
-                            <svg viewBox="0 0 12 12" className="w-3 h-3 flex-none" fill="#B8956A"><path d="M6 1l1.2 3.7H11L8.1 6.6l1.2 3.7L6 8.3 2.7 10.3l1.2-3.7L1 4.7h3.8z" /></svg>
-                            <div className="flex-1 h-1.5 bg-warm rounded-full overflow-hidden">
-                              <div className="h-full bg-gold rounded-full" style={{ width: `${pct}%` }} />
-                            </div>
-                            <span className="font-body text-[0.62rem] text-muted w-8 text-right">{pct}%</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Review cards */}
-                  <div className="space-y-6">
-                    {FAKE_REVIEWS.map((r, i) => (
-                      <div key={i} className="pb-6 border-b border-warm last:border-0">
-                        <div className="flex items-start justify-between mb-2 gap-3">
-                          <div>
-                            <p className="font-body text-[0.75rem] text-bark font-normal">{r.author}</p>
-                            <p className="font-body text-[0.62rem] text-muted">{r.location}</p>
-                          </div>
-                          <p className="font-body text-[0.62rem] text-muted flex-none">{r.date}</p>
-                        </div>
-                        <div className="flex gap-0.5 mb-2">
-                          {[1,2,3,4,5].map(n => (
-                            <svg key={n} viewBox="0 0 12 12" className="w-3.5 h-3.5" fill={n <= r.stars ? '#B8956A' : '#EDE5D8'}>
-                              <path d="M6 1l1.2 3.7H11L8.1 6.6l1.2 3.7L6 8.3 2.7 10.3l1.2-3.7L1 4.7h3.8z" />
-                            </svg>
-                          ))}
-                        </div>
-                        <p className="font-body font-extralight text-[0.82rem] leading-relaxed text-bark">{r.text}</p>
-                        <div className="flex items-center gap-3 mt-3">
-                          <span className="font-body text-[0.6rem] uppercase tracking-[0.12em] text-muted">Verified Purchase</span>
-                          <span className="w-1 h-1 rounded-full bg-muted/30" aria-hidden="true" />
-                          <button className="font-body text-[0.62rem] text-muted hover:text-bark transition-colors">Helpful</button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <ReviewsList slug={productId} />
+                  <ReviewForm slug={productId} />
                 </div>
               )}
             </div>
           </div>
 
           {/* Related products */}
-          <RelatedProducts product={product} onNavigate={onNavigateToProduct} />
+          <RelatedProducts related={relatedProducts} onNavigate={onNavigateToProduct} />
         </div>
       </main>
       <Footer />

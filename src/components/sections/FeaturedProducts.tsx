@@ -1,17 +1,31 @@
 import type { FC } from 'react'
-import { PRODUCTS } from '@/data'
+import { useFeaturedProducts } from '@/hooks/useProducts'
+import type { ProductDetail } from '@/types'
 import SectionLabel from '@/components/ui/SectionLabel'
 import SectionTitle from '@/components/ui/SectionTitle'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { cn } from '@/lib/utils'
-import type { Product } from '@/types'
 
-const ProductCard: FC<{ product: Product }> = ({ product }) => (
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+const SkeletonCard: FC = () => (
+  <div className="animate-pulse bg-cream">
+    <div className="w-full aspect-square bg-warm" />
+    <div className="px-4 pt-4 pb-5 space-y-2">
+      <div className="h-2.5 bg-warm rounded w-1/2" />
+      <div className="h-4 bg-warm rounded w-3/4" />
+      <div className="h-3 bg-warm rounded w-1/3 mt-3" />
+    </div>
+  </div>
+)
+
+// ─── Product card ─────────────────────────────────────────────────────────────
+
+const ProductCard: FC<{ product: ProductDetail }> = ({ product }) => (
   <article
     className="product-card bg-cream cursor-pointer group transition-transform duration-300 hover:-translate-y-1"
     aria-label={product.name}
   >
-    {/* Image / gem area */}
     <div
       className={cn(
         product.bgClass,
@@ -23,16 +37,15 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => (
       {product.emoji}
     </div>
 
-    {/* Info */}
     <div className="px-4 pt-4 pb-5">
       <p className="font-body text-tag uppercase tracking-[0.22em] text-muted mb-1">
-        {product.type}
+        {product.category}
       </p>
       <h3 className="font-display text-[1.1rem] font-normal text-deep mb-3">
         {product.name}
       </h3>
       <div className="flex justify-between items-center">
-        <span className="font-body text-price text-bark">{product.price}</span>
+        <span className="font-body text-price text-bark">{product.priceDisplay}</span>
         <button
           className="w-7 h-7 bg-deep text-cream flex items-center justify-center text-lg transition-colors duration-200 group-hover:bg-gold leading-none font-light"
           aria-label={`Add ${product.name} to cart`}
@@ -44,9 +57,13 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => (
   </article>
 )
 
+// ─── Section ──────────────────────────────────────────────────────────────────
+
 const FeaturedProducts: FC = () => {
   const headRef = useScrollReveal<HTMLDivElement>()
   const gridRef = useScrollReveal<HTMLDivElement>()
+
+  const { data: products = [], isLoading } = useFeaturedProducts()
 
   return (
     <section
@@ -68,9 +85,10 @@ const FeaturedProducts: FC = () => {
           md:grid-cols-4
         "
       >
-        {PRODUCTS.map(p => (
-          <ProductCard key={p.id} product={p} />
-        ))}
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+          : products.map(p => <ProductCard key={p.id} product={p} />)
+        }
       </div>
     </section>
   )

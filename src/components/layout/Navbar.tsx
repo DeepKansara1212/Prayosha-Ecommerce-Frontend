@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect, type FC } from 'react'
 import { useNavScroll } from '@/hooks/useNavScroll'
+import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
+import { useSearchOverlay } from '@/hooks/useSearchOverlay'
+import SearchOverlay from '@/components/search/SearchOverlay'
 import { cn } from '@/lib/utils'
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -96,7 +99,7 @@ const DROPDOWN_COLUMNS: DropdownColumn[] = [
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
-type PageHash = '#/collection' | '#/about' | '#/contact' | '#/auth' | '#/wishlist' | '#/cart' | ''
+type PageHash = '#/collection' | '#/about' | '#/contact' | '#/auth/login' | '#/auth/register' | '#/account' | '#/wishlist' | '#/cart' | ''
 
 interface NavItem {
   label: string
@@ -442,6 +445,9 @@ const Navbar: FC = () => {
   const [mobileCollectionOpen, setMobileCollectionOpen] = useState(false)
   const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const { isOpen: searchOpen, open: openSearch, close: closeSearch } = useSearchOverlay()
+  useLockBodyScroll(searchOpen)
+
   const currentHash = typeof window !== 'undefined' ? window.location.hash : ''
 
   const isActive = (hash: string) => currentHash === hash
@@ -546,7 +552,7 @@ const Navbar: FC = () => {
         {/* Mobile utility links */}
         <div className="flex gap-10 items-center">
           {[
-            { label: 'Account',  hash: '#/auth'     as PageHash, Icon: UserIcon },
+            { label: 'Account',  hash: '#/account' as PageHash, Icon: UserIcon },
             { label: 'Wishlist', hash: '#/wishlist' as PageHash, Icon: () => <HeartIcon filled={isActive('#/wishlist')} /> },
             { label: 'Cart',     hash: '#/cart'     as PageHash, Icon: BagIcon },
           ].map(({ label, hash, Icon }) => (
@@ -619,13 +625,17 @@ const Navbar: FC = () => {
 
           {/* Icon group */}
           <div className="flex items-center gap-4 text-cream">
-            <button aria-label="Search" className="opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-cream">
+            <button
+              onClick={openSearch}
+              aria-label="Search"
+              className="opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-cream"
+            >
               <SearchIcon />
             </button>
             <button
-              onClick={() => go('#/auth')}
+              onClick={() => go('#/account')}
               aria-label="Account"
-              className={cn('opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0', isActive('#/auth') && 'opacity-100')}
+              className={cn('opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0', (currentHash.startsWith('#/auth') || currentHash.startsWith('#/account')) && 'opacity-100')}
             >
               <UserIcon />
             </button>
@@ -667,6 +677,8 @@ const Navbar: FC = () => {
           <MegaDropdown open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
         </div>
       </nav>
+
+      <SearchOverlay isOpen={searchOpen} onClose={closeSearch} />
     </>
   )
 }
