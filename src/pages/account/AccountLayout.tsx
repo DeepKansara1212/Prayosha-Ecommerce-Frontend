@@ -1,4 +1,5 @@
 import { type FC, type ReactNode, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import Navbar from '@/components/layout/Navbar'
 
@@ -83,23 +84,24 @@ interface AccountLayoutProps {
   activeTab: AccountTab
 }
 
-const NAV_ITEMS: { key: AccountTab; label: string; hash: string }[] = [
-  { key: 'orders',    label: 'My Orders',    hash: '#/account/orders' },
-  { key: 'addresses', label: 'My Addresses', hash: '#/account/addresses' },
-  { key: 'profile',   label: 'Profile',      hash: '#/account/profile' },
+const NAV_ITEMS: { key: AccountTab; label: string; path: string }[] = [
+  { key: 'orders',    label: 'My Orders',    path: '/account/orders' },
+  { key: 'addresses', label: 'My Addresses', path: '/account/addresses' },
+  { key: 'profile',   label: 'Profile',      path: '/account/profile' },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
+  const navigate = useNavigate()
   const user   = useAuthStore(s => s.user)
   const logout = useAuthStore(s => s.logout)
 
   useEffect(() => {
     if (!user) {
-      window.location.hash = '#/auth/login'
+      navigate('/auth/login', { replace: true })
     }
-  }, [user])
+  }, [user, navigate])
 
   if (!user) return null
 
@@ -111,14 +113,14 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
     .join('')
     .toUpperCase()
 
-  const handleNav = (hash: string) => {
-    window.location.hash = hash
+  const handleNav = (path: string) => {
+    navigate(path)
     window.scrollTo({ top: 0 })
   }
 
   const handleLogout = async () => {
     await logout()
-    window.location.hash = '#/'
+    navigate('/')
     window.scrollTo({ top: 0 })
   }
 
@@ -165,7 +167,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
               return (
                 <button
                   key={item.key}
-                  onClick={() => handleNav(item.hash)}
+                  onClick={() => handleNav(item.path)}
                   style={{
                     display: 'block', width: '100%', textAlign: 'left',
                     padding: '11px 24px',
@@ -225,7 +227,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
           return (
             <button
               key={item.key}
-              onClick={() => handleNav(item.hash)}
+              onClick={() => handleNav(item.path)}
               style={{
                 flex: 1, padding: '10px 4px',
                 fontFamily: 'Jost', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.08em',

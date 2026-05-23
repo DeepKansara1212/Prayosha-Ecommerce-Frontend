@@ -15,6 +15,18 @@
   @media (pointer: fine) {
     body { cursor: none; }
   }
+
+  /* Reduced motion — honour user OS preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer utilities {
@@ -82,5 +94,15 @@
   :focus-visible {
     outline: 2px solid #B8956A;
     outline-offset: 2px;
+  }
+
+  /* ── Skeleton pulse animation ────────────────────────── */
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+  .skeleton-pulse {
+    background: #E2DAC8;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
   }
 }

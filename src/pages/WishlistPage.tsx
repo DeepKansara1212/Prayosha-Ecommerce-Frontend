@@ -1,9 +1,11 @@
-import { useState, useCallback, type FC } from 'react'
+import { useState, useCallback, useEffect, useRef, type FC } from 'react'
 import Navbar  from '@/components/layout/Navbar'
 import Footer  from '@/components/layout/Footer'
 import { COLLECTION_PRODUCTS } from '@/data/collection'
 import { cn } from '@/lib/utils'
 import type { ProductDetail } from '@/types'
+import EmptyState from '@/components/ui/EmptyState'
+import { toast } from '@/store/toastStore'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,32 +19,6 @@ interface WishlistPageProps {
   onNavigateToCollection: () => void
   onNavigateToCart: () => void
 }
-
-// ─── Empty state ──────────────────────────────────────────────────────────────
-
-const EmptyWishlist: FC<{ onBrowse: () => void }> = ({ onBrowse }) => (
-  <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-    {/* Animated heart */}
-    <div className="relative w-20 h-20 mb-6">
-      <div className="absolute inset-0 rounded-full bg-rose/10 animate-ping opacity-60" aria-hidden="true" />
-      <div className="relative w-20 h-20 rounded-full bg-rose/15 flex items-center justify-center">
-        <svg viewBox="0 0 24 22" className="w-9 h-9" fill="none" stroke="#C9837A" strokeWidth="1.5">
-          <path d="M12 21S1 13.5 1 6.5A5.5 5.5 0 0 1 12 3.7 5.5 5.5 0 0 1 23 6.5C23 13.5 12 21 12 21Z" />
-        </svg>
-      </div>
-    </div>
-    <h2 className="font-display font-light text-[1.8rem] text-deep mb-2">Your wishlist is empty</h2>
-    <p className="font-body font-extralight text-[0.82rem] text-muted max-w-xs leading-relaxed mb-7">
-      Save the stones that call to you. Browse our collection and tap the heart on any crystal.
-    </p>
-    <button
-      onClick={onBrowse}
-      className="font-body text-[0.7rem] uppercase tracking-[0.22em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200"
-    >
-      Browse Collection
-    </button>
-  </div>
-)
 
 // ─── Wishlist product card ────────────────────────────────────────────────────
 
@@ -96,7 +72,7 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
         {/* Remove from wishlist */}
         <button
           onClick={e => { e.stopPropagation(); handleRemove() }}
-          className="absolute top-3 right-3 w-8 h-8 bg-rose text-cream flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-rose/80"
+          className="absolute top-3 right-3 w-11 h-11 bg-rose text-cream flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-rose/80"
           aria-label={`Remove ${product.name} from wishlist`}
         >
           <svg viewBox="0 0 20 18" className="w-4 h-4" fill="currentColor" stroke="none">
@@ -167,13 +143,56 @@ const WishlistPage: FC<WishlistPageProps> = ({
   onNavigateToCart,
 }) => {
   const [drawerProduct, setDrawerProduct] = useState<ProductDetail | null>(null)
+  const drawerRef = useRef<HTMLDivElement>(null)
 
   const wishlistProducts = COLLECTION_PRODUCTS.filter(p => wishlistIds.has(p.id))
 
+  // Focus trap + Escape key for drawer
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDrawerProduct(null)
+    }
+    document.addEventListener('keydown', handleEsc)
+    return () => document.removeEventListener('keydown', handleEsc)
+  }, [])
+
+  useEffect(() => {
+    if (!drawerProduct) return
+    const el = drawerRef.current
+    if (!el) return
+    const focusable = el.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    )
+    focusable[0]?.focus()
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      const list = [...focusable]
+      const first = list[0]
+      const last  = list[list.length - 1]
+      if (e.shiftKey) {
+        if (document.activeElement === first) { e.preventDefault(); last.focus() }
+      } else {
+        if (document.activeElement === last) { e.preventDefault(); first.focus() }
+      }
+    }
+    el.addEventListener('keydown', handleTab)
+    return () => el.removeEventListener('keydown', handleTab)
+  }, [drawerProduct])
+
+  const handleRemove = useCallback((id: string) => {
+    onRemoveFromWishlist(id)
+    toast.info('Removed from wishlist')
+  }, [onRemoveFromWishlist])
+
+  const handleMoveToCart = useCallback((id: string) => {
+    onMoveToCart(id)
+    toast.success('Moved to cart')
+  }, [onMoveToCart])
+
   const handleMoveAll = useCallback(() => {
-    wishlistProducts
-      .filter(p => p.inStock && !cartIds.has(p.id))
-      .forEach(p => onMoveToCart(p.id))
+    const movable = wishlistProducts.filter(p => p.inStock && !cartIds.has(p.id))
+    movable.forEach(p => onMoveToCart(p.id))
+    if (movable.length > 0) toast.success(`${movable.length} ${movable.length === 1 ? 'item' : 'items'} moved to cart`)
   }, [wishlistProducts, cartIds, onMoveToCart])
 
   const movableCount = wishlistProducts.filter(p => p.inStock && !cartIds.has(p.id)).length
@@ -221,7 +240,13 @@ const WishlistPage: FC<WishlistPageProps> = ({
         <div style={{ padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)' }}>
 
           {wishlistProducts.length === 0 ? (
-            <EmptyWishlist onBrowse={onNavigateToCollection} />
+            <EmptyState
+              icon={<svg viewBox="0 0 24 22" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M12 21S1 13.5 1 6.5A5.5 5.5 0 0 1 12 3.7 5.5 5.5 0 0 1 23 6.5C23 13.5 12 21 12 21Z" /></svg>}
+              title="Your wishlist is empty"
+              description="Save the stones that call to you. Browse our collection and tap the heart on any crystal."
+              actionLabel="Browse Collection"
+              onAction={onNavigateToCollection}
+            />
           ) : (
             <>
               {/* Toolbar */}
@@ -261,8 +286,8 @@ const WishlistPage: FC<WishlistPageProps> = ({
                     key={p.id}
                     product={p}
                     inCart={cartIds.has(p.id)}
-                    onRemove={() => onRemoveFromWishlist(p.id)}
-                    onMoveToCart={() => onMoveToCart(p.id)}
+                    onRemove={() => handleRemove(p.id)}
+                    onMoveToCart={() => handleMoveToCart(p.id)}
                     onViewDetails={() => setDrawerProduct(p)}
                   />
                 ))}
@@ -294,6 +319,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
             aria-hidden="true"
           />
           <div
+            ref={drawerRef}
             role="dialog"
             aria-modal="true"
             aria-label={`${drawerProduct.name} details`}
@@ -301,8 +327,8 @@ const WishlistPage: FC<WishlistPageProps> = ({
           >
             <button
               onClick={() => setDrawerProduct(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-warm hover:bg-warm/70 transition-colors"
-              aria-label="Close"
+              className="absolute top-4 right-4 z-10 w-11 h-11 flex items-center justify-center bg-warm hover:bg-warm/70 transition-colors"
+              aria-label="Close quick view"
             >
               <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M18 6 6 18M6 6l12 12" />
@@ -331,7 +357,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
               </div>
               <div className="flex gap-3">
                 <button
-                  onClick={() => { onMoveToCart(drawerProduct.id); setDrawerProduct(null) }}
+                  onClick={() => { handleMoveToCart(drawerProduct.id); setDrawerProduct(null) }}
                   disabled={!drawerProduct.inStock || cartIds.has(drawerProduct.id)}
                   className={cn(
                     'flex-1 font-body text-[0.65rem] uppercase tracking-[0.18em] py-4 transition-all duration-200',
@@ -345,7 +371,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
                   {cartIds.has(drawerProduct.id) ? '✦ In Cart' : 'Move to Cart'}
                 </button>
                 <button
-                  onClick={() => { onRemoveFromWishlist(drawerProduct.id); setDrawerProduct(null) }}
+                  onClick={() => { handleRemove(drawerProduct.id); setDrawerProduct(null) }}
                   className="w-12 h-12 border border-warm flex items-center justify-center text-muted hover:border-rose hover:text-rose transition-colors duration-200"
                   aria-label="Remove from wishlist"
                 >

@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { Link } from 'react-router-dom'
 import { FOOTER_COLUMNS } from '@/data'
 
 const SOCIALS = ['In', 'Ig', 'Yt', 'Pi'] as const
@@ -8,12 +9,12 @@ const Footer: FC = () => (
     <div className="bg-deep section-p grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10">
       {/* Brand */}
       <div>
-        <a
-          href="#"
-          className="font-display font-light text-[1.7rem] tracking-[0.15em] text-cream block mb-4 no-underline"
+        <Link
+          to="/"
+          className="font-display font-light text-[1.7rem] tracking-[0.15em] text-cream block mb-4 no-underline hover:text-gold-light transition-colors duration-200"
         >
           LUMINAE
-        </a>
+        </Link>
         <p className="font-body font-extralight text-[0.76rem] leading-relaxed text-cream/40 max-w-[240px] mb-5">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.
         </p>
@@ -22,8 +23,8 @@ const Footer: FC = () => (
             <a
               key={s}
               href="#"
-              aria-label={`Follow on ${s}`}
-              className="w-[30px] h-[30px] border border-cream/15 flex items-center justify-center text-cream/50 text-[0.72rem] no-underline transition-[border-color,color] duration-300 hover:border-gold hover:text-gold"
+              aria-label={`Follow us on ${s}`}
+              className="w-[44px] h-[44px] border border-cream/15 flex items-center justify-center text-cream/50 text-[0.72rem] no-underline transition-[border-color,color] duration-300 hover:border-gold hover:text-gold"
             >
               {s}
             </a>
@@ -40,12 +41,12 @@ const Footer: FC = () => (
           <ul className="list-none space-y-[0.55rem]">
             {col.links.map(link => (
               <li key={link.label}>
-                <a
-                  href={link.href}
+                <Link
+                  to={link.href}
                   className="font-body font-extralight text-[0.78rem] text-cream/45 no-underline transition-colors duration-300 hover:text-cream"
                 >
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

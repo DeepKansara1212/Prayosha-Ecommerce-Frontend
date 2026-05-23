@@ -1,4 +1,5 @@
 import { useState, useEffect, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -70,6 +71,7 @@ const Step1: FC<{ onSuccess: (phone: string) => void }> = ({ onSuccess }) => {
 // ─── Step 2 — OTP + Password ──────────────────────────────────────────────────
 
 const Step2: FC<{ phone: string; onBack: () => void }> = ({ phone, onBack }) => {
+  const navigate = useNavigate()
   const [serverError, setServerError] = useState('')
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
@@ -98,7 +100,7 @@ const Step2: FC<{ phone: string; onBack: () => void }> = ({ phone, onBack }) => 
     setLoading(true)
     try {
       await login({ phone, otp: data.otp, password: data.password })
-      window.location.hash = '#/'
+      navigate('/')
       window.scrollTo({ top: 0 })
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Invalid OTP or password.'
@@ -151,19 +153,15 @@ const Step2: FC<{ phone: string; onBack: () => void }> = ({ phone, onBack }) => 
 // ─── LoginPage ────────────────────────────────────────────────────────────────
 
 const LoginPage: FC = () => {
+  const navigate    = useNavigate()
   const accessToken = useAuthStore(s => s.accessToken)
 
   useEffect(() => {
-    if (accessToken) {
-      window.location.hash = '#/'
-    }
-  }, [accessToken])
+    if (accessToken) navigate('/', { replace: true })
+  }, [accessToken, navigate])
 
   const [step, setStep] = useState<1 | 2>(1)
   const [phone, setPhone] = useState('')
-
-  const goToRegister = () => { window.location.hash = '#/auth/register' }
-  const goToForgot   = () => { window.location.hash = '#/auth/forgot' }
 
   return (
     <AuthShell
@@ -171,25 +169,11 @@ const LoginPage: FC = () => {
       headlineItalic="Prayosha Crystal"
       subtext="Sign in to access your orders, wishlist, and the sacred stone collection curated for your journey."
     >
-      {/* Page title */}
       <div style={{ marginBottom: '32px' }}>
-        <p style={{
-          fontFamily: 'Jost, system-ui, sans-serif',
-          fontSize: '11px',
-          textTransform: 'uppercase',
-          letterSpacing: '0.12em',
-          color: '#6B6057',
-          marginBottom: '8px',
-        }}>
+        <p style={{ fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#6B6057', marginBottom: '8px' }}>
           {step === 1 ? 'Step 1 of 2' : 'Step 2 of 2'}
         </p>
-        <h2 style={{
-          fontFamily: '"Cormorant Garamond", Georgia, serif',
-          fontWeight: 300,
-          fontSize: '28px',
-          color: '#1C1A17',
-          margin: 0,
-        }}>
+        <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
           {step === 1 ? 'Enter your number' : 'Verify & sign in'}
         </h2>
       </div>
@@ -199,22 +183,10 @@ const LoginPage: FC = () => {
         : <Step2 phone={phone} onBack={() => setStep(1)} />
       }
 
-      {/* Nav links */}
-      <div style={{
-        marginTop: '28px',
-        paddingTop: '20px',
-        borderTop: '1px solid #E2DAC8',
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '6px 16px',
-        justifyContent: 'center',
-        fontFamily: 'Jost, system-ui, sans-serif',
-        fontSize: '13px',
-        color: '#6B6057',
-      }}>
-        <span>New here? <AuthLink onClick={goToRegister}>Create account</AuthLink></span>
+      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', display: 'flex', flexWrap: 'wrap', gap: '6px 16px', justifyContent: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
+        <span>New here? <AuthLink onClick={() => navigate('/auth/register')}>Create account</AuthLink></span>
         <span style={{ color: '#E2DAC8' }}>·</span>
-        <AuthLink onClick={goToForgot}>Forgot password?</AuthLink>
+        <AuthLink onClick={() => navigate('/auth/forgot')}>Forgot password?</AuthLink>
       </div>
     </AuthShell>
   )

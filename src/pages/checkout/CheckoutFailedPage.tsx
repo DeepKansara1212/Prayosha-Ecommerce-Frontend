@@ -1,9 +1,11 @@
 import { useMemo, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 
 // ─── CheckoutFailedPage ───────────────────────────────────────────────────────
 
 const CheckoutFailedPage: FC = () => {
+  const navigate = useNavigate()
   const failedOrder = useMemo(() => {
     try {
       const raw = sessionStorage.getItem('prayosha_last_order_failed')
@@ -14,17 +16,17 @@ const CheckoutFailedPage: FC = () => {
   }, [])
 
   const retry = () => {
-    window.location.hash = '#/checkout'
+    navigate('/checkout')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const goContact = () => {
-    window.location.hash = '#/contact'
+    navigate('/contact')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const goCollection = () => {
-    window.location.hash = '#/collection'
+    navigate('/collection')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 

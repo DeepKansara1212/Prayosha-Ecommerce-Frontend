@@ -1,8 +1,10 @@
-import { useState, useEffect, useMemo, useCallback, type FC } from 'react'
+import { useMemo, useCallback, useEffect, type FC } from 'react'
+import { Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import CustomCursor from '@/components/ui/CustomCursor'
-import Navbar       from '@/components/layout/Navbar'
-import Footer       from '@/components/layout/Footer'
+import ToastContainer from '@/components/ui/Toast'
+import Navbar   from '@/components/layout/Navbar'
+import Footer   from '@/components/layout/Footer'
 
 // Sections (home page)
 import Hero             from '@/components/sections/Hero'
@@ -48,89 +50,6 @@ import { useAuthStore }     from '@/store/authStore'
 import { useCartStore }     from '@/store/cartStore'
 import { useWishlistStore } from '@/store/wishlistStore'
 
-// ─── Router ───────────────────────────────────────────────────────────────────
-
-type Page =
-  | 'home'
-  | 'collection'
-  | 'product'
-  | 'auth-login'
-  | 'auth-register'
-  | 'auth-forgot'
-  | 'auth-reset'
-  | 'about'
-  | 'contact'
-  | 'wishlist'
-  | 'cart'
-  | 'checkout'
-  | 'checkout-success'
-  | 'checkout-failed'
-  | 'account-orders'
-  | 'account-order-detail'
-  | 'account-addresses'
-  | 'account-profile'
-  | 'blog'
-  | 'blog-post'
-
-function getPage(): { page: Page; param: string | null } {
-  const hash = window.location.hash
-  if (hash === '#/collection')    return { page: 'collection',    param: null }
-  if (hash === '#/auth/login' || hash === '#/auth')
-                                  return { page: 'auth-login',    param: null }
-  if (hash === '#/auth/register') return { page: 'auth-register', param: null }
-  if (hash === '#/auth/forgot')   return { page: 'auth-forgot',   param: null }
-  if (hash.startsWith('#/auth/reset'))
-                                  return { page: 'auth-reset',    param: null }
-  if (hash === '#/about')         return { page: 'about',         param: null }
-  if (hash === '#/contact')       return { page: 'contact',       param: null }
-  if (hash === '#/wishlist')      return { page: 'wishlist',      param: null }
-  if (hash === '#/cart')              return { page: 'cart',             param: null }
-  if (hash === '#/checkout')          return { page: 'checkout',         param: null }
-  if (hash === '#/checkout/success')  return { page: 'checkout-success', param: null }
-  if (hash === '#/checkout/failed')   return { page: 'checkout-failed',  param: null }
-  if (hash.startsWith('#/product/')) {
-    return { page: 'product', param: hash.replace('#/product/', '') }
-  }
-  if (hash === '#/account' || hash === '#/account/orders') {
-    return { page: 'account-orders',    param: null }
-  }
-  if (hash.startsWith('#/account/orders/')) {
-    return { page: 'account-order-detail', param: hash.replace('#/account/orders/', '') }
-  }
-  if (hash === '#/account/addresses') return { page: 'account-addresses', param: null }
-  if (hash === '#/account/profile')   return { page: 'account-profile',   param: null }
-  if (hash === '#/blog')              return { page: 'blog',              param: null }
-  if (hash.startsWith('#/blog/'))     return { page: 'blog-post',         param: hash.replace('#/blog/', '') }
-  return { page: 'home', param: null }
-}
-
-function navigate(page: Page, id?: string) {
-  const hashes: Record<Page, string> = {
-    home:                   '',
-    collection:             '#/collection',
-    'auth-login':           '#/auth/login',
-    'auth-register':        '#/auth/register',
-    'auth-forgot':          '#/auth/forgot',
-    'auth-reset':           '#/auth/reset',
-    about:                  '#/about',
-    contact:                '#/contact',
-    wishlist:               '#/wishlist',
-    cart:                   '#/cart',
-    checkout:               '#/checkout',
-    'checkout-success':     '#/checkout/success',
-    'checkout-failed':      '#/checkout/failed',
-    product:                `#/product/${id ?? ''}`,
-    'account-orders':       '#/account/orders',
-    'account-order-detail': `#/account/orders/${id ?? ''}`,
-    'account-addresses':    '#/account/addresses',
-    'account-profile':      '#/account/profile',
-    blog:                   '#/blog',
-    'blog-post':            `#/blog/${id ?? ''}`,
-  }
-  window.location.hash = hashes[page]
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
 // ─── Home page ────────────────────────────────────────────────────────────────
 
 const HomePage: FC = () => (
@@ -150,33 +69,82 @@ const HomePage: FC = () => (
   </>
 )
 
+// ─── Route wrappers that need URL params ─────────────────────────────────────
+
+interface ProductRouteProps {
+  wishlistIds: Set<string>
+  cartIds: Set<string>
+  onToggleWishlist: (id: string) => void
+  onAddToCart: (id: string) => void
+}
+
+const ProductRoute: FC<ProductRouteProps> = ({ wishlistIds, cartIds, onToggleWishlist, onAddToCart }) => {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+
+  if (!id) return <Navigate to="/collection" replace />
+
+  return (
+    <ProductDetailPage
+      productId={id}
+      wishlistIds={wishlistIds}
+      cartIds={cartIds}
+      onToggleWishlist={onToggleWishlist}
+      onAddToCart={onAddToCart}
+      onNavigateToCollection={() => navigate('/collection')}
+      onNavigateToProduct={(pid) => navigate(`/product/${pid}`)}
+      onNavigateToCart={() => navigate('/cart')}
+    />
+  )
+}
+
+const BlogPostRoute: FC = () => {
+  const { slug } = useParams<{ slug: string }>()
+  const navigate = useNavigate()
+
+  if (!slug) return <Navigate to="/blog" replace />
+
+  return (
+    <BlogPostPage
+      slug={slug}
+      onNavigateToJournal={() => navigate('/blog')}
+      onNavigateToPost={(s) => navigate(`/blog/${s}`)}
+    />
+  )
+}
+
+const OrderDetailRoute: FC = () => {
+  const { num } = useParams<{ num: string }>()
+  if (!num) return <Navigate to="/account/orders" replace />
+  return <OrderDetailPage orderNumber={num} />
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 
 const App: FC = () => {
-  const [{ page, param }, setRoute] = useState(getPage)
+  const navigate = useNavigate()
 
   // ── Store slices ──────────────────────────────────────────────────────────
-  const fetchMe       = useAuthStore(s => s.fetchMe)
-  const accessToken   = useAuthStore(s => s.accessToken)
+  const fetchMe     = useAuthStore(s => s.fetchMe)
+  const accessToken = useAuthStore(s => s.accessToken)
 
-  const cartItems     = useCartStore(s => s.items)
-  const fetchCart     = useCartStore(s => s.fetchCart)
-  const addItemStore  = useCartStore(s => s.addItem)
-  const updateItemStore  = useCartStore(s => s.updateItem)
-  const removeItemStore  = useCartStore(s => s.removeItem)
-  const clearCartStore   = useCartStore(s => s.clearCart)
+  const cartItems      = useCartStore(s => s.items)
+  const fetchCart      = useCartStore(s => s.fetchCart)
+  const addItemStore   = useCartStore(s => s.addItem)
+  const updateItemStore   = useCartStore(s => s.updateItem)
+  const removeItemStore   = useCartStore(s => s.removeItem)
+  const clearCartStore    = useCartStore(s => s.clearCart)
 
-  const wishlistIds_  = useWishlistStore(s => s.productIds)
+  const wishlistIds_ = useWishlistStore(s => s.productIds)
   const fetchWishlist = useWishlistStore(s => s.fetchWishlist)
   const toggleStore   = useWishlistStore(s => s.toggle)
 
-  // ── Derived sets (stable references via useMemo) ──────────────────────────
+  // ── Derived sets ──────────────────────────────────────────────────────────
   const wishlistIds = useMemo(() => new Set(wishlistIds_), [wishlistIds_])
   const cartIds     = useMemo(() => new Set(cartItems.map(i => i.productId)), [cartItems])
 
   // ── Bootstrap session on mount ────────────────────────────────────────────
   useEffect(() => {
-    // Read current store state without subscribing — avoids re-running on token change
     if (useAuthStore.getState().accessToken) {
       void fetchMe()
       void fetchCart()
@@ -185,7 +153,6 @@ const App: FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Re-fetch when the user logs in during this session (token goes from null → value)
   useEffect(() => {
     if (accessToken) {
       void fetchMe()
@@ -194,13 +161,6 @@ const App: FC = () => {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken])
-
-  // ── Hash router ───────────────────────────────────────────────────────────
-  useEffect(() => {
-    const handler = () => setRoute(getPage())
-    window.addEventListener('hashchange', handler)
-    return () => window.removeEventListener('hashchange', handler)
-  }, [])
 
   // ── Cart actions ──────────────────────────────────────────────────────────
   const addToCart = useCallback((id: string) => {
@@ -225,8 +185,6 @@ const App: FC = () => {
     void toggleStore(id)
   }, [toggleStore])
 
-  // removeFromWishlist and moveToWishlist both go through toggle
-  // (toggle removes when the item is already in the list)
   const removeFromWishlist = useCallback((id: string) => {
     void toggleStore(id)
   }, [toggleStore])
@@ -235,91 +193,93 @@ const App: FC = () => {
     void toggleStore(id)
   }, [toggleStore])
 
-  // ── Nav helpers ───────────────────────────────────────────────────────────
-  const goCollection = () => navigate('collection')
-  const goCart       = () => navigate('cart')
-  const goWishlist   = () => navigate('wishlist')
-  const goProduct    = (id: string) => navigate('product', id)
-
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
       <CustomCursor />
+      <ToastContainer />
 
-      {page === 'home'            && <HomePage />}
-      {page === 'about'           && <AboutPage />}
-      {page === 'contact'         && <ContactPage />}
-      {page === 'auth-login'      && <LoginPage />}
-      {page === 'auth-register'   && <RegisterPage />}
-      {page === 'auth-forgot'     && <ForgotPasswordPage />}
-      {page === 'auth-reset'      && <ResetPasswordPage />}
+      <Routes>
+        {/* Home */}
+        <Route path="/" element={<HomePage />} />
 
-      {page === 'collection' && (
-        <CollectionPage
-          wishlistIds={wishlistIds}
-          cartIds={cartIds}
-          onToggleWishlist={toggleWishlist}
-          onAddToCart={addToCart}
-          onNavigateToProduct={goProduct}
-        />
-      )}
+        {/* Shop */}
+        <Route path="/collection" element={
+          <CollectionPage
+            wishlistIds={wishlistIds}
+            cartIds={cartIds}
+            onToggleWishlist={toggleWishlist}
+            onAddToCart={addToCart}
+            onNavigateToProduct={(id) => navigate(`/product/${id}`)}
+          />
+        } />
+        <Route path="/product/:id" element={
+          <ProductRoute
+            wishlistIds={wishlistIds}
+            cartIds={cartIds}
+            onToggleWishlist={toggleWishlist}
+            onAddToCart={addToCart}
+          />
+        } />
 
-      {page === 'product' && param && (
-        <ProductDetailPage
-          productId={param}
-          wishlistIds={wishlistIds}
-          cartIds={cartIds}
-          onToggleWishlist={toggleWishlist}
-          onAddToCart={addToCart}
-          onNavigateToCollection={goCollection}
-          onNavigateToProduct={goProduct}
-          onNavigateToCart={goCart}
-        />
-      )}
+        {/* Static pages */}
+        <Route path="/about"   element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
 
-      {page === 'wishlist' && (
-        <WishlistPage
-          wishlistIds={wishlistIds}
-          cartIds={cartIds}
-          onRemoveFromWishlist={removeFromWishlist}
-          onMoveToCart={id => { addToCart(id); goCart() }}
-          onNavigateToCollection={goCollection}
-          onNavigateToCart={goCart}
-        />
-      )}
+        {/* Auth */}
+        <Route path="/auth/login"    element={<LoginPage />} />
+        <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path="/auth/forgot"   element={<ForgotPasswordPage />} />
+        <Route path="/auth/reset"    element={<ResetPasswordPage />} />
 
-      {page === 'cart' && (
-        <CartPage
-          items={cartItems}
-          wishlistIds={wishlistIds}
-          onUpdateQty={updateCartQty}
-          onRemoveItem={removeFromCart}
-          onMoveToWishlist={moveToWishlist}
-          onNavigateToCollection={goCollection}
-          onNavigateToWishlist={goWishlist}
-          onClearCart={clearCart}
-        />
-      )}
+        {/* Cart & Wishlist */}
+        <Route path="/account/wishlist" element={
+          <WishlistPage
+            wishlistIds={wishlistIds}
+            cartIds={cartIds}
+            onRemoveFromWishlist={removeFromWishlist}
+            onMoveToCart={(id) => { addToCart(id); navigate('/cart') }}
+            onNavigateToCollection={() => navigate('/collection')}
+            onNavigateToCart={() => navigate('/cart')}
+          />
+        } />
+        <Route path="/cart" element={
+          <CartPage
+            items={cartItems}
+            wishlistIds={wishlistIds}
+            onUpdateQty={updateCartQty}
+            onRemoveItem={removeFromCart}
+            onMoveToWishlist={moveToWishlist}
+            onNavigateToCollection={() => navigate('/collection')}
+            onNavigateToWishlist={() => navigate('/account/wishlist')}
+            onClearCart={clearCart}
+          />
+        } />
 
-      {page === 'checkout'         && <CheckoutPage />}
-      {page === 'checkout-success' && <CheckoutSuccessPage />}
-      {page === 'checkout-failed'  && <CheckoutFailedPage />}
+        {/* Checkout */}
+        <Route path="/checkout"         element={<CheckoutPage />} />
+        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+        <Route path="/checkout/failed"  element={<CheckoutFailedPage />} />
 
-      {page === 'account-orders'       && <OrdersPage />}
-      {page === 'account-order-detail' && param && <OrderDetailPage orderNumber={param} />}
-      {page === 'account-addresses'    && <AddressesPage />}
-      {page === 'account-profile'      && <ProfilePage />}
+        {/* Account */}
+        <Route path="/account"               element={<Navigate to="/account/orders" replace />} />
+        <Route path="/account/orders"        element={<OrdersPage />} />
+        <Route path="/account/orders/:num"   element={<OrderDetailRoute />} />
+        <Route path="/account/addresses"     element={<AddressesPage />} />
+        <Route path="/account/profile"       element={<ProfilePage />} />
 
-      {page === 'blog' && (
-        <BlogPage onNavigateToPost={(slug) => navigate('blog-post', slug)} />
-      )}
-      {page === 'blog-post' && param && (
-        <BlogPostPage
-          slug={param}
-          onNavigateToJournal={() => navigate('blog')}
-          onNavigateToPost={(slug) => navigate('blog-post', slug)}
-        />
-      )}
+        {/* Blog */}
+        <Route path="/blog" element={
+          <BlogPage onNavigateToPost={(slug) => navigate(`/blog/${slug}`)} />
+        } />
+        <Route path="/blog/:slug" element={<BlogPostRoute />} />
+
+        {/* Legacy hash-style redirects */}
+        <Route path="/wishlist" element={<Navigate to="/account/wishlist" replace />} />
+
+        {/* 404 fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </>
   )
 }

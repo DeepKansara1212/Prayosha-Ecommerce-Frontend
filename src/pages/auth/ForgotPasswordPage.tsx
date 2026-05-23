@@ -1,4 +1,5 @@
 import { useState, useEffect, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -53,17 +54,7 @@ const Step1: FC<{ onSuccess: (phone: string) => void }> = ({ onSuccess }) => {
   return (
     <form onSubmit={handleSubmit(submit)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {serverError && <FormError message={serverError} />}
-
-      <FormField
-        label="Mobile Number"
-        error={errors.phone?.message}
-        type="tel"
-        placeholder="10-digit mobile number"
-        maxLength={10}
-        autoComplete="tel"
-        {...register('phone')}
-      />
-
+      <FormField label="Mobile Number" error={errors.phone?.message} type="tel" placeholder="10-digit mobile number" maxLength={10} autoComplete="tel" {...register('phone')} />
       <button type="submit" disabled={loading} className="auth-btn-primary">
         {loading ? 'Sending OTP…' : 'Send OTP'}
       </button>
@@ -74,6 +65,7 @@ const Step1: FC<{ onSuccess: (phone: string) => void }> = ({ onSuccess }) => {
 // ─── Step 2 — OTP + New password ──────────────────────────────────────────────
 
 const Step2: FC<{ phone: string }> = ({ phone }) => {
+  const navigate = useNavigate()
   const [serverError, setServerError] = useState('')
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
@@ -101,7 +93,7 @@ const Step2: FC<{ phone: string }> = ({ phone }) => {
     setLoading(true)
     try {
       await authApi.resetPassword({ phone, otp: data.otp, newPassword: data.newPassword })
-      window.location.hash = '#/auth/login'
+      navigate('/auth/login')
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Could not reset password. Please try again.'
       setServerError(msg)
@@ -113,40 +105,13 @@ const Step2: FC<{ phone: string }> = ({ phone }) => {
   return (
     <form onSubmit={handleSubmit(submit)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {serverError && <FormError message={serverError} />}
-
       <FormHint message="If this number is registered, you'll receive an OTP shortly." />
-
-      <FormField
-        label="OTP"
-        error={errors.otp?.message}
-        type="text"
-        inputMode="numeric"
-        placeholder="6-digit OTP"
-        maxLength={6}
-        autoComplete="one-time-code"
-        {...register('otp')}
-      />
-
-      <PasswordField
-        label="New Password"
-        error={errors.newPassword?.message}
-        placeholder="Min 6 characters"
-        autoComplete="new-password"
-        {...register('newPassword')}
-      />
-
-      <PasswordField
-        label="Confirm New Password"
-        error={errors.confirmPassword?.message}
-        placeholder="Repeat new password"
-        autoComplete="new-password"
-        {...register('confirmPassword')}
-      />
-
+      <FormField label="OTP" error={errors.otp?.message} type="text" inputMode="numeric" placeholder="6-digit OTP" maxLength={6} autoComplete="one-time-code" {...register('otp')} />
+      <PasswordField label="New Password" error={errors.newPassword?.message} placeholder="Min 6 characters" autoComplete="new-password" {...register('newPassword')} />
+      <PasswordField label="Confirm New Password" error={errors.confirmPassword?.message} placeholder="Repeat new password" autoComplete="new-password" {...register('confirmPassword')} />
       <button type="submit" disabled={loading} className="auth-btn-primary">
         {loading ? 'Resetting…' : 'Reset Password'}
       </button>
-
       <div style={{ textAlign: 'center' }}>
         <AuthLink onClick={resending ? undefined : resendOtp}>
           {resending ? 'Resending…' : 'Resend OTP'}
@@ -159,18 +124,15 @@ const Step2: FC<{ phone: string }> = ({ phone }) => {
 // ─── ForgotPasswordPage ───────────────────────────────────────────────────────
 
 const ForgotPasswordPage: FC = () => {
+  const navigate    = useNavigate()
   const accessToken = useAuthStore(s => s.accessToken)
 
   useEffect(() => {
-    if (accessToken) {
-      window.location.hash = '#/'
-    }
-  }, [accessToken])
+    if (accessToken) navigate('/', { replace: true })
+  }, [accessToken, navigate])
 
   const [step, setStep] = useState<1 | 2>(1)
   const [phone, setPhone] = useState('')
-
-  const goToLogin = () => { window.location.hash = '#/auth/login' }
 
   return (
     <AuthShell
@@ -178,25 +140,11 @@ const ForgotPasswordPage: FC = () => {
       headlineItalic="sacred access"
       subtext="Reset your password with a one-time code sent to your registered mobile number."
     >
-      {/* Page title */}
       <div style={{ marginBottom: '32px' }}>
-        <p style={{
-          fontFamily: 'Jost, system-ui, sans-serif',
-          fontSize: '11px',
-          textTransform: 'uppercase',
-          letterSpacing: '0.12em',
-          color: '#6B6057',
-          marginBottom: '8px',
-        }}>
+        <p style={{ fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#6B6057', marginBottom: '8px' }}>
           {step === 1 ? 'Step 1 of 2' : 'Step 2 of 2'}
         </p>
-        <h2 style={{
-          fontFamily: '"Cormorant Garamond", Georgia, serif',
-          fontWeight: 300,
-          fontSize: '28px',
-          color: '#1C1A17',
-          margin: 0,
-        }}>
+        <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
           {step === 1 ? 'Enter your number' : 'Set new password'}
         </h2>
       </div>
@@ -206,17 +154,8 @@ const ForgotPasswordPage: FC = () => {
         : <Step2 phone={phone} />
       }
 
-      {/* Nav link */}
-      <div style={{
-        marginTop: '28px',
-        paddingTop: '20px',
-        borderTop: '1px solid #E2DAC8',
-        textAlign: 'center',
-        fontFamily: 'Jost, system-ui, sans-serif',
-        fontSize: '13px',
-        color: '#6B6057',
-      }}>
-        <AuthLink onClick={goToLogin}>Back to sign in</AuthLink>
+      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
+        <AuthLink onClick={() => navigate('/auth/login')}>Back to sign in</AuthLink>
       </div>
     </AuthShell>
   )

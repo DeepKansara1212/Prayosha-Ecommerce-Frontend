@@ -5,18 +5,20 @@ This frontend is the public-facing application for the Prayosha experience, show
 
 ## Project highlights
 
-- React 19 with functional components and hooks
+- React 18 with functional components and hooks
 - Vite for fast development builds and production output
 - Tailwind CSS with custom theme extensions and animation utilities
-- Zustand for global state management (auth, cart, wishlist) with localStorage persistence
-- TanStack React Query for server-state caching and data fetching
+- **React Router v7** — full History API routing (no hash URLs)
+- Zustand for global state management (auth, cart, wishlist, toasts) with localStorage persistence
+- TanStack React Query v5 for server-state caching and data fetching
 - Axios with request/response interceptors and automatic token refresh
 - React Hook Form with resolver-based validation for all forms
 - Razorpay payment gateway integration
 - ESLint for code quality and consistency
-- Hash-based routing for a lightweight single-page experience
 - 18 product catalog entries across 6 categories with full metadata
 - 6 static blog posts with rich multi-section content
+- Loading skeleton components, global toast notification system, and reusable EmptyState component
+- WCAG-aligned accessibility: 44×44 px tap targets, focus trap on drawers, prefers-reduced-motion
 
 ## Getting started
 
@@ -81,42 +83,51 @@ npm run lint
 
 ### Routing
 
-The app uses a custom hash-based router defined in `src/App.tsx` with 20 route slots:
+The app uses **React Router v7** with `BrowserRouter` (History API). Routes are defined in `src/App.tsx`:
 
-| Route | Page |
+| Path | Page |
 |---|---|
-| `#/` (default) | Home / Landing |
-| `#/collection` | Collection |
-| `#/product/:id` | Product detail |
-| `#/auth`, `#/auth/login` | Login |
-| `#/auth/register` | Register |
-| `#/auth/forgot` | Forgot password |
-| `#/auth/reset` | Reset password |
-| `#/about` | About |
-| `#/contact` | Contact |
-| `#/wishlist` | Wishlist |
-| `#/cart` | Cart |
-| `#/checkout` | Checkout (3-step) |
-| `#/checkout/success` | Order confirmation |
-| `#/checkout/failed` | Payment failure |
-| `#/account`, `#/account/orders` | Order history |
-| `#/account/orders/:id` | Order detail |
-| `#/account/addresses` | Saved addresses |
-| `#/account/profile` | Profile edit |
-| `#/blog` | Blog listing |
-| `#/blog/:slug` | Blog post reader |
+| `/` | Home / Landing |
+| `/collection` | Collection |
+| `/product/:id` | Product detail |
+| `/auth/login` | Login |
+| `/auth/register` | Register |
+| `/auth/forgot` | Forgot password |
+| `/auth/reset` | Reset password |
+| `/about` | About |
+| `/contact` | Contact |
+| `/account/wishlist` | Wishlist (redirects from `/wishlist`) |
+| `/cart` | Cart |
+| `/checkout` | Checkout (3-step) |
+| `/checkout/success` | Order confirmation |
+| `/checkout/failed` | Payment failure |
+| `/account/orders` | Order history |
+| `/account/orders/:num` | Order detail |
+| `/account/addresses` | Saved addresses |
+| `/account/profile` | Profile edit |
+| `/blog` | Blog listing |
+| `/blog/:slug` | Blog post reader |
 
 ### State management
 
-The app uses three Zustand stores:
+The app uses four Zustand stores:
 
 | Store | Key State | Persisted | Sync |
 |---|---|---|---|
 | `authStore` | `user`, `accessToken`, `isLoading` | localStorage | On mount |
 | `cartStore` | `items[]`, `coupon`, `isOpen` | No | On mount + post-login |
 | `wishlistStore` | `productIds[]`, `isLoading` | No | On mount + post-login |
+| `toastStore` | `toasts[]` | No (ephemeral) | — |
 
 All stores use optimistic updates with automatic revert on API errors. Cart and wishlist sync their remote state after login via `syncOnLogin()`.
+
+The `toast` helper (`src/store/toastStore.ts`) can be called from anywhere without hooks:
+```ts
+toast.success('Added to cart')
+toast.error('Something went wrong')
+toast.info('Saved to wishlist')
+toast.warning('Only 2 left in stock')
+```
 
 ### API layer
 
@@ -281,7 +292,7 @@ Frontend/
       product/            # RatingBar, ReviewForm, ReviewsList
       search/             # SearchOverlay
       sections/           # Hero, Marquee, Collections, Benefits, FeaturedProducts, RitualBanner, Testimonials, Newsletter
-      ui/                 # Button, CustomCursor, SectionLabel, SectionTitle
+      ui/                 # Button, CustomCursor, EmptyState, Skeleton, SectionLabel, SectionTitle, Toast
     data/                 # static app content
       index.ts            # home page data, blog posts
       collection.ts       # 18-product catalog
@@ -311,9 +322,10 @@ Frontend/
       authStore.ts
       cartStore.ts
       wishlistStore.ts
+      toastStore.ts       # ephemeral toast queue + toast.success/error/info/warning helpers
     types/
       index.ts            # all shared TypeScript interfaces and enums
-    App.tsx               # hash router and state orchestration
+    App.tsx               # React Router routes and state orchestration
     env.d.ts              # Vite environment type declarations
     index.css             # global styles
     main.tsx              # app bootstrap (QueryClientProvider)
@@ -364,9 +376,10 @@ TypeScript 6, Vite 8, Tailwind CSS 3, PostCSS, Autoprefixer, ESLint 10 with type
 
 - The Axios client auto-refreshes expired access tokens and retries the original request once.
 - Cart and wishlist data are fetched from the backend on mount; static `src/data/collection.ts` is used for the collection and detail pages until the products API is wired end-to-end.
-- Product routing uses hash fragments rather than a dedicated router library; add a `#` prefix when linking to any route.
+- Routing uses React Router v7 with the History API. All internal navigation uses `useNavigate()` or `<Link>` — no `window.location.hash` calls remain in the codebase.
 - TanStack Query is bootstrapped in `main.tsx` with a 5-minute `staleTime`.
 - Razorpay is loaded dynamically via `useRazorpay`; the test key is read from `VITE_RAZORPAY_KEY_ID`.
+- The skeleton-pulse animation and `prefers-reduced-motion` rule are defined in `src/index.css` and apply globally.
 - Run `npm run lint` and `npm run build` before committing to catch TypeScript and style issues early.
 
 ## Recommended contribution workflow

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
 // ─── Announcement Ticker ──────────────────────────────────────────────────────
@@ -73,13 +74,7 @@ const AnnouncementTicker: FC = () => {
         <p className="font-body font-light text-[0.72rem] text-cream/80 xs:hidden block leading-tight">
           {ann.text.length > 50 ? ann.text.slice(0, 50) + '…' : ann.text}
         </p>
-        <a
-          href={ann.hash}
-          onClick={e => { e.preventDefault(); window.location.hash = ann.hash.replace('#/', '#/') }}
-          className="flex-none font-body text-[0.62rem] uppercase tracking-[0.18em] text-gold-light hover:text-gold transition-colors whitespace-nowrap underline-offset-2 hover:underline"
-        >
-          {ann.cta} →
-        </a>
+        <CtaLink hash={ann.hash} cta={ann.cta} />
       </div>
 
       {/* Next arrow */}
@@ -100,6 +95,28 @@ const AnnouncementTicker: FC = () => {
         ))}
       </div>
     </div>
+  )
+}
+
+// ─── Announcement CTA link (uses router navigate) ─────────────────────────────
+
+const HASH_TO_PATH: Record<string, string> = {
+  '#/collection': '/collection',
+  '#/about':      '/about',
+  '#/blog':       '/blog',
+  '#':            '/',
+}
+
+const CtaLink: FC<{ hash: string; cta: string }> = ({ hash, cta }) => {
+  const navigate = useNavigate()
+  const path = HASH_TO_PATH[hash] ?? '/collection'
+  return (
+    <button
+      onClick={() => { navigate(path); window.scrollTo({ top: 0 }) }}
+      className="flex-none font-body text-[0.62rem] uppercase tracking-[0.18em] text-gold-light hover:text-gold transition-colors whitespace-nowrap underline-offset-2 hover:underline bg-transparent border-none cursor-pointer p-0"
+    >
+      {cta} →
+    </button>
   )
 }
 
@@ -133,8 +150,9 @@ const STATS = [
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
 const Hero: FC = () => {
-  const navigate = (hash: string) => {
-    window.location.hash = hash
+  const navigate = useNavigate()
+  const go = (path: string) => {
+    navigate(path)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -179,14 +197,14 @@ const Hero: FC = () => {
 
           <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-center mb-10">
             <button
-              onClick={() => navigate('#/collection')}
-              className="font-body text-[0.7rem] uppercase tracking-[0.22em] bg-gold text-deep px-8 py-4 hover:bg-gold-light transition-all duration-300 hover:-translate-y-px"
+              onClick={() => go('/collection')}
+              className="font-body text-[0.7rem] uppercase tracking-[0.22em] bg-gold text-deep px-8 py-4 hover:bg-gold-light transition-all duration-300 hover:-translate-y-px min-h-[44px]"
             >
               Explore Collection
             </button>
             <button
-              onClick={() => navigate('#/about')}
-              className="font-body text-[0.7rem] uppercase tracking-[0.15em] text-cream/75 hover:text-cream transition-colors flex items-center gap-2 duration-200"
+              onClick={() => go('/about')}
+              className="font-body text-[0.7rem] uppercase tracking-[0.15em] text-cream/75 hover:text-cream transition-colors flex items-center gap-2 duration-200 min-h-[44px]"
             >
               Our Story <span aria-hidden="true">→</span>
             </button>

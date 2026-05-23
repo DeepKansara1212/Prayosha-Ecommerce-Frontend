@@ -1,9 +1,12 @@
 import { useState, useMemo, useCallback, type FC, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar  from '@/components/layout/Navbar'
 import Footer  from '@/components/layout/Footer'
 import { COLLECTION_PRODUCTS } from '@/data/collection'
 import { cn } from '@/lib/utils'
 import type { ProductDetail } from '@/types'
+import EmptyState from '@/components/ui/EmptyState'
+import { toast } from '@/store/toastStore'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,33 +37,6 @@ const VALID_PROMOS: Record<string, number> = {
   MOON20:    0.20,
   CRYSTAL15: 0.15,
 }
-
-// ─── Empty cart ───────────────────────────────────────────────────────────────
-
-const EmptyCart: FC<{ onBrowse: () => void }> = ({ onBrowse }) => (
-  <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-    <div className="relative w-20 h-20 mb-6">
-      <div className="absolute inset-0 rounded-full bg-gold/10 animate-pulse" aria-hidden="true" />
-      <div className="relative w-20 h-20 rounded-full bg-gold/15 flex items-center justify-center">
-        <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="#B8956A" strokeWidth="1.5">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <path d="M16 10a4 4 0 0 1-8 0" />
-        </svg>
-      </div>
-    </div>
-    <h2 className="font-display font-light text-[1.8rem] text-deep mb-2">Your cart is empty</h2>
-    <p className="font-body font-extralight text-[0.82rem] text-muted max-w-xs leading-relaxed mb-7">
-      The perfect crystal is waiting for you. Browse our ethically sourced collection and find your stone.
-    </p>
-    <button
-      onClick={onBrowse}
-      className="font-body text-[0.7rem] uppercase tracking-[0.22em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200"
-    >
-      Browse Collection
-    </button>
-  </div>
-)
 
 // ─── Cart line item ───────────────────────────────────────────────────────────
 
@@ -127,7 +103,7 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, onQtyChange, on
           <div className="flex items-center border border-warm">
             <button
               onClick={() => onQtyChange(Math.max(1, qty - 1))}
-              className="w-8 h-8 flex items-center justify-center text-bark hover:bg-warm transition-colors text-sm"
+              className="min-w-[44px] min-h-[44px] w-8 flex items-center justify-center text-bark hover:bg-warm transition-colors text-sm"
               aria-label="Decrease quantity"
             >
               −
@@ -141,7 +117,7 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, onQtyChange, on
             </span>
             <button
               onClick={() => onQtyChange(Math.min(product.stockCount, qty + 1))}
-              className="w-8 h-8 flex items-center justify-center text-bark hover:bg-warm transition-colors text-sm"
+              className="min-w-[44px] min-h-[44px] w-8 flex items-center justify-center text-bark hover:bg-warm transition-colors text-sm"
               aria-label="Increase quantity"
             >
               +
@@ -416,6 +392,7 @@ const CartPage: FC<CartPageProps> = ({
   onNavigateToWishlist,
   onClearCart,
 }) => {
+  const navigate = useNavigate()
   const [promoDiscount, setPromoDiscount] = useState(0)
   const [promoCode, setPromoCode]         = useState('')
   const [checkedOut, setCheckedOut]       = useState(false)
@@ -443,9 +420,9 @@ const CartPage: FC<CartPageProps> = ({
   )
 
   const handleCheckout = useCallback(() => {
-    window.location.hash = '#/checkout'
+    navigate('/checkout')
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [])
+  }, [navigate])
 
   return (
     <>
@@ -491,7 +468,13 @@ const CartPage: FC<CartPageProps> = ({
           {checkedOut ? (
             <CheckoutSuccess onContinue={() => { setCheckedOut(false); onNavigateToCollection() }} />
           ) : cartProducts.length === 0 ? (
-            <EmptyCart onBrowse={onNavigateToCollection} />
+            <EmptyState
+              icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>}
+              title="Your cart is empty"
+              description="The perfect crystal is waiting for you. Browse our ethically sourced collection and find your stone."
+              actionLabel="Browse Collection"
+              onAction={onNavigateToCollection}
+            />
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10">
 
@@ -534,7 +517,7 @@ const CartPage: FC<CartPageProps> = ({
                       inWishlist={wishlistIds.has(product.id)}
                       onQtyChange={q => onUpdateQty(product.id, q)}
                       onRemove={() => onRemoveItem(product.id)}
-                      onMoveToWishlist={() => onMoveToWishlist(product.id)}
+                      onMoveToWishlist={() => { onMoveToWishlist(product.id); toast.info('Saved to wishlist') }}
                     />
                   ))}
                 </div>

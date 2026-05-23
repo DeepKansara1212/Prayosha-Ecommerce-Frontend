@@ -2,6 +2,7 @@ import { useState, type FC } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { submitReview } from '@/api/reviews.api'
 import { useAuthStore } from '@/store/authStore'
+import { toast } from '@/store/toastStore'
 import type { AxiosError } from 'axios'
 
 // ─── Interactive star selector ────────────────────────────────────────────────
@@ -39,28 +40,6 @@ function StarSelector({ value, onChange }: { value: number; onChange: (n: number
   )
 }
 
-// ─── Inline toast ─────────────────────────────────────────────────────────────
-
-function Toast({ msg, error }: { msg: string; error: boolean }) {
-  return (
-    <div
-      role="alert"
-      style={{
-        marginBottom: 16,
-        padding: '12px 16px',
-        background: error ? '#FDF2F2' : '#F2F7F4',
-        border: `1px solid ${error ? '#E2BCBC' : '#B8D8C4'}`,
-        fontFamily: "'Jost', system-ui, sans-serif",
-        fontSize: 13,
-        color: error ? '#8A3A3A' : '#3A6A4A',
-        lineHeight: 1.5,
-      }}
-    >
-      {msg}
-    </div>
-  )
-}
-
 // ─── Main component ───────────────────────────────────────────────────────────
 
 interface ReviewFormProps {
@@ -75,12 +54,6 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
   const [rating, setRating] = useState(0)
   const [title, setTitle]   = useState('')
   const [body, setBody]     = useState('')
-  const [toast, setToast]   = useState<{ msg: string; error: boolean } | null>(null)
-
-  function showToast(msg: string, error = false) {
-    setToast({ msg, error })
-    setTimeout(() => setToast(null), 4500)
-  }
 
   const mutation = useMutation({
     mutationFn: () => submitReview(slug, { rating, title, body }),
@@ -90,13 +63,13 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
       setRating(0)
       setTitle('')
       setBody('')
-      showToast('Review submitted! It will appear after approval.')
+      toast.success('Review submitted! It will appear after approval.')
     },
     onError: (err: AxiosError) => {
       if (err.response?.status === 409) {
-        showToast("You've already reviewed this product.", true)
+        toast.error("You've already reviewed this product.")
       } else {
-        showToast('Something went wrong. Please try again.', true)
+        toast.error('Something went wrong. Please try again.')
       }
     },
   })
@@ -142,8 +115,6 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
       }}>
         Write a Review
       </p>
-
-      {toast && <Toast msg={toast.msg} error={toast.error} />}
 
       <form
         onSubmit={e => { e.preventDefault(); if (isValid && !mutation.isPending) mutation.mutate() }}

@@ -1,4 +1,5 @@
 import { useMemo, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 import { COLLECTION_PRODUCTS } from '@/data/collection'
 import type { Order } from '@/api/orders.api'
@@ -6,6 +7,7 @@ import type { Order } from '@/api/orders.api'
 // ─── CheckoutSuccessPage ──────────────────────────────────────────────────────
 
 const CheckoutSuccessPage: FC = () => {
+  const navigate = useNavigate()
   const order: Order | null = useMemo(() => {
     try {
       const raw = sessionStorage.getItem('prayosha_last_order')
@@ -16,11 +18,11 @@ const CheckoutSuccessPage: FC = () => {
   }, [])
 
   const goOrders = () => {
-    window.location.hash = order ? `#/account/orders/${order.orderNumber}` : '#/account/orders'
+    navigate(order ? `/account/orders/${order.orderNumber}` : '/account/orders')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   const goCollection = () => {
-    window.location.hash = '#/collection'
+    navigate('/collection')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 

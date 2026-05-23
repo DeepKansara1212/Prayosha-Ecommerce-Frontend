@@ -1,7 +1,10 @@
 import { useState, useEffect, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import AccountLayout from './AccountLayout'
 import * as ordersApi from '@/api/orders.api'
 import type { Order, PaginatedOrders } from '@/api/orders.api'
+import { OrderCardSkeleton } from '@/components/ui/Skeleton'
+import EmptyState from '@/components/ui/EmptyState'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -36,30 +39,6 @@ const StatusBadge: FC<{ status: string }> = ({ status }) => {
     </span>
   )
 }
-
-// ─── Empty state ──────────────────────────────────────────────────────────────
-
-const EmptyOrders: FC<{ onShop: () => void }> = ({ onShop }) => (
-  <div style={{ textAlign: 'center', padding: '80px 24px' }}>
-    <div style={{
-      width: 64, height: 64, borderRadius: '50%', background: '#F0EAF7',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
-    }}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="#7B5EA7" strokeWidth="1.5" width={28} height={28}>
-        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-        <line x1="3" y1="6" x2="21" y2="6" />
-        <path d="M16 10a4 4 0 0 1-8 0" />
-      </svg>
-    </div>
-    <p style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: 22, color: '#1C1A17', margin: '0 0 8px' }}>
-      No orders yet
-    </p>
-    <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '0 0 28px' }}>
-      Your crystal journey awaits
-    </p>
-    <button onClick={onShop} className="acct-btn-gold">Start Shopping</button>
-  </div>
-)
 
 // ─── Order card ───────────────────────────────────────────────────────────────
 
@@ -129,6 +108,7 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
 // ─── OrdersPage ───────────────────────────────────────────────────────────────
 
 const OrdersPage: FC = () => {
+  const navigate = useNavigate()
   const [data, setData] = useState<PaginatedOrders | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -155,7 +135,7 @@ const OrdersPage: FC = () => {
   }
 
   const goOrder = (orderNumber: string) => {
-    window.location.hash = `#/account/orders/${orderNumber}`
+    navigate(`/account/orders/${orderNumber}`)
     window.scrollTo({ top: 0 })
   }
 
@@ -168,20 +148,32 @@ const OrdersPage: FC = () => {
       </div>
 
       {loading && (
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#9A8F85', textAlign: 'center', padding: '60px 0' }}>
-          Loading orders…
-        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {[1, 2, 3].map(i => <OrderCardSkeleton key={i} />)}
+        </div>
       )}
 
       {error && (
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#A85050', textAlign: 'center', padding: '60px 0' }}>
-          {error}
-        </p>
+        <EmptyState
+          icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /></svg>}
+          title="Could not load orders"
+          description="Please check your connection and try again."
+          actionLabel="Retry"
+          onAction={() => window.location.reload()}
+        />
       )}
 
       {!loading && !error && data && (
         data.orders.length === 0
-          ? <EmptyOrders onShop={() => { window.location.hash = '#/collection' }} />
+          ? (
+            <EmptyState
+              icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>}
+              title="No orders yet"
+              description="Your crystal journey awaits."
+              actionLabel="Start Shopping"
+              onAction={() => navigate('/collection')}
+            />
+          )
           : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {data.orders.map(order => (

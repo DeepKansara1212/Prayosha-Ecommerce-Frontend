@@ -1,4 +1,5 @@
 import { useState, useCallback, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { ProductDetail } from '@/types'
 import { useProduct, useRelatedProducts } from '@/hooks/useProducts'
 import Navbar from '@/components/layout/Navbar'
@@ -6,6 +7,9 @@ import Footer from '@/components/layout/Footer'
 import { cn } from '@/lib/utils'
 import ReviewsList from '@/components/product/ReviewsList'
 import ReviewForm from '@/components/product/ReviewForm'
+import { ProductDetailSkeleton } from '@/components/ui/Skeleton'
+import EmptyState from '@/components/ui/EmptyState'
+import { toast } from '@/store/toastStore'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -26,35 +30,6 @@ const CHAKRA_COLOURS: Record<string, string> = {
   Root: '#8B3333', Sacral: '#B85C20', 'Solar Plexus': '#C4962A',
   Heart: '#3A7A4A', Throat: '#3A6A9A', 'Third Eye': '#4A4A9A', Crown: '#7C5C8A',
 }
-
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
-const ProductDetailSkeleton: FC = () => (
-  <div
-    className="animate-pulse"
-    style={{ padding: 'clamp(2rem,5vw,3.5rem) clamp(1.25rem,5vw,4rem)' }}
-  >
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] xl:grid-cols-[1fr_520px] gap-10 xl:gap-16">
-      {/* Image placeholder */}
-      <div className="w-full aspect-square bg-warm" />
-      {/* Info placeholders */}
-      <div className="space-y-4 pt-2">
-        <div className="h-3 bg-warm rounded w-1/3" />
-        <div className="h-8 bg-warm rounded w-3/4" />
-        <div className="h-3 bg-warm rounded w-1/2" />
-        <div className="h-px bg-warm my-5" />
-        <div className="h-10 bg-warm rounded w-1/3" />
-        <div className="h-3 bg-warm rounded w-2/5" />
-        <div className="flex gap-2 mt-2">
-          {[1,2,3].map(i => <div key={i} className="h-7 bg-warm rounded w-20" />)}
-        </div>
-        <div className="h-12 bg-warm rounded mt-6" />
-        <div className="h-12 bg-warm rounded" />
-        <div className="h-10 bg-warm rounded" />
-      </div>
-    </div>
-  </div>
-)
 
 // ─── Star rating ──────────────────────────────────────────────────────────────
 
@@ -145,9 +120,9 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
 
 const QuantitySelector: FC<{ qty: number; max: number; onChange: (q: number) => void }> = ({ qty, max, onChange }) => (
   <div className="flex items-center border border-warm">
-    <button onClick={() => onChange(Math.max(1, qty - 1))} className="w-10 h-10 flex items-center justify-center text-bark hover:bg-warm transition-colors" aria-label="Decrease">−</button>
+    <button onClick={() => onChange(Math.max(1, qty - 1))} className="w-11 h-11 flex items-center justify-center text-bark hover:bg-warm transition-colors" aria-label="Decrease quantity">−</button>
     <span className="w-12 text-center font-body text-[0.85rem] text-bark" aria-live="polite">{qty}</span>
-    <button onClick={() => onChange(Math.min(max, qty + 1))} className="w-10 h-10 flex items-center justify-center text-bark hover:bg-warm transition-colors" aria-label="Increase">+</button>
+    <button onClick={() => onChange(Math.min(max, qty + 1))} className="w-11 h-11 flex items-center justify-center text-bark hover:bg-warm transition-colors" aria-label="Increase quantity">+</button>
   </div>
 )
 
@@ -191,6 +166,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
   onNavigateToProduct,
   onNavigateToCart,
 }) => {
+  const navigate = useNavigate()
   const { data: product, isLoading, isError } = useProduct(productId)
   const { data: relatedProducts = [] }        = useRelatedProducts(productId)
 
@@ -207,7 +183,15 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
     for (let i = 0; i < qty; i++) onAddToCart(product.id)
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2500)
+    toast.success('Added to cart')
   }, [product, qty, onAddToCart])
+
+  const handleToggleWishlist = useCallback(() => {
+    if (!product) return
+    const wasIn = wishlistIds.has(product.id)
+    onToggleWishlist(product.id)
+    toast.info(wasIn ? 'Removed from wishlist' : 'Saved to wishlist')
+  }, [product, wishlistIds, onToggleWishlist])
 
   // Loading state
   if (isLoading) {
@@ -227,13 +211,14 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-cream flex flex-col items-center justify-center gap-5 text-center px-6 pt-24">
-          <p className="text-5xl" aria-hidden="true">🔮</p>
-          <h1 className="font-display font-light text-[2rem] text-deep">Stone not found</h1>
-          <p className="font-body text-[0.82rem] text-muted max-w-xs">This crystal may have found its home. Browse our collection for more.</p>
-          <button onClick={onNavigateToCollection} className="font-body text-[0.7rem] uppercase tracking-[0.2em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors">
-            Browse Collection
-          </button>
+        <main className="min-h-screen bg-cream pt-[88px]">
+          <EmptyState
+            icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>}
+            title="Stone not found"
+            description="This crystal may have found its home. Browse our collection for more."
+            actionLabel="Browse Collection"
+            onAction={onNavigateToCollection}
+          />
         </main>
         <Footer />
       </>
@@ -252,7 +237,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
         >
           <nav aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted flex-wrap">
-              <li><button onClick={() => { window.location.hash = ''; window.scrollTo({ top: 0 }) }} className="hover:text-bark transition-colors bg-transparent border-none cursor-pointer">Home</button></li>
+              <li><button onClick={() => { navigate('/'); window.scrollTo({ top: 0 }) }} className="hover:text-bark transition-colors bg-transparent border-none cursor-pointer">Home</button></li>
               <li aria-hidden="true" className="text-muted/40">›</li>
               <li><button onClick={onNavigateToCollection} className="hover:text-bark transition-colors bg-transparent border-none cursor-pointer">Collection</button></li>
               <li aria-hidden="true" className="text-muted/40">›</li>
@@ -378,7 +363,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                 )}
 
                 <button
-                  onClick={() => onToggleWishlist(product.id)}
+                  onClick={handleToggleWishlist}
                   className={cn(
                     'w-full flex items-center justify-center gap-2.5 font-body text-[0.68rem] uppercase tracking-[0.18em] py-3.5 border transition-all duration-200',
                     isWishlisted

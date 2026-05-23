@@ -1,4 +1,5 @@
 import { useState, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { ProductCategory, SortOption } from '@/types'
 import { useProducts } from '@/hooks/useProducts'
 
@@ -7,20 +8,9 @@ import Footer         from '@/components/layout/Footer'
 import CollectionHero from '@/components/collection/CollectionHero'
 import FilterBar      from '@/components/collection/FilterBar'
 import ProductGrid    from '@/components/collection/ProductGrid'
-
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
-const SkeletonCard: FC = () => (
-  <div className="animate-pulse bg-cream">
-    <div className="w-full aspect-square bg-warm" />
-    <div className="p-4 border-t border-warm space-y-2.5">
-      <div className="h-2 bg-warm rounded w-2/3" />
-      <div className="h-4 bg-warm rounded w-3/4" />
-      <div className="h-2.5 bg-warm rounded w-1/2" />
-      <div className="h-2 bg-warm rounded w-1/3 mt-3" />
-    </div>
-  </div>
-)
+import { ProductCardSkeleton } from '@/components/ui/Skeleton'
+import EmptyState from '@/components/ui/EmptyState'
+import { toast } from '@/store/toastStore'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -38,7 +28,9 @@ const CollectionPage: FC<CollectionPageProps> = ({
   wishlistIds,
   onToggleWishlist,
   onNavigateToProduct,
+  onAddToCart,
 }) => {
+  const navigate = useNavigate()
   const [category, setCategory] = useState<ProductCategory>('All')
   const [sort, setSort]         = useState<SortOption>('featured')
 
@@ -48,6 +40,17 @@ const CollectionPage: FC<CollectionPageProps> = ({
   }
 
   const { products, pagination, isLoading, isError } = useProducts(params)
+
+  const handleAddToCart = (id: string) => {
+    onAddToCart(id)
+    toast.success('Added to cart')
+  }
+
+  const handleToggleWishlist = (id: string) => {
+    const wasIn = wishlistIds.has(id)
+    onToggleWishlist(id)
+    toast.info(wasIn ? 'Removed from wishlist' : 'Saved to wishlist')
+  }
 
   return (
     <>
@@ -65,23 +68,31 @@ const CollectionPage: FC<CollectionPageProps> = ({
 
         <div style={{ padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)' }}>
           {isError ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center">
-              <p className="text-[3rem] mb-4" aria-hidden="true">⚠️</p>
-              <p className="font-display font-light text-[1.4rem] text-bark mb-2">Could not load products</p>
-              <p className="font-body font-extralight text-[0.82rem] text-muted">
-                Please check your connection and try again.
-              </p>
-            </div>
+            <EmptyState
+              icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /></svg>}
+              title="Could not load products"
+              description="Please check your connection and try again."
+              actionLabel="Retry"
+              onAction={() => window.location.reload()}
+            />
           ) : isLoading ? (
             <div className="grid gap-5 grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+              {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
             </div>
+          ) : products.length === 0 ? (
+            <EmptyState
+              icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" /></svg>}
+              title="No crystals found"
+              description="Try adjusting your filters or browsing all categories."
+              actionLabel="Clear Filters"
+              onAction={() => setCategory('All')}
+            />
           ) : (
             <ProductGrid
               products={products}
               onSelect={p => onNavigateToProduct(p.id)}
               wishlist={wishlistIds}
-              onWishlist={onToggleWishlist}
+              onWishlist={handleToggleWishlist}
             />
           )}
         </div>
@@ -107,6 +118,13 @@ const CollectionPage: FC<CollectionPageProps> = ({
               </div>
             ))}
           </div>
+
+          <button
+            onClick={() => navigate('/about')}
+            className="mt-8 font-body text-[0.7rem] uppercase tracking-[0.2em] border border-bark text-bark px-8 py-3.5 hover:bg-bark hover:text-cream transition-all duration-200 min-h-[44px]"
+          >
+            Our Story
+          </button>
         </div>
       </main>
       <Footer />
