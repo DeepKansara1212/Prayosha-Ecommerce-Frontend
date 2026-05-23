@@ -41,6 +41,38 @@ export interface FooterColumn {
   links: Array<{ label: string; href: string }>
 }
 
+// ─── Blog ─────────────────────────────────────────────────────────────────────
+
+export type BlogCategory =
+  | 'Crystal Guides'
+  | 'Rituals'
+  | 'Wellness'
+  | 'Gemstone Spotlight'
+  | 'Spiritual Practice'
+
+export type BlogSectionType = 'paragraph' | 'heading' | 'subheading' | 'quote' | 'list'
+
+export interface BlogSection {
+  type: BlogSectionType
+  text?: string
+  items?: string[]
+}
+
+export interface BlogPost {
+  id: string
+  slug: string
+  title: string
+  subtitle?: string
+  excerpt: string
+  category: BlogCategory
+  readTime: string
+  date: string
+  emoji: string
+  gradient: string
+  featured?: boolean
+  content: BlogSection[]
+}
+
 // ─── Collection page ─────────────────────────────────────────────────────────
 
 export type ProductCategory =

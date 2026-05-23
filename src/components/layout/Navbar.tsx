@@ -99,7 +99,7 @@ const DROPDOWN_COLUMNS: DropdownColumn[] = [
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
-type PageHash = '#/collection' | '#/about' | '#/contact' | '#/auth/login' | '#/auth/register' | '#/account' | '#/wishlist' | '#/cart' | ''
+type PageHash = '#/collection' | '#/about' | '#/contact' | '#/blog' | '#/auth/login' | '#/auth/register' | '#/account' | '#/wishlist' | '#/cart' | ''
 
 interface NavItem {
   label: string
@@ -109,6 +109,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Collections', hash: '#/collection', hasDropdown: true },
+  { label: 'Blog',     hash: '#/blog' },
   { label: 'About Us',    hash: '#/about' },
   { label: 'Contact',     hash: '#/contact' },
 ]

@@ -39,6 +39,10 @@ import CheckoutPage        from '@/pages/checkout/CheckoutPage'
 import CheckoutSuccessPage from '@/pages/checkout/CheckoutSuccessPage'
 import CheckoutFailedPage  from '@/pages/checkout/CheckoutFailedPage'
 
+// Blog pages
+import BlogPage     from '@/pages/BlogPage'
+import BlogPostPage from '@/pages/BlogPostPage'
+
 // Stores
 import { useAuthStore }     from '@/store/authStore'
 import { useCartStore }     from '@/store/cartStore'
@@ -65,6 +69,8 @@ type Page =
   | 'account-order-detail'
   | 'account-addresses'
   | 'account-profile'
+  | 'blog'
+  | 'blog-post'
 
 function getPage(): { page: Page; param: string | null } {
   const hash = window.location.hash
@@ -93,6 +99,8 @@ function getPage(): { page: Page; param: string | null } {
   }
   if (hash === '#/account/addresses') return { page: 'account-addresses', param: null }
   if (hash === '#/account/profile')   return { page: 'account-profile',   param: null }
+  if (hash === '#/blog')              return { page: 'blog',              param: null }
+  if (hash.startsWith('#/blog/'))     return { page: 'blog-post',         param: hash.replace('#/blog/', '') }
   return { page: 'home', param: null }
 }
 
@@ -116,6 +124,8 @@ function navigate(page: Page, id?: string) {
     'account-order-detail': `#/account/orders/${id ?? ''}`,
     'account-addresses':    '#/account/addresses',
     'account-profile':      '#/account/profile',
+    blog:                   '#/blog',
+    'blog-post':            `#/blog/${id ?? ''}`,
   }
   window.location.hash = hashes[page]
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -299,6 +309,17 @@ const App: FC = () => {
       {page === 'account-order-detail' && param && <OrderDetailPage orderNumber={param} />}
       {page === 'account-addresses'    && <AddressesPage />}
       {page === 'account-profile'      && <ProfilePage />}
+
+      {page === 'blog' && (
+        <BlogPage onNavigateToPost={(slug) => navigate('blog-post', slug)} />
+      )}
+      {page === 'blog-post' && param && (
+        <BlogPostPage
+          slug={param}
+          onNavigateToJournal={() => navigate('blog')}
+          onNavigateToPost={(slug) => navigate('blog-post', slug)}
+        />
+      )}
     </>
   )
 }
