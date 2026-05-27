@@ -32,7 +32,7 @@ interface CartState {
   updateItem(productId: string, quantity: number): Promise<void>
   removeItem(productId: string): Promise<void>
   clearCart(): Promise<void>
-  applyCoupon(code: string): Promise<void>
+  applyCoupon(code: string, discountAmount?: number): Promise<void>
   removeCoupon(): Promise<void>
   openCart(): void
   closeCart(): void
@@ -143,14 +143,19 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  applyCoupon: async (code) => {
+  applyCoupon: async (code, discountAmount) => {
     set({ isLoading: true })
     try {
       const cart = await cartApi.applyCoupon(code)
-      set({ ...fromApiCart(cart), isLoading: false })
+      const synced = fromApiCart(cart)
+      // Patch in the pre-validated discount if the cart response doesn't carry it
+      if (discountAmount != null && synced.coupon && synced.coupon.discountAmount === 0) {
+        synced.coupon = { ...synced.coupon, discountAmount }
+      }
+      set({ ...synced, isLoading: false })
     } catch (err) {
       set({ isLoading: false })
-      throw err // let the UI show the error
+      throw err
     }
   },
 

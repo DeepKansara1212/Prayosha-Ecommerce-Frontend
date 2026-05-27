@@ -1,5 +1,6 @@
 import type { FC } from 'react'
 import { useCustomCursor } from '@/hooks/useCustomCursor'
+import { prefersReducedMotion } from '@/lib/utils'
 
 /**
  * Renders the gold custom cursor dot + trailing ring.
@@ -7,6 +8,8 @@ import { useCustomCursor } from '@/hooks/useCustomCursor'
  */
 const CustomCursor: FC = () => {
   useCustomCursor()
+
+  if (prefersReducedMotion()) return null
 
   return (
     <>

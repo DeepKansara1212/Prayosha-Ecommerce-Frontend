@@ -2,10 +2,18 @@ import { useState, useRef, type FC } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import AccountLayout from './AccountLayout'
-import { useAuthStore } from '@/store/authStore'
-import * as authApi from '@/api/auth.api'
-import type { Address } from '@/api/auth.api'
+import EmptyState from '@/components/ui/EmptyState'
+import Skeleton from '@/components/ui/Skeleton'
+import { toast } from '@/store/toastStore'
+import {
+  getAddresses,
+  addAddress,
+  updateAddress,
+  deleteAddress,
+  type Address,
+} from '@/api/addresses.api'
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -37,52 +45,106 @@ const Field: FC<{
   </div>
 )
 
+// ─── Address form fields (shared between drawer and inline) ───────────────────
+
+const AddressFields: FC<{
+  register: ReturnType<typeof useForm<AddressFormValues>>['register']
+  errors: ReturnType<typeof useForm<AddressFormValues>>['formState']['errors']
+}> = ({ register, errors }) => (
+  <>
+    <Field label="Label" error={errors.label?.message}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        {(['home', 'work', 'other'] as const).map(opt => (
+          <label key={opt} style={{
+            display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+            fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', textTransform: 'capitalize',
+          }}>
+            <input type="radio" value={opt} {...register('label')} style={{ accentColor: '#7B5EA7' }} />
+            {opt}
+          </label>
+        ))}
+      </div>
+    </Field>
+
+    <Field label="Full Name" error={errors.fullName?.message}>
+      <input className="acct-input" type="text" placeholder="Full name" autoComplete="name" {...register('fullName')} />
+    </Field>
+
+    <Field label="Phone" error={errors.phone?.message}>
+      <input className="acct-input" type="tel" placeholder="10-digit number" maxLength={10} autoComplete="tel" {...register('phone')} />
+    </Field>
+
+    <Field label="Address Line 1" error={errors.line1?.message}>
+      <input className="acct-input" type="text" placeholder="Flat, House No., Building" autoComplete="address-line1" {...register('line1')} />
+    </Field>
+
+    <Field label="Address Line 2 (optional)" error={errors.line2?.message}>
+      <input className="acct-input" type="text" placeholder="Area, Colony, Street" autoComplete="address-line2" {...register('line2')} />
+    </Field>
+
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <Field label="City" error={errors.city?.message}>
+        <input className="acct-input" type="text" placeholder="City" autoComplete="address-level2" {...register('city')} />
+      </Field>
+      <Field label="State" error={errors.state?.message}>
+        <input className="acct-input" type="text" placeholder="State" autoComplete="address-level1" {...register('state')} />
+      </Field>
+    </div>
+
+    <Field label="Pincode" error={errors.pincode?.message}>
+      <input className="acct-input" type="text" placeholder="6-digit pincode" maxLength={6} autoComplete="postal-code" {...register('pincode')} />
+    </Field>
+
+    <label style={{
+      display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
+      fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', marginBottom: 28,
+    }}>
+      <input type="checkbox" {...register('isDefault')} style={{ accentColor: '#7B5EA7', width: 16, height: 16 }} />
+      Set as default address
+    </label>
+  </>
+)
+
 // ─── Address drawer ───────────────────────────────────────────────────────────
 
 interface DrawerProps {
   open: boolean
   address: Address | null
   onClose: () => void
-  onSaved: () => void
 }
 
-const AddressDrawer: FC<DrawerProps> = ({ open, address, onClose, onSaved }) => {
-  const [saving, setSaving] = useState(false)
-  const [serverError, setServerError] = useState('')
+const BLANK_DEFAULTS: AddressFormValues = {
+  label: 'home', fullName: '', phone: '', line1: '', line2: '',
+  city: '', state: '', pincode: '', isDefault: false,
+}
+
+const AddressDrawer: FC<DrawerProps> = ({ open, address, onClose }) => {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: (data: AddressFormValues) =>
+      address ? updateAddress(address._id, data) : addAddress(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['addresses'] })
+      toast.success(address ? 'Address updated.' : 'Address saved.')
+      onClose()
+    },
+    onError: () => {
+      toast.error('Could not save address.')
+    },
+  })
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<AddressFormValues>({
     resolver: zodResolver(addressSchema),
     defaultValues: address
-      ? { ...address, label: (address.label as 'home' | 'work' | 'other') ?? 'home' }
-      : { label: 'home', fullName: '', phone: '', line1: '', city: '', state: '', pincode: '', isDefault: false },
+      ? { ...address }
+      : BLANK_DEFAULTS,
   })
 
-  // Reset form when opening/closing or switching address
   const prevAddress = useRef(address)
   if (prevAddress.current !== address) {
     prevAddress.current = address
-    reset(address
-      ? { ...address, label: (address.label as 'home' | 'work' | 'other') ?? 'home' }
-      : { label: 'home', fullName: '', phone: '', line1: '', city: '', state: '', pincode: '', isDefault: false }
-    )
-  }
-
-  const submit = async (data: AddressFormValues) => {
-    setServerError('')
-    setSaving(true)
-    try {
-      if (address) {
-        await authApi.updateAddress(address._id, data)
-      } else {
-        await authApi.addAddress(data)
-      }
-      onSaved()
-      onClose()
-    } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : 'Could not save address.')
-    } finally {
-      setSaving(false)
-    }
+    reset(address ? { ...address } : BLANK_DEFAULTS)
   }
 
   return (
@@ -100,15 +162,20 @@ const AddressDrawer: FC<DrawerProps> = ({ open, address, onClose, onSaved }) => 
       />
 
       {/* Panel */}
-      <div style={{
-        position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 301,
-        width: 'min(400px, 100vw)',
-        background: '#F5F0E8',
-        boxShadow: '-4px 0 32px rgba(0,0,0,0.12)',
-        transform: open ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-        display: 'flex', flexDirection: 'column', overflowY: 'auto',
-      }}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={address ? 'Edit Address' : 'Add New Address'}
+        style={{
+          position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 301,
+          width: 'min(400px, 100vw)',
+          background: '#F5F0E8',
+          boxShadow: '-4px 0 32px rgba(0,0,0,0.12)',
+          transform: open ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+          display: 'flex', flexDirection: 'column', overflowY: 'auto',
+        }}
+      >
         {/* Header */}
         <div style={{
           padding: '24px 24px 20px',
@@ -131,71 +198,10 @@ const AddressDrawer: FC<DrawerProps> = ({ open, address, onClose, onSaved }) => 
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(submit)} style={{ padding: 24, flex: 1 }}>
-          {serverError && (
-            <div style={{
-              padding: '10px 14px', marginBottom: 20, borderRadius: 4,
-              background: '#FDF0F0', border: '1px solid #E2C8C8',
-              fontFamily: 'Jost', fontSize: 13, color: '#A85050',
-            }}>
-              {serverError}
-            </div>
-          )}
-
-          {/* Label radio */}
-          <Field label="Label" error={errors.label?.message}>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              {(['home', 'work', 'other'] as const).map(opt => (
-                <label key={opt} style={{
-                  display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-                  fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', textTransform: 'capitalize',
-                }}>
-                  <input type="radio" value={opt} {...register('label')} style={{ accentColor: '#7B5EA7' }} />
-                  {opt}
-                </label>
-              ))}
-            </div>
-          </Field>
-
-          <Field label="Full Name" error={errors.fullName?.message}>
-            <input className="acct-input" type="text" placeholder="Full name" autoComplete="name" {...register('fullName')} />
-          </Field>
-
-          <Field label="Phone" error={errors.phone?.message}>
-            <input className="acct-input" type="tel" placeholder="10-digit number" maxLength={10} autoComplete="tel" {...register('phone')} />
-          </Field>
-
-          <Field label="Address Line 1" error={errors.line1?.message}>
-            <input className="acct-input" type="text" placeholder="Flat, House No., Building" autoComplete="address-line1" {...register('line1')} />
-          </Field>
-
-          <Field label="Address Line 2 (optional)" error={errors.line2?.message}>
-            <input className="acct-input" type="text" placeholder="Area, Colony, Street" autoComplete="address-line2" {...register('line2')} />
-          </Field>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <Field label="City" error={errors.city?.message}>
-              <input className="acct-input" type="text" placeholder="City" autoComplete="address-level2" {...register('city')} />
-            </Field>
-            <Field label="State" error={errors.state?.message}>
-              <input className="acct-input" type="text" placeholder="State" autoComplete="address-level1" {...register('state')} />
-            </Field>
-          </div>
-
-          <Field label="Pincode" error={errors.pincode?.message}>
-            <input className="acct-input" type="text" placeholder="6-digit pincode" maxLength={6} autoComplete="postal-code" {...register('pincode')} />
-          </Field>
-
-          <label style={{
-            display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
-            fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', marginBottom: 28,
-          }}>
-            <input type="checkbox" {...register('isDefault')} style={{ accentColor: '#7B5EA7', width: 16, height: 16 }} />
-            Set as default address
-          </label>
-
-          <button type="submit" disabled={saving} className="acct-btn-gold" style={{ width: '100%' }}>
-            {saving ? 'Saving…' : address ? 'Update Address' : 'Save Address'}
+        <form onSubmit={handleSubmit(d => mutation.mutate(d))} style={{ padding: 24, flex: 1 }}>
+          <AddressFields register={register} errors={errors} />
+          <button type="submit" disabled={mutation.isPending} className="acct-btn-gold" style={{ width: '100%' }}>
+            {mutation.isPending ? 'Saving…' : address ? 'Update Address' : 'Save Address'}
           </button>
         </form>
       </div>
@@ -248,6 +254,26 @@ const ConfirmDialog: FC<{
   </>
 )
 
+// ─── Address card skeleton ────────────────────────────────────────────────────
+
+const AddressCardSkeleton: FC = () => (
+  <div style={{
+    background: '#fff', border: '1px solid #E2DAC8', borderRadius: 6,
+    padding: '18px 20px',
+  }} aria-hidden="true">
+    <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+      <Skeleton width="60px" height="20px" />
+    </div>
+    <div style={{ marginBottom: 8 }}>
+      <Skeleton width="150px" height="14px" />
+    </div>
+    <div style={{ marginBottom: 6 }}>
+      <Skeleton width="220px" height="13px" />
+    </div>
+    <Skeleton width="180px" height="13px" />
+  </div>
+)
+
 // ─── Address card ─────────────────────────────────────────────────────────────
 
 const AddressCard: FC<{
@@ -261,7 +287,6 @@ const AddressCard: FC<{
   }}>
     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
       <div style={{ flex: 1 }}>
-        {/* Badges */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
           <span style={{
             display: 'inline-block', padding: '2px 10px', borderRadius: 10,
@@ -281,7 +306,9 @@ const AddressCard: FC<{
           )}
         </div>
 
-        <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 4px' }}>{address.fullName}</p>
+        <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 4px' }}>
+          {address.fullName}
+        </p>
         <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0, lineHeight: 1.7 }}>
           {address.line1}
           {address.line2 && `, ${address.line2}`}
@@ -292,14 +319,10 @@ const AddressCard: FC<{
         </p>
       </div>
 
-      {/* Actions */}
       <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
         <button
           onClick={onEdit}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer', padding: 6,
-            color: '#7B5EA7',
-          }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#7B5EA7' }}
           aria-label="Edit address"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width={16} height={16}>
@@ -309,10 +332,7 @@ const AddressCard: FC<{
         </button>
         <button
           onClick={onDelete}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer', padding: 6,
-            color: '#A85050',
-          }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#A85050' }}
           aria-label="Delete address"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width={16} height={16}>
@@ -330,31 +350,31 @@ const AddressCard: FC<{
 // ─── AddressesPage ────────────────────────────────────────────────────────────
 
 const AddressesPage: FC = () => {
-  const user     = useAuthStore(s => s.user)
-  const fetchMe  = useAuthStore(s => s.fetchMe)
+  const queryClient = useQueryClient()
 
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [editTarget, setEditTarget] = useState<Address | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<Address | null>(null)
-  const [deleting, setDeleting] = useState(false)
+  const { data: addresses = [], isLoading } = useQuery({
+    queryKey: ['addresses'],
+    queryFn: getAddresses,
+  })
 
-  const addresses = user?.addresses ?? []
-
-  const openAdd  = () => { setEditTarget(null);    setDrawerOpen(true) }
-  const openEdit = (a: Address) => { setEditTarget(a); setDrawerOpen(true) }
-  const onSaved  = async () => { await fetchMe() }
-
-  const confirmDelete = async () => {
-    if (!deleteTarget) return
-    setDeleting(true)
-    try {
-      await authApi.deleteAddress(deleteTarget._id)
-      await fetchMe()
-    } finally {
-      setDeleting(false)
+  const deleteMutation = useMutation({
+    mutationFn: deleteAddress,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['addresses'] })
+      toast.success('Address deleted.')
       setDeleteTarget(null)
-    }
-  }
+    },
+    onError: () => {
+      toast.error('Could not delete address.')
+    },
+  })
+
+  const [drawerOpen, setDrawerOpen]     = useState(false)
+  const [editTarget, setEditTarget]     = useState<Address | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Address | null>(null)
+
+  const openAdd  = () => { setEditTarget(null); setDrawerOpen(true) }
+  const openEdit = (a: Address) => { setEditTarget(a); setDrawerOpen(true) }
 
   return (
     <AccountLayout activeTab="addresses">
@@ -367,25 +387,23 @@ const AddressesPage: FC = () => {
         <button onClick={openAdd} className="acct-btn-gold">+ Add Address</button>
       </div>
 
-      {addresses.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '80px 24px' }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: '50%', background: '#F0EAF7',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
-          }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7B5EA7" strokeWidth="1.5" width={28} height={28}>
+      {isLoading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {[1, 2, 3].map(i => <AddressCardSkeleton key={i} />)}
+        </div>
+      ) : addresses.length === 0 ? (
+        <EmptyState
+          icon={
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width={40} height={40}>
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-          </div>
-          <p style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: 20, color: '#1C1A17', margin: '0 0 8px' }}>
-            No saved addresses
-          </p>
-          <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '0 0 24px' }}>
-            Add an address to speed up checkout
-          </p>
-          <button onClick={openAdd} className="acct-btn-gold">Add Address</button>
-        </div>
+          }
+          title="No saved addresses"
+          description="Add an address to speed up checkout"
+          actionLabel="Add Address"
+          onAction={openAdd}
+        />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {addresses.map(a => (
@@ -403,14 +421,13 @@ const AddressesPage: FC = () => {
         open={drawerOpen}
         address={editTarget}
         onClose={() => setDrawerOpen(false)}
-        onSaved={onSaved}
       />
 
       <ConfirmDialog
         open={!!deleteTarget}
-        onConfirm={confirmDelete}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget._id)}
         onCancel={() => setDeleteTarget(null)}
-        loading={deleting}
+        loading={deleteMutation.isPending}
       />
     </AccountLayout>
   )

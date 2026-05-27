@@ -20,6 +20,12 @@ export type OrderStatus =
   | 'delivered'
   | 'cancelled'
 
+export interface OrderStatusEntry {
+  status: string
+  note?: string
+  timestamp: string
+}
+
 export interface Order {
   _id: string
   orderNumber: string
@@ -29,6 +35,7 @@ export interface Order {
   paymentMethod: PaymentMethod
   paymentStatus: PaymentStatus
   orderStatus: OrderStatus
+  statusHistory: OrderStatusEntry[]
   subtotal: number
   discount: number
   total: number

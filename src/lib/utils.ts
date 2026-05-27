@@ -9,3 +9,6 @@ export function scrollTo(href: string) {
   const el = document.querySelector(href)
   el?.scrollIntoView({ behavior: 'smooth' })
 }
+
+export const prefersReducedMotion = (): boolean =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, type FC } from 'react'
+import { useState, useMemo, useEffect, type FC } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import { useAuthStore } from '@/store/authStore'
 import {
@@ -305,10 +305,8 @@ const CheckoutPage: FC = () => {
   const clearCart  = useCartStore(s => s.clearCart)
   const { openRazorpay } = useRazorpay()
 
-  const [step, setStep]                       = useState<Step>(1)
+  const [step, setStep]                           = useState<Step>(1)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
-
-  const hasAutoSelected = useRef(false)
 
   // Auth guard
   useEffect(() => {
@@ -319,17 +317,6 @@ const CheckoutPage: FC = () => {
   useEffect(() => {
     if (items.length === 0) window.location.hash = '#/collection'
   }, [items.length])
-
-  // Auto-select default address (once)
-  useEffect(() => {
-    if (!user || hasAutoSelected.current) return
-    const def = user.addresses.find(a => a.isDefault) ?? user.addresses[0]
-    if (def) {
-      setSelectedAddressId(def._id)
-      hasAutoSelected.current = true
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.addresses])
 
   const orderItems = useMemo(
     () => items.map(i => ({ productId: i.productId, quantity: i.quantity })),

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { prefersReducedMotion } from '@/lib/utils'
 
 /**
  * Attaches an IntersectionObserver to the returned ref.
@@ -13,6 +14,11 @@ export function useScrollReveal<T extends Element>(
   useEffect(() => {
     const el = ref.current
     if (!el) return
+
+    if (prefersReducedMotion()) {
+      el.classList.add('visible')
+      return
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {

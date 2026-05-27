@@ -9,6 +9,7 @@ interface WishlistState {
 
   fetchWishlist(): Promise<void>
   toggle(productId: string): Promise<void>
+  addToWishlist(productId: string): Promise<void>
   isInWishlist(productId: string): boolean
   syncOnLogin(): Promise<void>
 }
@@ -29,6 +30,20 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
       })
     } catch {
       set({ isLoading: false })
+    }
+  },
+
+  addToWishlist: async (productId) => {
+    const prev = get().productIds
+    if (prev.includes(productId)) return
+    set({ productIds: [...prev, productId] })
+    try {
+      await wishlistApi.addToWishlist(productId)
+      const wishlist = await wishlistApi.getWishlist()
+      set({ productIds: wishlist.products.map(p => p.slug) })
+    } catch (err) {
+      set({ productIds: prev })
+      throw err
     }
   },
 

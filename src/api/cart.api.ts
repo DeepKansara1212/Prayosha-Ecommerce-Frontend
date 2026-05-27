@@ -68,9 +68,5 @@ export async function removeCoupon(): Promise<Cart> {
   return res.data.data
 }
 
-export async function validateCoupon(code: string): Promise<CouponValidation> {
-  const res = await apiClient.get<{ data: CouponValidation }>('/cart/coupon/validate', {
-    params: { code },
-  })
-  return res.data.data
-}
+export const validateCoupon = (code: string): Promise<CouponValidation> =>
+  apiClient.post<{ data: CouponValidation }>('/cart/coupon/validate', { code }).then(r => r.data.data)

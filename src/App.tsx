@@ -45,6 +45,9 @@ import CheckoutFailedPage  from '@/pages/checkout/CheckoutFailedPage'
 import BlogPage     from '@/pages/BlogPage'
 import BlogPostPage from '@/pages/BlogPostPage'
 
+// 404
+import NotFoundPage from '@/pages/NotFoundPage'
+
 // Stores
 import { useAuthStore }     from '@/store/authStore'
 import { useCartStore }     from '@/store/cartStore'
@@ -278,7 +281,7 @@ const App: FC = () => {
         <Route path="/wishlist" element={<Navigate to="/account/wishlist" replace />} />
 
         {/* 404 fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   )

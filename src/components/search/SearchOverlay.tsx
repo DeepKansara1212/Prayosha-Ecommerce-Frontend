@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, type FC, type KeyboardEvent } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { searchProducts, type ApiProduct } from '@/api/products.api'
+import { Link, useNavigate } from 'react-router-dom'
+import { searchProducts, type SearchResult } from '@/api/search.api'
+import EmptyState from '@/components/ui/EmptyState'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,13 +26,6 @@ const OVERLAY_CSS = `
   .sr-input::placeholder { color: #9E9590; }
 `
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function getCategoryName(cat: ApiProduct['category']): string {
-  if (typeof cat === 'string') return cat
-  return (cat as { name: string }).name ?? ''
-}
-
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const SectionLabel: FC<{ text: string }> = ({ text }) => (
@@ -52,7 +46,7 @@ const SkeletonRow: FC = () => (
     display: 'flex', alignItems: 'center', gap: 12,
     padding: '10px 8px', borderBottom: '1px solid #E2DAC8',
   }}>
-    <div style={{ width: 52, height: 52, borderRadius: 2, background: '#E2DAC8', animation: 'srPulse 1.5s ease-in-out infinite', flexShrink: 0 }} />
+    <div style={{ width: 40, height: 40, borderRadius: 2, background: '#E2DAC8', animation: 'srPulse 1.5s ease-in-out infinite', flexShrink: 0 }} />
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
       <div style={{ width: '60%', height: 12, borderRadius: 2, background: '#E2DAC8', animation: 'srPulse 1.5s ease-in-out infinite' }} />
       <div style={{ width: '35%', height: 10, borderRadius: 2, background: '#EDE8DC', animation: 'srPulse 1.5s ease-in-out 0.2s infinite' }} />
@@ -64,25 +58,38 @@ const SkeletonRow: FC = () => (
 // ─── SearchOverlay ────────────────────────────────────────────────────────────
 
 const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
+  const navigate = useNavigate()
   const [query, setQuery]               = useState('')
-  const [debouncedQuery, setDebounced]  = useState('')
+  const [results, setResults]           = useState<SearchResult[]>([])
+  const [isLoading, setIsLoading]       = useState(false)
   const [activeIndex, setActiveIndex]   = useState(-1)
   const [inputFocused, setInputFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Debounce query → debouncedQuery
+  // Debounce search: show skeletons immediately, fire API after 400ms quiet time
   useEffect(() => {
-    const t = setTimeout(() => setDebounced(query), 300)
-    return () => clearTimeout(t)
+    if (query.length < 2) {
+      setResults([])
+      setIsLoading(false)
+      return
+    }
+    setIsLoading(true)
+    let cancelled = false
+    const t = setTimeout(async () => {
+      try {
+        const data = await searchProducts(query)
+        if (!cancelled) setResults(data)
+      } catch {
+        if (!cancelled) setResults([])
+      } finally {
+        if (!cancelled) setIsLoading(false)
+      }
+    }, 400)
+    return () => {
+      cancelled = true
+      clearTimeout(t)
+    }
   }, [query])
-
-  const { data: rawResults = [], isLoading } = useQuery({
-    queryKey: ['search-overlay', debouncedQuery],
-    queryFn:  () => searchProducts(debouncedQuery),
-    enabled:  debouncedQuery.length >= 2,
-  })
-
-  const displayResults = rawResults.slice(0, 8)
 
   // Focus input on open; reset state on close
   useEffect(() => {
@@ -91,7 +98,8 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
       return () => clearTimeout(t)
     } else {
       setQuery('')
-      setDebounced('')
+      setResults([])
+      setIsLoading(false)
       setActiveIndex(-1)
     }
   }, [isOpen])
@@ -107,30 +115,25 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
   }, [isOpen, onClose])
 
   // Reset highlight when result list changes
-  useEffect(() => { setActiveIndex(-1) }, [displayResults.length])
+  useEffect(() => { setActiveIndex(-1) }, [results.length])
 
-  const navigateTo = useCallback((slug: string) => {
-    window.location.hash = `#/product/${slug}`
-    window.scrollTo({ top: 0 })
-    onClose()
-  }, [onClose])
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActiveIndex(i => Math.min(i + 1, displayResults.length - 1))
+      setActiveIndex(i => Math.min(i + 1, results.length - 1))
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
       setActiveIndex(i => Math.max(i - 1, -1))
     } else if (e.key === 'Enter' && activeIndex >= 0) {
-      navigateTo(displayResults[activeIndex].slug)
+      navigate(`/product/${results[activeIndex].slug}`)
+      onClose()
     }
-  }
+  }, [results, activeIndex, navigate, onClose])
 
   const showSuggestions = query.length === 0
-  const showLoading     = isLoading && debouncedQuery.length >= 2
-  const showNoResults   = !isLoading && debouncedQuery.length >= 2 && displayResults.length === 0
-  const showResults     = displayResults.length > 0
+  const showLoading     = isLoading
+  const showNoResults   = !isLoading && query.length >= 2 && results.length === 0
+  const showResults     = !isLoading && results.length > 0
 
   if (!isOpen) return null
 
@@ -264,40 +267,41 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
 
             {/* No results */}
             {showNoResults && (
-              <div style={{ paddingTop: 8 }}>
-                <p style={{ fontFamily: 'Jost, sans-serif', fontSize: 14, color: '#6B6057', margin: '0 0 6px' }}>
-                  No results for{' '}
-                  <strong style={{ color: '#1C1A17' }}>"{debouncedQuery}"</strong>
-                </p>
-                <p style={{ fontFamily: 'Jost, sans-serif', fontSize: 12, color: '#9E9590', margin: 0 }}>
-                  Try: amethyst, rose quartz, healing
-                </p>
-              </div>
+              <EmptyState
+                icon={
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                }
+                title={`No results for "${query}"`}
+                description="Try: amethyst, rose quartz, healing"
+              />
             )}
 
             {/* Result rows */}
             {showResults && (
               <div>
                 <SectionLabel text="RESULTS" />
-                {displayResults.map((product, idx) => {
-                  const imageUrl = product.images?.[0]
-                  const catName  = getCategoryName(product.category)
+                {results.map((result, idx) => {
+                  const imageUrl = result.images?.[0]
                   const active   = idx === activeIndex
 
                   return (
-                    <button
-                      key={product._id}
+                    <Link
+                      key={result._id}
+                      to={`/product/${result.slug}`}
+                      onClick={onClose}
                       role="option"
                       aria-selected={active}
-                      onClick={() => navigateTo(product.slug)}
                       onMouseEnter={() => setActiveIndex(idx)}
                       onMouseLeave={() => setActiveIndex(-1)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 12,
-                        width: '100%', textAlign: 'left',
+                        textDecoration: 'none',
                         background: active ? '#EDE8DC' : 'transparent',
-                        border: 'none', borderBottom: '1px solid #E2DAC8',
-                        padding: '10px 8px', cursor: 'pointer',
+                        borderBottom: '1px solid #E2DAC8',
+                        padding: '10px 8px',
                         transition: 'background 0.12s',
                       }}
                     >
@@ -306,13 +310,13 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                         <img
                           src={imageUrl}
                           alt=""
-                          style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 2, flexShrink: 0 }}
+                          style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 2, flexShrink: 0 }}
                         />
                       ) : (
                         <div style={{
-                          width: 52, height: 52, borderRadius: 2, flexShrink: 0,
+                          width: 40, height: 40, borderRadius: 2, flexShrink: 0,
                           background: '#EDE8DC', display: 'flex', alignItems: 'center',
-                          justifyContent: 'center', fontSize: 22,
+                          justifyContent: 'center', fontSize: 18,
                         }}>
                           💎
                         </div>
@@ -325,14 +329,14 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                           color: '#1C1A17', margin: 0,
                           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                         }}>
-                          {product.name}
+                          {result.name}
                         </p>
                         <p style={{
                           fontFamily: 'Jost, sans-serif', fontSize: 11,
                           color: '#9E9590', margin: '2px 0 0',
                           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                         }}>
-                          {catName}
+                          {result.category}
                         </p>
                       </div>
 
@@ -341,9 +345,9 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                         fontFamily: 'Jost, sans-serif', fontSize: 14, fontWeight: 500,
                         color: '#C49A3C', flexShrink: 0,
                       }}>
-                        ₹{product.price.toLocaleString('en-IN')}
+                        ₹{result.price.toLocaleString('en-IN')}
                       </span>
-                    </button>
+                    </Link>
                   )
                 })}
               </div>

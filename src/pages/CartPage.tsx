@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils'
 import type { ProductDetail } from '@/types'
 import EmptyState from '@/components/ui/EmptyState'
 import { toast } from '@/store/toastStore'
+import { useCartStore, selectDiscountAmount } from '@/store/cartStore'
+import { useWishlistStore } from '@/store/wishlistStore'
+import { validateCoupon } from '@/api/cart.api'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,24 +35,19 @@ const SHIPPING_THRESHOLD = 999
 const SHIPPING_COST      = 149
 const TAX_RATE           = 0.18
 
-const VALID_PROMOS: Record<string, number> = {
-  LUMINAE10: 0.10,
-  MOON20:    0.20,
-  CRYSTAL15: 0.15,
-}
-
 // ─── Cart line item ───────────────────────────────────────────────────────────
 
 interface CartLineProps {
   product: ProductDetail
   qty: number
   inWishlist: boolean
+  movingToWishlist?: boolean
   onQtyChange: (q: number) => void
   onRemove: () => void
   onMoveToWishlist: () => void
 }
 
-const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, onQtyChange, onRemove, onMoveToWishlist }) => {
+const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlist, onQtyChange, onRemove, onMoveToWishlist }) => {
   const [removing, setRemoving] = useState(false)
 
   const handleRemove = () => {
@@ -132,16 +130,24 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, onQtyChange, on
           {/* Move to wishlist */}
           <button
             onClick={onMoveToWishlist}
+            disabled={movingToWishlist}
             className={cn(
               'flex items-center gap-1.5 font-body text-[0.62rem] uppercase tracking-[0.15em] transition-colors duration-200',
               inWishlist ? 'text-rose' : 'text-muted hover:text-rose',
+              movingToWishlist && 'opacity-60 cursor-not-allowed',
             )}
             aria-label={inWishlist ? 'Already in wishlist' : `Save ${product.name} to wishlist`}
           >
-            <svg viewBox="0 0 20 18" className="w-3.5 h-3.5" fill={inWishlist ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-              <path d="M10 16.5S1 11 1 5.5A4.5 4.5 0 0 1 10 3.2 4.5 4.5 0 0 1 19 5.5C19 11 10 16.5 10 16.5Z" />
-            </svg>
-            {inWishlist ? 'Saved' : 'Save'}
+            {movingToWishlist ? (
+              <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 20 18" className="w-3.5 h-3.5" fill={inWishlist ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                <path d="M10 16.5S1 11 1 5.5A4.5 4.5 0 0 1 10 3.2 4.5 4.5 0 0 1 19 5.5C19 11 10 16.5 10 16.5Z" />
+              </svg>
+            )}
+            {movingToWishlist ? '…' : (inWishlist ? 'Saved' : 'Save')}
           </button>
         </div>
       </div>
@@ -152,41 +158,46 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, onQtyChange, on
 // ─── Promo code input ─────────────────────────────────────────────────────────
 
 interface PromoProps {
-  onApply: (discount: number, code: string) => void
-  applied: string
-  onClear: () => void
+  appliedCode: string
+  discountAmount: number
+  onApply: (code: string) => Promise<void>
+  onRemove: () => void
 }
 
-const PromoCode: FC<PromoProps> = ({ onApply, applied, onClear }) => {
-  const [code, setCode] = useState('')
-  const [error, setError] = useState('')
-  const [checking, setChecking] = useState(false)
+const PromoCode: FC<PromoProps> = ({ appliedCode, discountAmount, onApply, onRemove }) => {
+  const [code, setCode]         = useState('')
+  const [error, setError]       = useState('')
+  const [validating, setValidating] = useState(false)
 
   const handleApply = async (e: FormEvent) => {
     e.preventDefault()
-    if (!code.trim()) { setError('Enter a promo code.'); return }
-    setChecking(true)
-    await new Promise(r => setTimeout(r, 700))
-    setChecking(false)
-    const disc = VALID_PROMOS[code.trim().toUpperCase()]
-    if (disc) {
-      onApply(disc, code.trim().toUpperCase())
-      setError('')
-    } else {
-      setError('Invalid or expired promo code.')
+    const trimmed = code.trim().toUpperCase()
+    if (!trimmed) { setError('Enter a promo code.'); return }
+    setValidating(true)
+    setError('')
+    try {
+      await onApply(trimmed)
+      setCode('')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not apply coupon. Please try again.')
+    } finally {
+      setValidating(false)
     }
   }
 
-  if (applied) {
+  if (appliedCode) {
     return (
       <div className="flex items-center justify-between bg-sage/10 border border-sage/30 px-4 py-3">
         <div className="flex items-center gap-2.5">
           <svg viewBox="0 0 20 20" className="w-4 h-4 text-sage flex-none" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16.5 7.5 8 16l-4-4 1.5-1.5L8 13l7-7 1.5 1.5Z"/></svg>
           <span className="font-body text-[0.72rem] text-sage">
-            Code <strong>{applied}</strong> applied
+            Code <strong>{appliedCode}</strong> applied
+            {discountAmount > 0 && (
+              <span className="text-sage/80"> · −₹{Math.round(discountAmount).toLocaleString('en-IN')}</span>
+            )}
           </span>
         </div>
-        <button onClick={onClear} className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted hover:text-rose transition-colors">
+        <button onClick={onRemove} className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted hover:text-rose transition-colors">
           Remove
         </button>
       </div>
@@ -204,22 +215,28 @@ const PromoCode: FC<PromoProps> = ({ onApply, applied, onClear }) => {
           type="text"
           value={code}
           onChange={e => { setCode(e.target.value.toUpperCase()); setError('') }}
-          placeholder="e.g. MOON20"
+          placeholder="Enter promo code"
           className="flex-1 min-w-0 font-body text-[0.8rem] text-deep bg-cream border border-warm border-r-0 px-4 py-3 outline-none focus:border-gold transition-colors placeholder:text-muted/40 uppercase"
           aria-describedby={error ? 'promo-error' : undefined}
         />
         <button
           type="submit"
-          disabled={checking}
-          className="font-body text-[0.65rem] uppercase tracking-[0.15em] px-5 py-3 bg-bark text-cream hover:bg-deep transition-colors duration-200 whitespace-nowrap flex-none"
+          disabled={validating}
+          className="font-body text-[0.65rem] uppercase tracking-[0.15em] px-5 py-3 bg-bark text-cream hover:bg-deep transition-colors duration-200 whitespace-nowrap flex-none disabled:opacity-60"
         >
-          {checking ? '…' : 'Apply'}
+          {validating ? (
+            <span className="flex items-center gap-1.5">
+              <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+              </svg>
+              …
+            </span>
+          ) : 'Apply'}
         </button>
       </div>
       {error && (
         <p id="promo-error" role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">{error}</p>
       )}
-      <p className="mt-1.5 font-body text-[0.62rem] text-muted/60">Try: LUMINAE10 · MOON20 · CRYSTAL15</p>
     </form>
   )
 }
@@ -228,19 +245,18 @@ const PromoCode: FC<PromoProps> = ({ onApply, applied, onClear }) => {
 
 interface SummaryProps {
   subtotal: number
-  promoDiscount: number
-  promoCode: string
-  onPromoApply: (disc: number, code: string) => void
-  onPromoClear: () => void
+  discountAmount: number
+  appliedCode: string
+  onPromoApply: (code: string) => Promise<void>
+  onPromoRemove: () => void
   onCheckout: () => void
   itemCount: number
 }
 
 const OrderSummary: FC<SummaryProps> = ({
-  subtotal, promoDiscount, promoCode,
-  onPromoApply, onPromoClear, onCheckout, itemCount,
+  subtotal, discountAmount, appliedCode,
+  onPromoApply, onPromoRemove, onCheckout, itemCount,
 }) => {
-  const discountAmount = subtotal * promoDiscount
   const discountedSubtotal = subtotal - discountAmount
   const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
   const tax = discountedSubtotal * TAX_RATE
@@ -289,9 +305,9 @@ const OrderSummary: FC<SummaryProps> = ({
           <span className="font-body text-[0.8rem] text-bark">₹{subtotal.toLocaleString('en-IN')}</span>
         </div>
 
-        {promoDiscount > 0 && (
+        {discountAmount > 0 && (
           <div className="flex justify-between text-sage">
-            <span className="font-body text-[0.75rem]">Discount ({promoCode})</span>
+            <span className="font-body text-[0.75rem]">Discount ({appliedCode})</span>
             <span className="font-body text-[0.8rem]">−₹{Math.round(discountAmount).toLocaleString('en-IN')}</span>
           </div>
         )}
@@ -311,7 +327,12 @@ const OrderSummary: FC<SummaryProps> = ({
 
       {/* Promo code */}
       <div className="mb-5 pb-5 border-b border-warm/60">
-        <PromoCode onApply={onPromoApply} applied={promoCode} onClear={onPromoClear} />
+        <PromoCode
+          appliedCode={appliedCode}
+          discountAmount={discountAmount}
+          onApply={onPromoApply}
+          onRemove={onPromoRemove}
+        />
       </div>
 
       {/* Total */}
@@ -393,9 +414,48 @@ const CartPage: FC<CartPageProps> = ({
   onClearCart,
 }) => {
   const navigate = useNavigate()
-  const [promoDiscount, setPromoDiscount] = useState(0)
-  const [promoCode, setPromoCode]         = useState('')
-  const [checkedOut, setCheckedOut]       = useState(false)
+  const [checkedOut, setCheckedOut] = useState(false)
+  const [movingIds, setMovingIds] = useState<Set<string>>(new Set())
+
+  const coupon        = useCartStore(s => s.coupon)
+  const applyCoupon   = useCartStore(s => s.applyCoupon)
+  const removeCoupon  = useCartStore(s => s.removeCoupon)
+  const removeItem    = useCartStore(s => s.removeItem)
+  const discountAmount = useCartStore(selectDiscountAmount)
+
+  const wishlistProductIds  = useWishlistStore(s => s.productIds)
+  const wishlistAddToWishlist = useWishlistStore(s => s.addToWishlist)
+
+  const handleMoveToWishlist = useCallback(async (productId: string) => {
+    if (movingIds.has(productId)) return
+    setMovingIds(prev => new Set(prev).add(productId))
+    const alreadyInWishlist = wishlistProductIds.includes(productId)
+    try {
+      if (!alreadyInWishlist) {
+        await wishlistAddToWishlist(productId)
+      }
+      await removeItem(productId)
+      toast.info(alreadyInWishlist ? 'Saved to wishlist' : 'Moved to wishlist')
+    } catch {
+      toast.error('Failed to move item')
+    } finally {
+      setMovingIds(prev => {
+        const next = new Set(prev)
+        next.delete(productId)
+        return next
+      })
+    }
+  }, [movingIds, wishlistProductIds, wishlistAddToWishlist, removeItem])
+
+  const handleCouponApply = useCallback(async (code: string) => {
+    const result = await validateCoupon(code)
+    if (result.valid) {
+      await applyCoupon(code, result.discount)
+      toast.success('Coupon applied!')
+    } else {
+      throw new Error(result.message)
+    }
+  }, [applyCoupon])
 
   // Resolve products from IDs
   const cartProducts: Array<{ product: ProductDetail; qty: number }> = useMemo(
@@ -515,9 +575,10 @@ const CartPage: FC<CartPageProps> = ({
                       product={product}
                       qty={qty}
                       inWishlist={wishlistIds.has(product.id)}
+                      movingToWishlist={movingIds.has(product.id)}
                       onQtyChange={q => onUpdateQty(product.id, q)}
                       onRemove={() => onRemoveItem(product.id)}
-                      onMoveToWishlist={() => { onMoveToWishlist(product.id); toast.info('Saved to wishlist') }}
+                      onMoveToWishlist={() => handleMoveToWishlist(product.id)}
                     />
                   ))}
                 </div>
@@ -547,10 +608,10 @@ const CartPage: FC<CartPageProps> = ({
               {/* Order summary */}
               <OrderSummary
                 subtotal={subtotal}
-                promoDiscount={promoDiscount}
-                promoCode={promoCode}
-                onPromoApply={(disc, code) => { setPromoDiscount(disc); setPromoCode(code) }}
-                onPromoClear={() => { setPromoDiscount(0); setPromoCode('') }}
+                discountAmount={discountAmount}
+                appliedCode={coupon?.code ?? ''}
+                onPromoApply={handleCouponApply}
+                onPromoRemove={removeCoupon}
                 onCheckout={handleCheckout}
                 itemCount={itemCount}
               />

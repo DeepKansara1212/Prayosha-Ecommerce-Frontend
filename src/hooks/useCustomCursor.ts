@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { prefersReducedMotion } from '@/lib/utils'
 
 /**
  * Activates a custom gold cursor on pointer-fine (desktop) devices.
@@ -7,6 +8,8 @@ import { useEffect } from 'react'
  */
 export function useCustomCursor() {
   useEffect(() => {
+    if (prefersReducedMotion()) return
+
     const isPointerFine = window.matchMedia('(pointer: fine)').matches
     if (!isPointerFine) return
 

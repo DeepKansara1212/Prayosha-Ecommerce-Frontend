@@ -2,6 +2,7 @@ import { useState, useEffect, type FC, type ReactNode } from 'react'
 import AccountLayout from './AccountLayout'
 import * as ordersApi from '@/api/orders.api'
 import type { Order, OrderStatus } from '@/api/orders.api'
+import StatusTimeline, { StatusTimelineSkeleton } from '@/components/ui/StatusTimeline'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -193,9 +194,42 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
       </button>
 
       {loading && (
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#9A8F85', textAlign: 'center', padding: '60px 0' }}>
-          Loading order…
-        </p>
+        <div aria-busy="true" aria-label="Loading order">
+          {/* Header skeleton */}
+          <div style={{ marginBottom: 32 }}>
+            <div className="skeleton-pulse" style={{ height: 10, width: 100, borderRadius: 2, marginBottom: 10 }} />
+            <div className="skeleton-pulse" style={{ height: 22, width: 160, borderRadius: 2 }} />
+          </div>
+
+          {/* Status card skeleton */}
+          <div style={{ background: '#fff', border: '1px solid #E2DAC8', borderRadius: 6, marginBottom: 20 }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E2DAC8' }}>
+              <div className="skeleton-pulse" style={{ height: 9, width: 80, borderRadius: 2 }} />
+            </div>
+            <div style={{ padding: 20 }}>
+              <StatusTimelineSkeleton />
+            </div>
+          </div>
+
+          {/* Items card skeleton */}
+          <div style={{ background: '#fff', border: '1px solid #E2DAC8', borderRadius: 6 }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid #E2DAC8' }}>
+              <div className="skeleton-pulse" style={{ height: 9, width: 60, borderRadius: 2 }} />
+            </div>
+            <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[1, 2].map(i => (
+                <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+                  <div className="skeleton-pulse" style={{ width: 56, height: 56, borderRadius: 4, flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div className="skeleton-pulse" style={{ height: 13, width: '60%', borderRadius: 2, marginBottom: 8 }} />
+                    <div className="skeleton-pulse" style={{ height: 10, width: 40, borderRadius: 2 }} />
+                  </div>
+                  <div className="skeleton-pulse" style={{ height: 14, width: 60, borderRadius: 2 }} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
       {error && (
@@ -273,6 +307,14 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
                     </div>
                   ))}
                 </div>
+              </Card>
+
+              {/* Status history timeline */}
+              <Card title="Status History">
+                <StatusTimeline
+                  statusHistory={order.statusHistory ?? []}
+                  currentStatus={order.orderStatus}
+                />
               </Card>
 
               {/* Shipping address */}
