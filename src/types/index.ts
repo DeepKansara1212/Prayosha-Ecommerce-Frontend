@@ -102,6 +102,7 @@ export interface ProductDetail {
   category: ProductCategory
   price: number
   priceDisplay: string
+  images: string[]
   emoji: string
   bgClass: string
   badge?: string

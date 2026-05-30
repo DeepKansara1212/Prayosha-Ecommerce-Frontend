@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useFeaturedProducts } from '@/hooks/useProducts'
 import type { ProductDetail } from '@/types'
 import SectionLabel from '@/components/ui/SectionLabel'
@@ -21,20 +22,24 @@ const SkeletonCard: FC = () => (
 
 // ─── Product card ─────────────────────────────────────────────────────────────
 
-const ProductCard: FC<{ product: ProductDetail }> = ({ product }) => (
+const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void }> = ({ product, onNavigate }) => (
   <article
     className="product-card bg-cream cursor-pointer group transition-transform duration-300 hover:-translate-y-1"
-    aria-label={product.name}
+    aria-label={`View ${product.name}`}
+    onClick={() => onNavigate(product.id)}
   >
     <div
       className={cn(
-        product.bgClass,
-        'w-full aspect-square flex items-center justify-center',
-        'text-[clamp(2.5rem,5vw,4rem)]',
+        product.images.length === 0 && product.bgClass,
+        'w-full aspect-square flex items-center justify-center overflow-hidden',
+        'transition-transform duration-700 group-hover:scale-105',
       )}
       aria-hidden="true"
     >
-      {product.emoji}
+      {product.images.length > 0
+        ? <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+        : <span className="text-[clamp(2.5rem,5vw,4rem)]">{product.emoji}</span>
+      }
     </div>
 
     <div className="px-4 pt-4 pb-5">
@@ -47,8 +52,9 @@ const ProductCard: FC<{ product: ProductDetail }> = ({ product }) => (
       <div className="flex justify-between items-center">
         <span className="font-body text-price text-bark">{product.priceDisplay}</span>
         <button
+          onClick={e => { e.stopPropagation(); onNavigate(product.id) }}
           className="w-7 h-7 bg-deep text-cream flex items-center justify-center text-lg transition-colors duration-200 group-hover:bg-gold leading-none font-light"
-          aria-label={`Add ${product.name} to cart`}
+          aria-label={`View ${product.name} details`}
         >
           +
         </button>
@@ -60,6 +66,7 @@ const ProductCard: FC<{ product: ProductDetail }> = ({ product }) => (
 // ─── Section ──────────────────────────────────────────────────────────────────
 
 const FeaturedProducts: FC = () => {
+  const navigate = useNavigate()
   const headRef = useScrollReveal<HTMLDivElement>()
   const gridRef = useScrollReveal<HTMLDivElement>()
 
@@ -87,7 +94,7 @@ const FeaturedProducts: FC = () => {
       >
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-          : products.map(p => <ProductCard key={p.id} product={p} />)
+          : products.map(p => <ProductCard key={p.id} product={p} onNavigate={id => navigate(`/product/${id}`)} />)
         }
       </div>
     </section>

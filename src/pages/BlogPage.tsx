@@ -1,9 +1,9 @@
-import { useState, type FC } from 'react'
+import { useState, useEffect, type FC } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { cn } from '@/lib/utils'
-import { BLOG_POSTS } from '@/data'
+import { fetchBlogs } from '@/api/blog.api'
 import type { BlogPost, BlogCategory } from '@/types'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -28,7 +28,6 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
     }}
     aria-hidden="true"
   >
-    {/* Dot-grid texture */}
     <div
       className="absolute inset-0"
       style={{
@@ -38,7 +37,6 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
         opacity: 0.35,
       }}
     />
-    {/* Ambient glow */}
     <div
       className="absolute rounded-full"
       style={{
@@ -48,14 +46,12 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
         filter: 'blur(28px)',
       }}
     />
-    {/* Emoji */}
     <span
       className="select-none relative z-10"
       style={{ fontSize: tall ? 'clamp(3.5rem,6vw,5.5rem)' : 'clamp(3rem,5vw,4rem)' }}
     >
       {post.emoji}
     </span>
-    {/* Bottom shadow fade */}
     <div
       className="absolute bottom-0 left-0 right-0 h-12"
       style={{ background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.35))' }}
@@ -146,7 +142,6 @@ const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
     onClick={() => onNavigate(post.slug)}
     aria-label={`Featured: ${post.title}`}
   >
-    {/* Dot-grid texture */}
     <div
       className="absolute inset-0 pointer-events-none"
       style={{
@@ -157,7 +152,6 @@ const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
       }}
     />
 
-    {/* Large background emoji */}
     <div
       className="absolute inset-0 flex items-center justify-end pointer-events-none select-none"
       style={{
@@ -170,7 +164,6 @@ const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
       {post.emoji}
     </div>
 
-    {/* Dark gradient overlay for text legibility */}
     <div
       className="absolute inset-0 pointer-events-none"
       style={{
@@ -245,11 +238,19 @@ interface BlogPageProps {
 
 const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
   const [activeCategory, setActiveCategory] = useState<'All' | BlogCategory>('All')
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
   const heroRef = useScrollReveal<HTMLDivElement>()
   const gridRef = useScrollReveal<HTMLDivElement>()
 
-  const featuredPost  = activeCategory === 'All' ? BLOG_POSTS.find(p => p.featured) : null
-  const filteredPosts = BLOG_POSTS.filter(p => {
+  useEffect(() => {
+    fetchBlogs()
+      .then(setPosts)
+      .finally(() => setLoading(false))
+  }, [])
+
+  const featuredPost  = activeCategory === 'All' ? posts.find(p => p.featured) : null
+  const filteredPosts = posts.filter(p => {
     const matchesCategory = activeCategory === 'All' || p.category === activeCategory
     if (activeCategory === 'All' && p.featured) return false
     return matchesCategory
@@ -351,50 +352,72 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
           </div>
         </div>
 
-        {/* ── Featured post ── */}
-        {featuredPost && (
-          <div style={{ padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem) 0', background: '#EDE8DC' }}>
-            <FeaturedCard post={featuredPost} onNavigate={onNavigateToPost} />
+        {/* ── Loading state ── */}
+        {loading && (
+          <div style={{ background: '#EDE8DC', padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map(i => (
+                <div
+                  key={i}
+                  style={{
+                    background: '#E8E2D6',
+                    height: 360,
+                    border: '1px solid rgba(196,184,154,0.3)',
+                    animation: 'pulse 1.5s ease-in-out infinite',
+                  }}
+                />
+              ))}
+            </div>
           </div>
         )}
 
-        {/* ── Post grid ── */}
-        <div
-          ref={gridRef}
-          className="reveal"
-          style={{
-            background: '#EDE8DC',
-            padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)',
-          }}
-        >
-          {/* Section label */}
-          <p className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-gold mb-6">
-            ✦ {activeCategory === 'All' ? 'All Articles' : activeCategory}
-          </p>
+        {!loading && (
+          <>
+            {/* ── Featured post ── */}
+            {featuredPost && (
+              <div style={{ padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem) 0', background: '#EDE8DC' }}>
+                <FeaturedCard post={featuredPost} onNavigate={onNavigateToPost} />
+              </div>
+            )}
 
-          {filteredPosts.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="font-display font-light text-[1.5rem] text-deep mb-2">
-                No posts in this category yet
+            {/* ── Post grid ── */}
+            <div
+              ref={gridRef}
+              className="reveal"
+              style={{
+                background: '#EDE8DC',
+                padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)',
+              }}
+            >
+              <p className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-gold mb-6">
+                ✦ {activeCategory === 'All' ? 'All Articles' : activeCategory}
               </p>
-              <p className="font-body font-extralight text-[0.82rem] text-muted">
-                We're working on new content — check back soon.
-              </p>
-              <button
-                onClick={() => setActiveCategory('All')}
-                className="mt-6 font-body text-[0.65rem] uppercase tracking-[0.15em] text-gold hover:text-deep transition-colors bg-transparent border-none cursor-pointer"
-              >
-                ← View all posts
-              </button>
+
+              {filteredPosts.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className="font-display font-light text-[1.5rem] text-deep mb-2">
+                    No posts in this category yet
+                  </p>
+                  <p className="font-body font-extralight text-[0.82rem] text-muted">
+                    We're working on new content — check back soon.
+                  </p>
+                  <button
+                    onClick={() => setActiveCategory('All')}
+                    className="mt-6 font-body text-[0.65rem] uppercase tracking-[0.15em] text-gold hover:text-deep transition-colors bg-transparent border-none cursor-pointer"
+                  >
+                    ← View all posts
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredPosts.map(post => (
+                    <PostCard key={post.id} post={post} onNavigate={onNavigateToPost} />
+                  ))}
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPosts.map(post => (
-                <PostCard key={post.id} post={post} onNavigate={onNavigateToPost} />
-              ))}
-            </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* ── Newsletter strip ── */}
         <div

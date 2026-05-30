@@ -51,50 +51,12 @@ const StarRating: FC<{ rating: number; reviewCount: number }> = ({ rating, revie
 
 const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
   const [active, setActive] = useState(0)
+  const hasImages = product.images.length > 0
 
-  const views = [
-    { label: 'Front', tint: '' },
-    { label: 'Detail', tint: 'brightness-110 saturate-150' },
-    { label: 'Side', tint: 'brightness-90' },
-  ]
-
-  return (
-    <div className="flex flex-col-reverse sm:flex-row gap-3">
-      {/* Thumbnails */}
-      <div className="flex sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible">
-        {views.map((v, i) => (
-          <button
-            key={v.label}
-            onClick={() => setActive(i)}
-            className={cn(
-              'flex-none w-16 h-16 sm:w-20 sm:h-20 transition-all duration-200',
-              product.bgClass,
-              'flex items-center justify-center text-2xl sm:text-3xl',
-              i === active
-                ? 'ring-2 ring-gold ring-offset-2 ring-offset-cream opacity-100'
-                : 'opacity-60 hover:opacity-85',
-            )}
-            aria-label={`View ${v.label}`}
-          >
-            {product.emoji}
-          </button>
-        ))}
-      </div>
-
-      {/* Main image */}
-      <div
-        className={cn(
-          product.bgClass,
-          'flex-1 aspect-square sm:aspect-[4/3] flex items-center justify-center relative overflow-hidden rounded-sm',
-        )}
-      >
-        <span
-          className="text-[clamp(6rem,20vw,12rem)] select-none transition-all duration-300"
-          style={{ filter: active === 1 ? 'brightness(1.15) saturate(1.4)' : active === 2 ? 'brightness(0.88)' : 'none' }}
-        >
-          {product.emoji}
-        </span>
-
+  if (!hasImages) {
+    return (
+      <div className={cn(product.bgClass, 'w-full aspect-square sm:aspect-[4/3] flex items-center justify-center relative overflow-hidden rounded-sm')}>
+        <span className="text-[clamp(6rem,20vw,12rem)] select-none">{product.emoji}</span>
         {product.badge && (
           <span className={cn(
             'absolute top-4 left-4 font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-1.5',
@@ -107,10 +69,55 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
             {product.badge}
           </span>
         )}
+      </div>
+    )
+  }
 
-        <span className="absolute bottom-3 right-3 font-body text-[0.6rem] uppercase tracking-[0.15em] text-cream/60 bg-deep/40 backdrop-blur-sm px-2 py-1">
-          {views[active].label} view
-        </span>
+  return (
+    <div className="flex flex-col-reverse sm:flex-row gap-3">
+      {/* Thumbnails */}
+      <div className="flex sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible">
+        {product.images.map((url, i) => (
+          <button
+            key={url}
+            onClick={() => setActive(i)}
+            className={cn(
+              'flex-none w-16 h-16 sm:w-20 sm:h-20 transition-all duration-200 overflow-hidden rounded-sm bg-warm',
+              i === active
+                ? 'ring-2 ring-gold ring-offset-2 ring-offset-cream opacity-100'
+                : 'opacity-60 hover:opacity-85',
+            )}
+            aria-label={`View image ${i + 1}`}
+          >
+            <img src={url} alt="" className="w-full h-full object-cover" />
+          </button>
+        ))}
+      </div>
+
+      {/* Main image */}
+      <div className="flex-1 aspect-square sm:aspect-[4/3] relative overflow-hidden rounded-sm bg-warm">
+        <img
+          src={product.images[active]}
+          alt={product.name}
+          className="w-full h-full object-cover transition-opacity duration-300"
+        />
+        {product.badge && (
+          <span className={cn(
+            'absolute top-4 left-4 font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-1.5',
+            product.badge === 'Bestseller' && 'bg-gold text-deep',
+            product.badge === 'New'        && 'bg-amethyst text-cream',
+            product.badge === 'Limited'    && 'bg-rose text-cream',
+            product.badge === 'Rare'       && 'bg-deep text-gold-light border border-gold/40',
+            product.badge === 'Gifting'    && 'bg-sage text-cream',
+          )}>
+            {product.badge}
+          </span>
+        )}
+        {product.images.length > 1 && (
+          <span className="absolute bottom-3 right-3 font-body text-[0.6rem] uppercase tracking-[0.15em] text-cream/70 bg-deep/50 backdrop-blur-sm px-2 py-1">
+            {active + 1} / {product.images.length}
+          </span>
+        )}
       </div>
     </div>
   )
@@ -141,8 +148,11 @@ const RelatedProducts: FC<{ related: ProductDetail[]; onNavigate: (id: string) =
             onClick={() => onNavigate(rp.id)}
             className="group text-left transition-transform duration-200 hover:-translate-y-1"
           >
-            <div className={cn(rp.bgClass, 'w-full aspect-square flex items-center justify-center text-[2.5rem] mb-3 transition-transform duration-400 group-hover:scale-105')} aria-hidden="true">
-              {rp.emoji}
+            <div className={cn(rp.images.length === 0 && rp.bgClass, 'w-full aspect-square flex items-center justify-center text-[2.5rem] mb-3 overflow-hidden transition-transform duration-400 group-hover:scale-105')} aria-hidden="true">
+              {rp.images.length > 0
+                ? <img src={rp.images[0]} alt={rp.name} className="w-full h-full object-cover" />
+                : rp.emoji
+              }
             </div>
             <p className="font-body text-[0.58rem] uppercase tracking-[0.18em] text-muted mb-0.5">{rp.category}</p>
             <p className="font-display text-[1rem] font-light text-deep leading-tight mb-1">{rp.name}</p>

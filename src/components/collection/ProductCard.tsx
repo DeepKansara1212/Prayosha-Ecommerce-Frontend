@@ -40,14 +40,16 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
       <div className="relative overflow-hidden">
         <div
           className={cn(
-            product.bgClass,
-            'w-full aspect-square flex items-center justify-center',
-            'text-[clamp(3rem,8vw,5rem)]',
+            product.images.length === 0 && product.bgClass,
+            'w-full aspect-square flex items-center justify-center overflow-hidden',
             'transition-transform duration-700 group-hover:scale-105',
           )}
           aria-hidden="true"
         >
-          {product.emoji}
+          {product.images.length > 0
+            ? <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+            : <span className="text-[clamp(3rem,8vw,5rem)]">{product.emoji}</span>
+          }
         </div>
 
         {/* Badges */}

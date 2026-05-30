@@ -1,9 +1,9 @@
-import type { FC } from 'react'
+import { useState, useEffect, type FC } from 'react'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
-import { BLOG_POSTS } from '@/data'
-import type { BlogSection } from '@/types'
+import { fetchBlogs, fetchBlogBySlug } from '@/api/blog.api'
+import type { BlogPost, BlogSection } from '@/types'
 
 // ─── Article content renderer ─────────────────────────────────────────────────
 
@@ -68,10 +68,48 @@ interface BlogPostPageProps {
 const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavigateToPost }) => {
   const contentRef = useScrollReveal<HTMLDivElement>()
   const relatedRef = useScrollReveal<HTMLDivElement>()
+  const [post, setPost] = useState<BlogPost | null>(null)
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
 
-  const post = BLOG_POSTS.find(p => p.slug === slug)
+  useEffect(() => {
+    setLoading(true)
+    setNotFound(false)
 
-  if (!post) {
+    fetchBlogBySlug(slug)
+      .then(async found => {
+        setPost(found)
+        const all = await fetchBlogs()
+        const related = all
+          .filter(p => p.id !== found.id)
+          .sort((a, b) => {
+            if (a.category === found.category && b.category !== found.category) return -1
+            if (b.category === found.category && a.category !== found.category) return 1
+            return 0
+          })
+          .slice(0, 3)
+        setRelatedPosts(related)
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false))
+  }, [slug])
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main className="bg-cream" style={{ paddingTop: '120px', minHeight: '60vh' }}>
+          <div className="text-center" style={{ padding: 'clamp(4rem,8vw,7rem) clamp(1.25rem,5vw,4rem)' }}>
+            <p className="font-body font-extralight text-[0.88rem] text-muted">Loading…</p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
+  }
+
+  if (notFound || !post) {
     return (
       <>
         <Navbar />
@@ -91,16 +129,6 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
     )
   }
 
-  const relatedPosts = BLOG_POSTS
-    .filter(p => p.id !== post.id)
-    .sort((a, b) => {
-      // Prioritise same category
-      if (a.category === post.category && b.category !== post.category) return -1
-      if (b.category === post.category && a.category !== post.category) return 1
-      return 0
-    })
-    .slice(0, 3)
-
   return (
     <>
       <Navbar />
@@ -115,14 +143,12 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             background: post.gradient,
           }}
         >
-          {/* Ambient glow */}
           <div
             className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full pointer-events-none"
             style={{ background: '#7C5C8A', opacity: 0.15, filter: 'blur(90px)' }}
             aria-hidden="true"
           />
 
-          {/* Large background emoji */}
           <div
             className="absolute right-0 bottom-0 pointer-events-none select-none leading-none"
             style={{ fontSize: 'clamp(10rem,22vw,20rem)', opacity: 0.06, paddingRight: 'clamp(1rem,4vw,3rem)', paddingBottom: '1rem' }}
@@ -131,7 +157,6 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             {post.emoji}
           </div>
 
-          {/* Back button */}
           <div
             className="relative z-10"
             style={{ padding: 'clamp(1.5rem,3vw,2.5rem) clamp(1.25rem,5vw,4rem) 0' }}
@@ -145,7 +170,6 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             </button>
           </div>
 
-          {/* Post meta + title */}
           <div
             className="relative z-10"
             style={{ padding: 'clamp(1.5rem,3vw,2.5rem) clamp(1.25rem,5vw,4rem) clamp(3rem,6vw,5rem)' }}
@@ -194,7 +218,6 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             className="max-w-2xl mx-auto"
             style={{ padding: 'clamp(3rem,6vw,5rem) clamp(1.25rem,5vw,2rem)' }}
           >
-            {/* Lead paragraph */}
             <p
               className="font-display font-light leading-[1.7] text-deep mb-8 pb-8"
               style={{
@@ -205,12 +228,10 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
               {post.excerpt}
             </p>
 
-            {/* Article sections */}
             <div className="space-y-5">
               {post.content.map((section, i) => renderSection(section, i))}
             </div>
 
-            {/* Author tag */}
             <div
               className="mt-12 pt-8 flex items-center gap-4"
               style={{ borderTop: '1px solid rgba(196,184,154,0.4)' }}
@@ -224,7 +245,6 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
               </div>
             </div>
 
-            {/* Back to Journal (inline) */}
             <div className="mt-8">
               <button
                 onClick={onNavigateToJournal}
@@ -270,7 +290,6 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
                     el.style.borderColor = 'rgba(196,184,154,0.4)'
                   }}
                 >
-                  {/* Card image */}
                   <div
                     className="w-full relative overflow-hidden flex items-center justify-center"
                     style={{ aspectRatio: '16/9', background: related.gradient }}

@@ -117,12 +117,15 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
             {/* Gem hero */}
             <div
               className={cn(
-                product.bgClass,
+                product.images.length === 0 && product.bgClass,
                 'w-full aspect-[4/3] flex items-center justify-center flex-shrink-0 relative overflow-hidden',
               )}
               aria-hidden="true"
             >
-              <span className="text-[7rem] sm:text-[9rem] select-none">{product.emoji}</span>
+              {product.images.length > 0
+                ? <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                : <span className="text-[7rem] sm:text-[9rem] select-none">{product.emoji}</span>
+              }
 
               {/* Badges */}
               <div className="absolute top-4 left-4 flex gap-2">
@@ -356,8 +359,11 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                         className="group text-left transition-opacity duration-200 hover:opacity-80"
                         aria-label={`View ${rp.name}`}
                       >
-                        <div className={cn(rp.bgClass, 'w-full aspect-square flex items-center justify-center text-2xl mb-2')} aria-hidden="true">
-                          {rp.emoji}
+                        <div className={cn(rp.images.length === 0 && rp.bgClass, 'w-full aspect-square flex items-center justify-center text-2xl mb-2 overflow-hidden')} aria-hidden="true">
+                          {rp.images.length > 0
+                            ? <img src={rp.images[0]} alt={rp.name} className="w-full h-full object-cover" />
+                            : rp.emoji
+                          }
                         </div>
                         <p className="font-display text-[0.82rem] font-light text-deep leading-tight mb-0.5 truncate">{rp.name}</p>
                         <p className="font-body text-[0.7rem] text-muted">{rp.priceDisplay}</p>

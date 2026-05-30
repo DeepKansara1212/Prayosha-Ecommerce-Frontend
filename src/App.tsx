@@ -45,6 +45,10 @@ import CheckoutFailedPage  from '@/pages/checkout/CheckoutFailedPage'
 import BlogPage     from '@/pages/BlogPage'
 import BlogPostPage from '@/pages/BlogPostPage'
 
+// Legal pages
+import TermsPage   from '@/pages/TermsPage'
+import PrivacyPage from '@/pages/PrivacyPage'
+
 // 404
 import NotFoundPage from '@/pages/NotFoundPage'
 
@@ -228,6 +232,8 @@ const App: FC = () => {
         {/* Static pages */}
         <Route path="/about"   element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/terms"   element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
 
         {/* Auth */}
         <Route path="/auth/login"    element={<LoginPage />} />

@@ -47,6 +47,7 @@ function adapt(p: ApiProduct): ProductDetail {
     category: str(p.category) as ProductCategory,
     price: p.price,
     priceDisplay: '₹' + p.price.toLocaleString('en-IN'),
+    images: p.images ?? [],
     emoji: p.emoji ?? '💎',
     bgClass: p.bgClass ?? 'bg-warm',
     badge: p.badge ? BADGE_MAP[p.badge] : undefined,

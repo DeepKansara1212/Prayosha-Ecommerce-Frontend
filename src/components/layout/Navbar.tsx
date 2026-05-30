@@ -386,18 +386,26 @@ const Navbar: FC = () => {
       >
         {/* Collections with accordion */}
         <div className="w-full flex flex-col items-center">
-          <button
-            onClick={() => setMobileCollectionOpen(v => !v)}
-            className={cn(
-              'font-display font-light tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200 flex items-center gap-3 min-h-[44px]',
-              isActive('/collection') ? 'text-gold-light opacity-100' : 'text-cream opacity-75 hover:opacity-100 hover:text-gold-light',
-            )}
-            style={{ fontSize: 'clamp(1.6rem,6vw,2.5rem)', marginBottom: '0.25rem' }}
-            aria-expanded={mobileCollectionOpen}
-          >
-            Collections
-            <ChevronDownIcon open={mobileCollectionOpen} />
-          </button>
+          <div className="flex items-center gap-3 min-h-[44px]" style={{ marginBottom: '0.25rem' }}>
+            <button
+              onClick={() => go('/collection')}
+              className={cn(
+                'font-display font-light tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200',
+                isActive('/collection') ? 'text-gold-light opacity-100' : 'text-cream opacity-75 hover:opacity-100 hover:text-gold-light',
+              )}
+              style={{ fontSize: 'clamp(1.6rem,6vw,2.5rem)' }}
+            >
+              Collections
+            </button>
+            <button
+              onClick={() => setMobileCollectionOpen(v => !v)}
+              className="bg-transparent border-none cursor-pointer text-cream opacity-75 hover:opacity-100 transition-all duration-200 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
+              aria-expanded={mobileCollectionOpen}
+              aria-label="Toggle collection categories"
+            >
+              <ChevronDownIcon open={mobileCollectionOpen} />
+            </button>
+          </div>
 
           <div style={{ maxHeight: mobileCollectionOpen ? '60vh' : '0', overflow: 'hidden', transition: 'max-height 0.4s ease', width: '100%' }}>
             <MobileCollectionAccordion onNavigate={go} />
@@ -474,7 +482,7 @@ const Navbar: FC = () => {
                 onMouseLeave={item.hasDropdown ? handleCollectionMouseLeave : undefined}
               >
                 <button
-                  onClick={() => !item.hasDropdown && go(item.path)}
+                  onClick={() => go(item.path)}
                   className={cn(
                     'font-body text-[0.72rem] tracking-[0.2em] uppercase transition-all duration-200 bg-transparent border-none cursor-pointer relative pb-0.5 flex items-center gap-1.5 min-h-[44px]',
                     'after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gold-light after:transition-all after:duration-300',
