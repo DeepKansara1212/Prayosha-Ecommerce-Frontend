@@ -26,10 +26,12 @@ export interface Cart {
 }
 
 export interface CouponValidation {
-  valid: boolean
-  discount: number
+  code: string
   discountType: 'flat' | 'percent'
-  message: string
+  discountValue: number
+  discountAmount: number
+  subtotal: number
+  payable: number
 }
 
 // ─── Functions ────────────────────────────────────────────────────────────────

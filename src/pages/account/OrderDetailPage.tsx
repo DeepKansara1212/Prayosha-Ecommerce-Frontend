@@ -258,8 +258,8 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
             <div>
               {/* Status tracker */}
               <Card title="Order Status">
-                <StatusTracker status={order.orderStatus} />
-                {order.orderStatus === 'shipped' && (
+                <StatusTracker status={order.status} />
+                {order.status === 'shipped' && (
                   <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '16px 0 0' }}>
                     Tracking: <span style={{ color: '#1C1A17', fontWeight: 500 }}>—</span>
                   </p>
@@ -313,7 +313,7 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
               <Card title="Status History">
                 <StatusTimeline
                   statusHistory={order.statusHistory ?? []}
-                  currentStatus={order.orderStatus}
+                  currentStatus={order.status}
                 />
               </Card>
 

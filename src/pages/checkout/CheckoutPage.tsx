@@ -330,8 +330,7 @@ const CheckoutPage: FC = () => {
 
     if (method === 'cod') {
       const order = await ordersApi.createCODOrder({
-        items: orderItems,
-        shippingAddressId: selectedAddressId,
+        addressId: selectedAddressId,
         couponCode: coupon?.code,
       })
       sessionStorage.setItem('prayosha_last_order', JSON.stringify(order))
@@ -342,8 +341,7 @@ const CheckoutPage: FC = () => {
 
     // Razorpay
     const { razorpayOrderId, amount, currency, order } = await ordersApi.createRazorpayOrder({
-      items: orderItems,
-      shippingAddressId: selectedAddressId,
+      addressId: selectedAddressId,
       couponCode: coupon?.code,
     })
 
@@ -351,7 +349,6 @@ const CheckoutPage: FC = () => {
       razorpayOrderId,
       amount,
       currency,
-      order._id,
       async (verifiedOrder) => {
         sessionStorage.setItem('prayosha_last_order', JSON.stringify(verifiedOrder))
         await clearCart()

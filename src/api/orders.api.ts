@@ -34,7 +34,7 @@ export interface Order {
   shippingAddress: Address
   paymentMethod: PaymentMethod
   paymentStatus: PaymentStatus
-  orderStatus: OrderStatus
+  status: OrderStatus
   statusHistory: OrderStatusEntry[]
   subtotal: number
   discount: number
@@ -50,14 +50,12 @@ export interface OrderLineInput {
 }
 
 export interface CODOrderData {
-  items: OrderLineInput[]
-  shippingAddressId: string
+  addressId: string
   couponCode?: string
 }
 
 export interface RazorpayOrderData {
-  items: OrderLineInput[]
-  shippingAddressId: string
+  addressId: string
   couponCode?: string
 }
 
@@ -72,7 +70,6 @@ export interface RazorpayPaymentData {
   razorpay_order_id: string
   razorpay_payment_id: string
   razorpay_signature: string
-  orderId: string
 }
 
 export interface PaginatedOrders {
@@ -92,7 +89,7 @@ export async function createCODOrder(data: CODOrderData): Promise<Order> {
 export async function createRazorpayOrder(
   data: RazorpayOrderData,
 ): Promise<RazorpayOrderResponse> {
-  const res = await apiClient.post<{ data: RazorpayOrderResponse }>('/orders/razorpay', data)
+  const res = await apiClient.post<{ data: RazorpayOrderResponse }>('/orders/razorpay/create', data)
   return res.data.data
 }
 

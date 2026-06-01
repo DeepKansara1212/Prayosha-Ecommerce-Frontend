@@ -7,6 +7,7 @@ import {
   SHIPPING_THRESHOLD,
   SHIPPING_COST,
 } from '@/store/cartStore'
+import { validateCoupon } from '@/api/cart.api'
 import { COLLECTION_PRODUCTS } from '@/data/collection'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -39,10 +40,12 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
     if (!code) return
     setCouponError('')
     try {
-      await applyCoupon(code)
+      const result = await validateCoupon(code)
+      await applyCoupon(code, result.discountAmount)
       setCouponInput('')
-    } catch {
-      setCouponError('Invalid or expired coupon code.')
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      setCouponError(msg || 'Invalid or expired coupon code.')
     }
   }
 

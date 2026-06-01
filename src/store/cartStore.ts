@@ -9,11 +9,14 @@ export const SHIPPING_COST = 149
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-// productId = slug, matching COLLECTION_PRODUCTS[n].id so CartPage's static lookup still works
 export interface StoreCartItem {
-  productId: string
+  productId: string   // slug from backend
   quantity: number
   priceAtAdd: number
+  // Snapshot kept so CartPage can render even when slug doesn't match static data
+  name?: string
+  images?: string[]
+  stock?: number
 }
 
 export interface Coupon {
@@ -60,13 +63,15 @@ export const selectTotal = (s: CartState): number => {
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
-// productId uses slug so it matches the static-data lookup in CartPage / WishlistPage
 function fromApiCart(cart: Cart): Pick<CartState, 'items' | 'coupon'> {
   return {
     items: cart.items.map(i => ({
       productId: i.product.slug,
       quantity: i.quantity,
       priceAtAdd: i.priceAtAdd,
+      name: i.product.name,
+      images: i.product.images,
+      stock: i.product.stock,
     })),
     coupon: cart.couponApplied
       ? { code: cart.couponApplied, discountAmount: 0 }

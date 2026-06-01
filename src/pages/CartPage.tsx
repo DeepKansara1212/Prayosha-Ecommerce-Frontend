@@ -4,7 +4,8 @@ import Navbar  from '@/components/layout/Navbar'
 import Footer  from '@/components/layout/Footer'
 import { COLLECTION_PRODUCTS } from '@/data/collection'
 import { cn } from '@/lib/utils'
-import type { ProductDetail } from '@/types'
+import type { ProductDetail, ProductCategory, ChakraType } from '@/types'
+import type { StoreCartItem } from '@/store/cartStore'
 import EmptyState from '@/components/ui/EmptyState'
 import { toast } from '@/store/toastStore'
 import { useCartStore, selectDiscountAmount } from '@/store/cartStore'
@@ -19,7 +20,7 @@ export interface CartItem {
 }
 
 interface CartPageProps {
-  items: CartItem[]
+  items: StoreCartItem[]
   wishlistIds: Set<string>
   onUpdateQty: (productId: string, qty: number) => void
   onRemoveItem: (productId: string) => void
@@ -64,10 +65,12 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
     >
       {/* Product image */}
       <div
-        className={cn(product.bgClass, 'w-20 h-20 sm:w-24 sm:h-24 flex-none flex items-center justify-center text-[2rem] sm:text-[2.5rem] cursor-pointer flex-shrink-0')}
+        className={cn(product.bgClass, 'w-20 h-20 sm:w-24 sm:h-24 flex-none flex items-center justify-center text-[2rem] sm:text-[2.5rem] cursor-pointer flex-shrink-0 overflow-hidden')}
         aria-hidden="true"
       >
-        {product.emoji}
+        {product.images?.[0]
+          ? <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+          : product.emoji}
       </div>
 
       {/* Details */}
@@ -447,25 +450,49 @@ const CartPage: FC<CartPageProps> = ({
     }
   }, [movingIds, wishlistProductIds, wishlistAddToWishlist, removeItem])
 
-  const handleCouponApply = useCallback(async (code: string) => {
-    const result = await validateCoupon(code)
-    if (result.valid) {
-      await applyCoupon(code, result.discount)
-      toast.success('Coupon applied!')
-    } else {
-      throw new Error(result.message)
-    }
-  }, [applyCoupon])
-
-  // Resolve products from IDs
+  // Resolve products from IDs — prefer static data (has emoji/bgClass), fall back to API snapshot
   const cartProducts: Array<{ product: ProductDetail; qty: number }> = useMemo(
     () =>
       items
-        .map(item => ({
-          product: COLLECTION_PRODUCTS.find(p => p.id === item.productId)!,
-          qty: item.quantity,
-        }))
-        .filter(({ product }) => Boolean(product)),
+        .map(item => {
+          const staticProduct = COLLECTION_PRODUCTS.find(p => p.id === item.productId)
+          if (staticProduct) return { product: staticProduct, qty: item.quantity }
+
+          // Fallback: build a minimal ProductDetail from the API snapshot stored in the cart item
+          if (item.name) {
+            const fallback: ProductDetail = {
+              id: item.productId,
+              name: item.name,
+              subtitle: '',
+              category: 'All' as ProductCategory,
+              price: item.priceAtAdd,
+              priceDisplay: '₹' + item.priceAtAdd.toLocaleString('en-IN'),
+              images: item.images ?? [],
+              emoji: '💎',
+              bgClass: 'bg-warm',
+              badge: undefined,
+              chakra: 'Crown' as ChakraType,
+              origin: '',
+              intention: '',
+              description: '',
+              properties: [],
+              howToUse: '',
+              dimensions: '',
+              weight: '',
+              inStock: (item.stock ?? 0) > 0,
+              stockCount: item.stock ?? 99,
+              rating: 0,
+              reviewCount: 0,
+              isNew: false,
+              isBestseller: false,
+              relatedIds: [],
+            }
+            return { product: fallback, qty: item.quantity }
+          }
+
+          return null
+        })
+        .filter((x): x is { product: ProductDetail; qty: number } => x !== null),
     [items],
   )
 
@@ -478,6 +505,12 @@ const CartPage: FC<CartPageProps> = ({
     () => cartProducts.reduce((acc, { qty }) => acc + qty, 0),
     [cartProducts],
   )
+
+  const handleCouponApply = useCallback(async (code: string) => {
+    const result = await validateCoupon(code)
+    await applyCoupon(code, result.discountAmount)
+    toast.success('Coupon applied!')
+  }, [applyCoupon])
 
   const handleCheckout = useCallback(() => {
     navigate('/checkout')
@@ -515,11 +548,6 @@ const CartPage: FC<CartPageProps> = ({
             <h1 className="font-display font-light text-[clamp(2rem,6vw,3.5rem)] leading-[1.05] text-cream mb-3">
               Your sacred <em className="italic text-sage">selection</em>
             </h1>
-            {cartProducts.length > 0 && !checkedOut && (
-              <p className="font-body font-extralight text-[0.8rem] text-cream/55">
-                {itemCount} {itemCount === 1 ? 'item' : 'items'} · ₹{subtotal.toLocaleString('en-IN')}
-              </p>
-            )}
           </div>
         </div>
 

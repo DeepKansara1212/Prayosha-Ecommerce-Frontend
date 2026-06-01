@@ -81,7 +81,7 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
           <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9A8F85', margin: '0 0 10px' }}>
             {fmtDate(order.createdAt)}
           </p>
-          <StatusBadge status={order.orderStatus} />
+          <StatusBadge status={order.status} />
         </div>
 
         {/* Price + CTA */}

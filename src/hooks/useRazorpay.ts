@@ -56,7 +56,6 @@ export function useRazorpay() {
     razorpayOrderId: string,
     amount: number,
     currency: string,
-    internalOrderId: string,
     onSuccess: (order: ordersApi.Order) => void | Promise<void>,
     onFailure: () => void,
   ) => {
@@ -82,7 +81,6 @@ export function useRazorpay() {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
-            orderId: internalOrderId,
           })
           await onSuccess(order)
         } catch {
