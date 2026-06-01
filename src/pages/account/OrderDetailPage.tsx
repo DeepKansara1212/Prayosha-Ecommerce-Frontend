@@ -277,10 +277,10 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
                         background: '#EDE8DC', flexShrink: 0,
                         border: '1px solid #E2DAC8',
                       }}>
-                        {item.product?.images?.[0] && (
+                        {item.image && (
                           <img
-                            src={item.product.images[0]}
-                            alt={item.product.name}
+                            src={item.image}
+                            alt={item.name}
                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                           />
                         )}
@@ -293,7 +293,7 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
                           fontWeight: 400, fontSize: 15, color: '#1C1A17',
                           margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                         }}>
-                          {item.product?.name ?? 'Product'}
+                          {item.name}
                         </p>
                         <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9A8F85', margin: '4px 0 0' }}>
                           Qty: {item.quantity}

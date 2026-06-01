@@ -8,6 +8,7 @@ import Footer         from '@/components/layout/Footer'
 import CollectionHero from '@/components/collection/CollectionHero'
 import FilterBar      from '@/components/collection/FilterBar'
 import ProductGrid    from '@/components/collection/ProductGrid'
+import Pagination     from '@/components/ui/Pagination'
 import { ProductCardSkeleton } from '@/components/ui/Skeleton'
 import EmptyState from '@/components/ui/EmptyState'
 import { toast } from '@/store/toastStore'
@@ -28,23 +29,23 @@ const CollectionPage: FC<CollectionPageProps> = ({
   wishlistIds,
   onToggleWishlist,
   onNavigateToProduct,
-  onAddToCart,
 }) => {
   const navigate = useNavigate()
   const [category, setCategory] = useState<ProductCategory>('All')
   const [sort, setSort]         = useState<SortOption>('featured')
+  const [page, setPage]         = useState(1)
+
+  const handleCategory = (c: ProductCategory) => { setCategory(c); setPage(1) }
+  const handleSort     = (s: SortOption)      => { setSort(s);     setPage(1) }
 
   const params = {
     category: category !== 'All' ? category : undefined,
     sort,
+    page,
+    limit: 12,
   }
 
   const { products, pagination, isLoading, isError } = useProducts(params)
-
-  const handleAddToCart = (id: string) => {
-    onAddToCart(id)
-    toast.success('Added to cart')
-  }
 
   const handleToggleWishlist = (id: string) => {
     const wasIn = wishlistIds.has(id)
@@ -62,8 +63,8 @@ const CollectionPage: FC<CollectionPageProps> = ({
           active={category}
           sort={sort}
           total={pagination?.total ?? 0}
-          onCategory={setCategory}
-          onSort={setSort}
+          onCategory={handleCategory}
+          onSort={handleSort}
         />
 
         <div style={{ padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)' }}>
@@ -88,12 +89,19 @@ const CollectionPage: FC<CollectionPageProps> = ({
               onAction={() => setCategory('All')}
             />
           ) : (
-            <ProductGrid
-              products={products}
-              onSelect={p => onNavigateToProduct(p.id)}
-              wishlist={wishlistIds}
-              onWishlist={handleToggleWishlist}
-            />
+            <>
+              <ProductGrid
+                products={products}
+                onSelect={p => onNavigateToProduct(p.id)}
+                wishlist={wishlistIds}
+                onWishlist={handleToggleWishlist}
+              />
+              <Pagination
+                page={page}
+                totalPages={pagination?.totalPages ?? 1}
+                onPage={setPage}
+              />
+            </>
           )}
         </div>
 

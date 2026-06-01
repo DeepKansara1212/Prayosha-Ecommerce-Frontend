@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 import { useAuthStore } from '@/store/authStore'
 import {
@@ -299,6 +300,7 @@ const SidebarRow: FC<{ label: string; value: string; valueColor?: string }> = ({
 // ─── CheckoutPage ─────────────────────────────────────────────────────────────
 
 const CheckoutPage: FC = () => {
+  const navigate   = useNavigate()
   const user       = useAuthStore(s => s.user)
   const items      = useCartStore(s => s.items)
   const coupon     = useCartStore(s => s.coupon)
@@ -310,13 +312,13 @@ const CheckoutPage: FC = () => {
 
   // Auth guard
   useEffect(() => {
-    if (!user) window.location.hash = '#/auth/login'
-  }, [user])
+    if (!user) navigate('/auth/login', { replace: true })
+  }, [user, navigate])
 
   // Cart guard
   useEffect(() => {
-    if (items.length === 0) window.location.hash = '#/collection'
-  }, [items.length])
+    if (items.length === 0) navigate('/collection', { replace: true })
+  }, [items.length, navigate])
 
   const orderItems = useMemo(
     () => items.map(i => ({ productId: i.productId, quantity: i.quantity })),
@@ -335,7 +337,7 @@ const CheckoutPage: FC = () => {
       })
       sessionStorage.setItem('prayosha_last_order', JSON.stringify(order))
       await clearCart()
-      window.location.hash = '#/checkout/success'
+      navigate('/checkout/success', { replace: true })
       return
     }
 
@@ -352,11 +354,11 @@ const CheckoutPage: FC = () => {
       async (verifiedOrder) => {
         sessionStorage.setItem('prayosha_last_order', JSON.stringify(verifiedOrder))
         await clearCart()
-        window.location.hash = '#/checkout/success'
+        navigate('/checkout/success', { replace: true })
       },
       () => {
         sessionStorage.setItem('prayosha_last_order_failed', JSON.stringify({ orderNumber: order.orderNumber }))
-        window.location.hash = '#/checkout/failed'
+        navigate('/checkout/failed', { replace: true })
       },
     )
   }

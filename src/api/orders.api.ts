@@ -1,13 +1,15 @@
 import { apiClient } from './client'
-import type { ApiProduct } from './products.api'
 import type { Address } from './auth.api'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface OrderItem {
-  product: ApiProduct
-  quantity: number
+  product: string  // MongoDB ObjectId
+  name: string
+  image: string
+  sku: string
   price: number
+  quantity: number
 }
 
 export type PaymentMethod = 'cod' | 'razorpay'

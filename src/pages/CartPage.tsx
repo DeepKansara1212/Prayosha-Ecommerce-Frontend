@@ -34,7 +34,6 @@ interface CartPageProps {
 
 const SHIPPING_THRESHOLD = 999
 const SHIPPING_COST      = 149
-const TAX_RATE           = 0.18
 
 // ─── Cart line item ───────────────────────────────────────────────────────────
 
@@ -262,8 +261,7 @@ const OrderSummary: FC<SummaryProps> = ({
 }) => {
   const discountedSubtotal = subtotal - discountAmount
   const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-  const tax = discountedSubtotal * TAX_RATE
-  const total = discountedSubtotal + shipping + tax
+  const total = discountedSubtotal + shipping
 
   const freeShippingRemaining = SHIPPING_THRESHOLD - discountedSubtotal
   const freeShippingPct = Math.min(100, (discountedSubtotal / SHIPPING_THRESHOLD) * 100)
@@ -322,10 +320,6 @@ const OrderSummary: FC<SummaryProps> = ({
           </span>
         </div>
 
-        <div className="flex justify-between">
-          <span className="font-body text-[0.75rem] text-muted">GST (18%)</span>
-          <span className="font-body text-[0.8rem] text-bark">₹{Math.round(tax).toLocaleString('en-IN')}</span>
-        </div>
       </div>
 
       {/* Promo code */}
@@ -347,13 +341,10 @@ const OrderSummary: FC<SummaryProps> = ({
       {/* Checkout button */}
       <button
         onClick={onCheckout}
-        className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-deep text-cream hover:bg-bark transition-colors duration-200 mb-3"
+        className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-deep text-cream hover:bg-bark transition-colors duration-200"
         aria-label="Proceed to checkout"
       >
         Proceed to Checkout
-      </button>
-      <button className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 border border-deep text-deep hover:bg-warm transition-colors duration-200">
-        Buy with UPI / GPay
       </button>
 
       {/* Trust signals */}

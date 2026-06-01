@@ -37,7 +37,8 @@ apiClient.interceptors.response.use(
     const isRefreshEndpoint = (config.url ?? '').includes('refresh-token')
 
     if (!is401 || config._retry || isRefreshEndpoint) {
-      return Promise.reject(error)
+      const message = error.response?.data?.message
+      return Promise.reject(message ? new Error(message) : error)
     }
 
     config._retry = true
@@ -63,10 +64,11 @@ apiClient.interceptors.response.use(
       config.headers.Authorization = `Bearer ${newToken}`
       flushQueue(newToken)
       return apiClient(config)
-    } catch {
+    } catch (refreshError: unknown) {
       flushQueue(null)
       clearAuth()
-      return Promise.reject(error)
+      const message = (refreshError as { response?: { data?: { message?: string } } })?.response?.data?.message
+      return Promise.reject(message ? new Error(message) : error)
     } finally {
       refreshing = false
     }

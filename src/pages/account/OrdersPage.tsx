@@ -62,10 +62,10 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
               width: 44, height: 44, borderRadius: 4, overflow: 'hidden',
               border: '2px solid #F5F0E8', background: '#EDE8DC',
             }}>
-              {item.product?.images?.[0] && (
+              {item.image && (
                 <img
-                  src={item.product.images[0]}
-                  alt={item.product.name}
+                  src={item.image}
+                  alt={item.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               )}
