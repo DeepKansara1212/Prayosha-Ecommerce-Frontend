@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect, type FC } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useNavScroll } from '@/hooks/useNavScroll'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { useSearchOverlay } from '@/hooks/useSearchOverlay'
 import SearchOverlay from '@/components/search/SearchOverlay'
@@ -319,7 +318,6 @@ const Navbar: FC = () => {
   const navigate  = useNavigate()
   const location  = useLocation()
 
-  const scrolled  = useNavScroll(60)
   const [open, setOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileCollectionOpen, setMobileCollectionOpen] = useState(false)
@@ -458,9 +456,7 @@ const Navbar: FC = () => {
             'flex items-center justify-between',
             'px-[clamp(1.25rem,5vw,4rem)] py-5',
             'transition-all duration-400',
-            scrolled
-              ? 'bg-[rgba(28,20,16,0.94)] backdrop-blur-[12px] shadow-[0_1px_0_rgba(184,149,106,0.1)]'
-              : 'bg-transparent',
+            'bg-[rgba(28,20,16,0.97)] backdrop-blur-[12px] shadow-[0_1px_0_rgba(184,149,106,0.12)]',
           )}
         >
           {/* Logo */}
