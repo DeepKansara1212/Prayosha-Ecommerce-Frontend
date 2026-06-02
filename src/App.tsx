@@ -49,6 +49,11 @@ import BlogPostPage from '@/pages/BlogPostPage'
 import TermsPage   from '@/pages/TermsPage'
 import PrivacyPage from '@/pages/PrivacyPage'
 
+// Admin pages
+import AdminLayout        from '@/pages/admin/AdminLayout'
+import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
+import HeroBannersPage    from '@/pages/admin/HeroBannersPage'
+
 // 404
 import NotFoundPage from '@/pages/NotFoundPage'
 
@@ -282,6 +287,18 @@ const App: FC = () => {
           <BlogPage onNavigateToPost={(slug) => navigate(`/blog/${slug}`)} />
         } />
         <Route path="/blog/:slug" element={<BlogPostRoute />} />
+
+        {/* Admin */}
+        <Route path="/admin" element={
+          <AdminLayout>
+            <AdminDashboardPage />
+          </AdminLayout>
+        } />
+        <Route path="/admin/hero-banners" element={
+          <AdminLayout>
+            <HeroBannersPage />
+          </AdminLayout>
+        } />
 
         {/* Legacy hash-style redirects */}
         <Route path="/wishlist" element={<Navigate to="/account/wishlist" replace />} />

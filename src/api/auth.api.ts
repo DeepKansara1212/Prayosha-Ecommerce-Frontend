@@ -33,6 +33,7 @@ export interface UserProfile {
   phone: string
   email?: string
   avatar?: string
+  role?: 'user' | 'admin'
   addresses: Address[]
   createdAt: string
 }
