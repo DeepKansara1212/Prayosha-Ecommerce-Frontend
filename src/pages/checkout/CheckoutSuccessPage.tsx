@@ -3,19 +3,30 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { COLLECTION_PRODUCTS } from '@/data/collection'
-import type { Order } from '@/api/orders.api'
+import type { Order, OrderSuccessResponse } from '@/api/orders.api'
+import FreeGiftBanner from '@/components/ui/FreeGiftBanner'
 
 // ─── CheckoutSuccessPage ──────────────────────────────────────────────────────
 
 const CheckoutSuccessPage: FC = () => {
   const navigate = useNavigate()
 
-  const order: Order | null = useMemo(() => {
+  const { order, pointsEarned, newPointsBalance } = useMemo<{
+    order: Order | null
+    pointsEarned: number
+    newPointsBalance: number
+  }>(() => {
     try {
       const raw = sessionStorage.getItem('prayosha_last_order')
-      return raw ? (JSON.parse(raw) as Order) : null
+      if (!raw) return { order: null, pointsEarned: 0, newPointsBalance: 0 }
+      const parsed = JSON.parse(raw) as OrderSuccessResponse
+      return {
+        order: parsed.order ?? null,
+        pointsEarned: parsed.pointsEarned ?? 0,
+        newPointsBalance: parsed.newPointsBalance ?? 0,
+      }
     } catch {
-      return null
+      return { order: null, pointsEarned: 0, newPointsBalance: 0 }
     }
   }, [])
 
@@ -223,6 +234,39 @@ const CheckoutSuccessPage: FC = () => {
                   </div>
                 </div>
               )}
+              {/* Points earned */}
+              {pointsEarned > 0 && (
+                <div style={{
+                  background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 8,
+                  padding: '18px 24px',
+                  display: 'flex', alignItems: 'center', gap: 14,
+                }}>
+                  <span style={{ fontSize: 20, flexShrink: 0 }}>✨</span>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', margin: '0 0 2px' }}>
+                      You earned <strong style={{ color: '#C49A3C' }}>{pointsEarned} reward points</strong> on this order!
+                    </p>
+                    <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
+                      Your total balance: <strong>{newPointsBalance} pts</strong>
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => { navigate('/account/rewards'); window.scrollTo({ top: 0 }) }}
+                    style={{
+                      flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer',
+                      fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase',
+                      letterSpacing: '0.12em', color: '#7B5EA7', padding: 0,
+                      minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center',
+                    }}
+                  >
+                    View rewards →
+                  </button>
+                </div>
+              )}
+
+              {/* Free gift banner */}
+              {order?.hasFreeGift && <FreeGiftBanner />}
+
             </div>
 
             {/* ── Right column ── */}

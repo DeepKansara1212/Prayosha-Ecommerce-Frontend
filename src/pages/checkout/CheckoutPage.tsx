@@ -331,11 +331,11 @@ const CheckoutPage: FC = () => {
     if (!selectedAddressId) throw new Error('No address selected.')
 
     if (method === 'cod') {
-      const order = await ordersApi.createCODOrder({
+      const result = await ordersApi.createCODOrder({
         addressId: selectedAddressId,
         couponCode: coupon?.code,
       })
-      sessionStorage.setItem('prayosha_last_order', JSON.stringify(order))
+      sessionStorage.setItem('prayosha_last_order', JSON.stringify(result))
       await clearCart()
       navigate('/checkout/success', { replace: true })
       return
@@ -351,8 +351,8 @@ const CheckoutPage: FC = () => {
       razorpayOrderId,
       amount,
       currency,
-      async (verifiedOrder) => {
-        sessionStorage.setItem('prayosha_last_order', JSON.stringify(verifiedOrder))
+      async (result) => {
+        sessionStorage.setItem('prayosha_last_order', JSON.stringify(result))
         await clearCart()
         navigate('/checkout/success', { replace: true })
       },

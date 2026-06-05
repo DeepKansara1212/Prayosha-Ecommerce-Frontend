@@ -56,7 +56,7 @@ export function useRazorpay() {
     razorpayOrderId: string,
     amount: number,
     currency: string,
-    onSuccess: (order: ordersApi.Order) => void | Promise<void>,
+    onSuccess: (result: ordersApi.OrderSuccessResponse) => void | Promise<void>,
     onFailure: () => void,
   ) => {
     const loaded = await loadRazorpayScript()
@@ -77,12 +77,12 @@ export function useRazorpay() {
       theme: { color: '#7B5EA7' },
       handler: async (response) => {
         try {
-          const order = await ordersApi.verifyRazorpayPayment({
+          const result = await ordersApi.verifyRazorpayPayment({
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
           })
-          await onSuccess(order)
+          await onSuccess(result)
         } catch {
           onFailure()
         }

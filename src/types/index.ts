@@ -73,6 +73,20 @@ export interface BlogPost {
   content: BlogSection[]
 }
 
+// ─── Rewards ─────────────────────────────────────────────────────────────────
+
+export interface RewardTransaction {
+  _id: string
+  order: { orderNumber: string; total: number; createdAt: string }
+  pointsEarned: number
+  orderTotal: number
+  createdAt: string
+}
+
+export interface RewardsBalance {
+  rewardPoints: number
+}
+
 // ─── Collection page ─────────────────────────────────────────────────────────
 
 export type ProductCategory =

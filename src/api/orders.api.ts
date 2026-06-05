@@ -42,8 +42,16 @@ export interface Order {
   discount: number
   total: number
   razorpayOrderId?: string
+  pointsEarned: number
+  hasFreeGift: boolean
   createdAt: string
   updatedAt: string
+}
+
+export interface OrderSuccessResponse {
+  order: Order
+  pointsEarned: number
+  newPointsBalance: number
 }
 
 export interface OrderLineInput {
@@ -83,8 +91,8 @@ export interface PaginatedOrders {
 
 // ─── Functions ────────────────────────────────────────────────────────────────
 
-export async function createCODOrder(data: CODOrderData): Promise<Order> {
-  const res = await apiClient.post<{ data: Order }>('/orders/cod', data)
+export async function createCODOrder(data: CODOrderData): Promise<OrderSuccessResponse> {
+  const res = await apiClient.post<{ data: OrderSuccessResponse }>('/orders/cod', data)
   return res.data.data
 }
 
@@ -95,8 +103,8 @@ export async function createRazorpayOrder(
   return res.data.data
 }
 
-export async function verifyRazorpayPayment(data: RazorpayPaymentData): Promise<Order> {
-  const res = await apiClient.post<{ data: Order }>('/orders/razorpay/verify', data)
+export async function verifyRazorpayPayment(data: RazorpayPaymentData): Promise<OrderSuccessResponse> {
+  const res = await apiClient.post<{ data: OrderSuccessResponse }>('/orders/razorpay/verify', data)
   return res.data.data
 }
 

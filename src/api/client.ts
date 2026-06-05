@@ -25,7 +25,8 @@ function flushQueue(token: string | null) {
 function clearAuth() {
   localStorage.removeItem('accessToken')
   localStorage.removeItem('refreshToken')
-  window.location.hash = '#/auth'
+  localStorage.removeItem('prayosha-auth')
+  window.location.href = '/auth/login'
 }
 
 apiClient.interceptors.response.use(

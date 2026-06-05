@@ -35,6 +35,7 @@ import OrdersPage      from '@/pages/account/OrdersPage'
 import OrderDetailPage from '@/pages/account/OrderDetailPage'
 import AddressesPage   from '@/pages/account/AddressesPage'
 import ProfilePage     from '@/pages/account/ProfilePage'
+import RewardsPage     from '@/pages/account/RewardsPage'
 
 // Checkout pages
 import CheckoutPage        from '@/pages/checkout/CheckoutPage'
@@ -279,6 +280,7 @@ const App: FC = () => {
         <Route path="/account"               element={<Navigate to="/account/orders" replace />} />
         <Route path="/account/orders"        element={<OrdersPage />} />
         <Route path="/account/orders/:num"   element={<OrderDetailRoute />} />
+        <Route path="/account/rewards"       element={<RewardsPage />} />
         <Route path="/account/addresses"     element={<AddressesPage />} />
         <Route path="/account/profile"       element={<ProfilePage />} />
 

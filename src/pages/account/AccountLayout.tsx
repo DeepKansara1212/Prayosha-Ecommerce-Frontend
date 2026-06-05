@@ -77,17 +77,18 @@ const ACCOUNT_CSS = `
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type AccountTab = 'orders' | 'addresses' | 'profile'
+export type AccountTab = 'orders' | 'rewards' | 'addresses' | 'profile'
 
 interface AccountLayoutProps {
   children: ReactNode
   activeTab: AccountTab
 }
 
-const NAV_ITEMS: { key: AccountTab; label: string; path: string }[] = [
-  { key: 'orders',    label: 'My Orders',    path: '/account/orders' },
-  { key: 'addresses', label: 'My Addresses', path: '/account/addresses' },
-  { key: 'profile',   label: 'Profile',      path: '/account/profile' },
+const NAV_ITEMS: { key: AccountTab; label: string; mobileLabel: string; path: string }[] = [
+  { key: 'orders',    label: 'My Orders',    mobileLabel: 'Orders',    path: '/account/orders' },
+  { key: 'rewards',   label: 'My Rewards',   mobileLabel: 'Rewards',   path: '/account/rewards' },
+  { key: 'addresses', label: 'My Addresses', mobileLabel: 'Addresses', path: '/account/addresses' },
+  { key: 'profile',   label: 'Profile',      mobileLabel: 'Profile',   path: '/account/profile' },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -229,8 +230,8 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
               key={item.key}
               onClick={() => handleNav(item.path)}
               style={{
-                flex: 1, padding: '10px 4px',
-                fontFamily: 'Jost', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.08em',
+                flex: 1, padding: '10px 2px',
+                fontFamily: 'Jost', fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.06em',
                 background: active ? '#F0EAF7' : 'none',
                 color: active ? '#7B5EA7' : '#6B6057',
                 border: 'none',
@@ -238,7 +239,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
                 cursor: 'pointer', textAlign: 'center',
               }}
             >
-              {item.label}
+              {item.mobileLabel}
             </button>
           )
         })}
