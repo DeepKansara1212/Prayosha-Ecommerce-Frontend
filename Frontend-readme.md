@@ -150,6 +150,7 @@ Defined in `src/App.tsx`. Product URLs use **slug** as `:id` (e.g. `/product/ame
 | `/contact` | Contact | Public |
 | `/terms` | Terms of service | Public |
 | `/privacy` | Privacy policy | Public |
+| `/b2b` | B2B / bulk inquiry (WhatsApp redirect) | Public |
 | `/blog` | Blog listing (API) | Public |
 | `/blog/:slug` | Blog article (API) | Public |
 | `/auth/login` | OTP login | Public |
@@ -239,7 +240,7 @@ Shared client: `src/api/client.ts` (`apiClient`).
 | `blog.api.ts` | `fetchBlogs`, `fetchBlogBySlug` |
 | `heroBanner.api.ts` | `getActiveBanners`, `getAllBannersAdmin`, `createBanner`, `updateBanner`, `toggleBanner`, `reorderBanners`, `deleteBanner` |
 | `rewards.api.ts` | `getRewardsBalance`, `getRewardsHistory(page, limit)` → `/rewards/*` |
-| `settings.api.ts` | `getPublicSettings` → `/settings` (returns `freeGiftEnabled`) |
+| `settings.api.ts` | `getPublicSettings` → `/settings` (returns `freeGiftEnabled`, `whatsappNumber`, `whatsappDefaultMessage`); exports `PublicSettings` type |
 | `search.api.ts` | `searchProducts(q, limit)` → `/search` |
 | `addresses.api.ts` | Thin wrappers around auth address endpoints |
 
@@ -353,6 +354,31 @@ Shared `_AuthShell` layout:
 - Post: multi-section renderer (paragraph, heading, subheading, quote, list)
 - Related posts from same fetch
 
+### B2B inquiry (`/b2b`)
+
+Public page for bulk and wholesale inquiries. No backend API call — on valid submit the form constructs a `wa.me` deep-link and opens WhatsApp in a new tab with the customer's name, mobile, and message pre-filled.
+
+- React Hook Form + Zod validation (`name` ≥ 2 chars, `mobileNumber` exactly 10 digits, optional `message` ≤ 500 chars)
+- Reads `whatsappNumber` from `getPublicSettings`; disables the submit button with a fallback note when the number is not configured
+- Success state shown after `window.open` fires; form resets after 3 s
+- Two-column layout (desktop) matching the Contact page design language
+- Navbar link ("B2B") added to desktop nav and mobile drawer
+
+### WhatsApp chat widget (global)
+
+`WhatsAppChatButton` is mounted once in `App.tsx` and appears on all storefront routes **except** `/admin/*`.
+
+- Floating action button (`bottom-6 right-6`, `z-50`) with WhatsApp green (`#25D366`) background
+- Clicking opens a pop-up card with a page-context pre-filled message (editable):
+  - `/product/:slug` → `"Hi! I'm interested in [product name] and have a question."`
+  - `/cart` → `"Hi! I have a question about my cart."`
+  - `/checkout` → `"Hi! I need help completing my order."`
+  - `/account/orders/:num` → `"Hi! I have a question about my order #[num]."`
+  - Other pages → generic help message
+- "Start Chat" opens `https://wa.me/<number>?text=<encoded_message>` in a new tab
+- Hidden when `whatsappNumber` is empty; card closes on outside-click or `Escape`
+- `role="dialog"`, `aria-modal`, focus trap, 44 × 44 px minimum tap target
+
 ### Legal
 
 - `TermsPage`, `PrivacyPage` — static content pages
@@ -402,7 +428,7 @@ Uses `heroBanner.api.ts` admin endpoints. Full catalog/order admin is in the sep
 
 ### UI
 
-- `Button`, `CustomCursor`, `EmptyState`, `FreeGiftBanner` (shown on checkout success when `order.hasFreeGift`), `Skeleton` (+ product/order variants), `SectionLabel`, `SectionTitle`, `Toast`, `Pagination`, `StatusTimeline`
+- `Button`, `CustomCursor`, `EmptyState`, `FreeGiftBanner` (shown on checkout success when `order.hasFreeGift`), `Skeleton` (+ product/order variants), `SectionLabel`, `SectionTitle`, `Toast`, `Pagination`, `StatusTimeline`, `WhatsAppChatButton` (global floating chat FAB)
 
 ### Admin
 
@@ -483,6 +509,7 @@ Frontend/
       search/
       sections/
       ui/
+        WhatsAppChatButton.tsx   # global floating WhatsApp FAB
     data/
       index.ts              # homepage marketing copy
       collection.ts         # category labels + static product fallback
@@ -504,6 +531,7 @@ Frontend/
       auth/
       checkout/
       AboutPage.tsx
+      B2BPage.tsx
       BlogPage.tsx
       BlogPostPage.tsx
       CartPage.tsx
@@ -582,6 +610,8 @@ Frontend/
 | Blog list + post | ✓ | API |
 | Embedded admin (banners) | ✓ | API |
 | Newsletter signup | UI only | — |
+| WhatsApp chat widget (FAB) | ✓ | Public settings API |
+| B2B / bulk inquiry page | ✓ | Public settings API + `wa.me` redirect |
 | Terms / Privacy / 404 | ✓ | Static |
 | Custom cursor + toasts | ✓ | Client |
 
