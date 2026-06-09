@@ -165,6 +165,7 @@ Defined in `src/App.tsx`. Product URLs use **slug** as `:id` (e.g. `/product/ame
 | `/account` | Redirect → `/account/orders` | — |
 | `/account/orders` | Order history | JWT |
 | `/account/orders/:num` | Order detail | JWT |
+| `/account/rewards` | Rewards balance + history | JWT |
 | `/account/addresses` | Saved addresses | JWT |
 | `/account/profile` | Profile edit | JWT |
 | `/admin` | Admin dashboard | Admin |
@@ -237,6 +238,8 @@ Shared client: `src/api/client.ts` (`apiClient`).
 | `reviews.api.ts` | `getProductReviews`, `submitReview` |
 | `blog.api.ts` | `fetchBlogs`, `fetchBlogBySlug` |
 | `heroBanner.api.ts` | `getActiveBanners`, `getAllBannersAdmin`, `createBanner`, `updateBanner`, `toggleBanner`, `reorderBanners`, `deleteBanner` |
+| `rewards.api.ts` | `getRewardsBalance`, `getRewardsHistory(page, limit)` → `/rewards/*` |
+| `settings.api.ts` | `getPublicSettings` → `/settings` (returns `freeGiftEnabled`) |
 | `search.api.ts` | `searchProducts(q, limit)` → `/search` |
 | `addresses.api.ts` | Thin wrappers around auth address endpoints |
 
@@ -339,6 +342,7 @@ Shared `_AuthShell` layout:
 |---|---|
 | Orders | Paginated API list, status badges |
 | Order detail | Line items, `StatusTimeline`, payment info |
+| Rewards | Balance card (current points), paginated earn history, "How it works" steps (earn 20 pts/₹100) |
 | Addresses | CRUD with Zod forms |
 | Profile | Update name via `updateMe` |
 
@@ -398,7 +402,7 @@ Uses `heroBanner.api.ts` admin endpoints. Full catalog/order admin is in the sep
 
 ### UI
 
-- `Button`, `CustomCursor`, `EmptyState`, `Skeleton` (+ product/order variants), `SectionLabel`, `SectionTitle`, `Toast`, `Pagination`, `StatusTimeline`
+- `Button`, `CustomCursor`, `EmptyState`, `FreeGiftBanner` (shown on checkout success when `order.hasFreeGift`), `Skeleton` (+ product/order variants), `SectionLabel`, `SectionTitle`, `Toast`, `Pagination`, `StatusTimeline`
 
 ### Admin
 
@@ -465,6 +469,8 @@ Frontend/
       reviews.api.ts
       blog.api.ts
       heroBanner.api.ts
+      rewards.api.ts
+      settings.api.ts
       search.api.ts
       addresses.api.ts
     components/
@@ -489,6 +495,12 @@ Frontend/
         AdminDashboardPage.tsx
         HeroBannersPage.tsx
       account/
+        AccountLayout.tsx
+        AddressesPage.tsx
+        OrderDetailPage.tsx
+        OrdersPage.tsx
+        ProfilePage.tsx
+        RewardsPage.tsx
       auth/
       checkout/
       AboutPage.tsx
@@ -565,6 +577,7 @@ Frontend/
 | Checkout COD | ✓ | API |
 | Checkout Razorpay | ✓ | API + Razorpay.js |
 | Account orders / detail | ✓ | API |
+| Account rewards | ✓ | API |
 | Account addresses / profile | ✓ | API |
 | Blog list + post | ✓ | API |
 | Embedded admin (banners) | ✓ | API |

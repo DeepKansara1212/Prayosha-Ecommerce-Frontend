@@ -111,6 +111,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Blog',        path: '/blog' },
   { label: 'About Us',    path: '/about' },
   { label: 'Contact',     path: '/contact' },
+  { label: 'B2B',         path: '/b2b' },
 ]
 
 // ─── Mega Dropdown ────────────────────────────────────────────────────────────

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useParams } from 'react-router-do
 
 import CustomCursor from '@/components/ui/CustomCursor'
 import ToastContainer from '@/components/ui/Toast'
+import WhatsAppChatButton from '@/components/ui/WhatsAppChatButton'
 import Navbar   from '@/components/layout/Navbar'
 import Footer   from '@/components/layout/Footer'
 
@@ -49,6 +50,9 @@ import BlogPostPage from '@/pages/BlogPostPage'
 // Legal pages
 import TermsPage   from '@/pages/TermsPage'
 import PrivacyPage from '@/pages/PrivacyPage'
+
+// B2B
+import B2BPage from '@/pages/B2BPage'
 
 // Admin pages
 import AdminLayout        from '@/pages/admin/AdminLayout'
@@ -211,6 +215,7 @@ const App: FC = () => {
     <>
       <CustomCursor />
       <ToastContainer />
+      <WhatsAppChatButton />
 
       <Routes>
         {/* Home */}
@@ -238,6 +243,7 @@ const App: FC = () => {
         {/* Static pages */}
         <Route path="/about"   element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/b2b"     element={<B2BPage />} />
         <Route path="/terms"   element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
 
