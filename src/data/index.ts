@@ -16,13 +16,11 @@ export const NAV_LINKS: NavLink[] = [
 ]
 
 export const MARQUEE_ITEMS: string[] = [
-  'Ethically Sourced',
-  'Free Shipping Over ₹999',
-  'Certified Authentic',
+  'Iso Certified',
+  'Secure Payment',
+  'Premium Quality',
   'Handpicked Crystals',
-  'Sacred Geometry Sets',
-  'New Moon Drops',
-  'Gift Wrapping Available',
+  'Genuine Product',
 ]
 
 export const CRYSTAL_CARDS: CrystalCard[] = [
