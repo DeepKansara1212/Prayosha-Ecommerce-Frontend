@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils'
 // ─── Team ─────────────────────────────────────────────────────────────────────
 
 const TEAM = [
-  { name: 'Aria Sharma', role: 'Founder & Crystal Curator', emoji: '🔮', bio: 'A geologist-turned-crystal healer with 12 years of sourcing experience across India, Brazil and Madagascar. Aria hand-selects every stone in the Luminae collection.' },
+  { name: 'Aria Sharma', role: 'Founder & Crystal Curator', emoji: '🔮', bio: 'A geologist-turned-crystal healer with 12 years of sourcing experience across India, Brazil and Madagascar. Aria hand-selects every stone in the Prayosha Crystal collection.' },
   { name: 'Rohan Mehta', role: 'Head of Sourcing', emoji: '🌍', bio: 'Rohan leads our ethical sourcing partnerships, maintaining direct relationships with responsible mines across three continents and ensuring full provenance documentation.' },
   { name: 'Priya Nair', role: 'Ritual & Healing Guide', emoji: '🌙', bio: 'A certified crystal healer and sound practitioner, Priya creates all of our ritual guides and leads our monthly new-moon ceremonies and online crystal workshops.' },
-  { name: 'Dev Kapoor', role: 'Creative Director', emoji: '✦', bio: 'Dev shapes the Luminae aesthetic — from our sacred packaging to our visual world — ensuring every touchpoint reflects the beauty of the stones themselves.' },
+  { name: 'Dev Kapoor', role: 'Creative Director', emoji: '✦', bio: 'Dev shapes the Prayosha Crystal aesthetic — from our sacred packaging to our visual world — ensuring every touchpoint reflects the beauty of the stones themselves.' },
 ]
 
 // ─── Values ───────────────────────────────────────────────────────────────────
@@ -25,8 +25,8 @@ const VALUES = [
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 
 const MILESTONES = [
-  { year: '2019', text: 'Aria returns from a year-long sourcing journey across Minas Gerais, Brazil, discovering the first Luminae amethyst cathedral.' },
-  { year: '2020', text: 'Luminae launches from a small Bangalore studio with 12 hand-selected crystals and 200 founding community members.' },
+  { year: '2019', text: 'Aria returns from a year-long sourcing journey across Minas Gerais, Brazil, discovering the first Prayosha Crystal amethyst cathedral.' },
+  { year: '2020', text: 'Prayosha Crystal launches from a small Bangalore studio with 12 hand-selected crystals and 200 founding community members.' },
   { year: '2021', text: 'First direct mine partnership established in Madagascar. Sacred packaging line launched — fully compostable and botanically scented.' },
   { year: '2022', text: 'Moon-cleansing ritual certified. First live crystal sourcing journey with 40 community members in Rajasthan, India.' },
   { year: '2023', text: 'Expanded to 100+ crystal varieties. Gemologist partnership established for in-house authentication of every stone.' },
@@ -81,7 +81,7 @@ const AboutPage: FC = () => (
             <em className="italic text-gold-light">the earth's secrets</em>
           </h1>
           <p className="font-body font-extralight text-[clamp(0.82rem,2vw,0.92rem)] leading-[1.9] text-cream/60 max-w-xl">
-            Luminae began not as a business, but as an obsession — with the ancient, the authentic, and the extraordinary beauty that the earth has been quietly creating for millions of years.
+            Prayosha Crystal began not as a business, but as an obsession — with the ancient, the authentic, and the extraordinary beauty that the earth has been quietly creating for millions of years.
           </p>
         </div>
       </div>
@@ -110,7 +110,7 @@ const AboutPage: FC = () => (
             </div>
             <div className="absolute -bottom-4 -right-4 bg-warm p-5 shadow-lg max-w-[200px]">
               <p className="font-display font-light text-[1.8rem] text-amethyst">2019</p>
-              <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted mt-1">Year Luminae was born</p>
+              <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted mt-1">Year Prayosha Crystal was born</p>
             </div>
           </div>
         </div>

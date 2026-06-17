@@ -240,7 +240,7 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
                 🌙
               </div>
               <div>
-                <p className="font-body text-[0.72rem] font-medium text-deep">Luminae Journal</p>
+                <p className="font-body text-[0.72rem] font-medium text-deep">Prayosha Crystal Journal</p>
                 <p className="font-body font-extralight text-[0.68rem] text-muted">Crystal wisdom &amp; sacred rituals</p>
               </div>
             </div>

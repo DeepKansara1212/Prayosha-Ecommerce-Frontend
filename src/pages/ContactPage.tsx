@@ -113,9 +113,9 @@ const Field: FC<InputProps> = ({ id, label, value, onChange, error, type = 'text
 
 const INFO_ITEMS = [
   { icon: '📍', label: 'Studio', value: '14 Vittal Mallya Road, Indiranagar, Bangalore — 560 038' },
-  { icon: '📧', label: 'Email', value: 'hello@luminae.in' },
+  { icon: '📧', label: 'Email', value: 'hello@prayoshacrystal.com' },
   { icon: '📞', label: 'Phone', value: '+91 98765 43210 · Mon–Sat, 10am–6pm IST' },
-  { icon: '🌐', label: 'Social', value: '@luminae.crystals on Instagram' },
+  { icon: '🌐', label: 'Social', value: '@prayosha.crystal on Instagram' },
 ]
 
 // ─── ContactPage ──────────────────────────────────────────────────────────────
@@ -382,7 +382,7 @@ const ContactPage: FC = () => {
             <div className="w-12 h-12 rounded-full bg-gold flex items-center justify-center mx-auto mb-3">
               <span className="text-xl" aria-hidden="true">📍</span>
             </div>
-            <p className="font-display font-light text-[1.1rem] text-cream mb-1">Luminae Studio</p>
+            <p className="font-display font-light text-[1.1rem] text-cream mb-1">Prayosha Crystal Studio</p>
             <p className="font-body font-extralight text-[0.72rem] text-cream/55">14 Vittal Mallya Road, Indiranagar, Bangalore</p>
           </div>
         </div>

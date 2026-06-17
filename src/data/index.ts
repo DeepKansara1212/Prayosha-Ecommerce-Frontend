@@ -138,7 +138,7 @@ export const TESTIMONIALS: Testimonial[] = [
   },
   {
     id: 'aarav',
-    quote: "I've bought crystals from many places, but Luminae's quality and authenticity is unmatched. The packaging is like receiving a gift from the earth itself.",
+    quote: "I've bought crystals from many places, but Prayosha Crystal's quality and authenticity is unmatched. The packaging is like receiving a gift from the earth itself.",
     author: 'Aarav K.',
     location: 'Bangalore',
   },

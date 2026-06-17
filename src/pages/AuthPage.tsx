@@ -163,7 +163,7 @@ const SignInForm: FC<{ onSwitch: () => void; onSuccess: () => void }> = ({ onSwi
       </button>
       <div className="relative flex items-center gap-3"><div className="flex-1 h-px bg-warm" /><span className="font-body text-[0.6rem] uppercase tracking-[0.18em] text-muted/60 flex-none">or</span><div className="flex-1 h-px bg-warm" /></div>
       <div className="flex gap-3"><SocialBtn symbol="G" label="Google" /><SocialBtn symbol="⌘" label="Apple" /></div>
-      <p className="text-center font-body text-[0.75rem] text-muted">New to Luminae? <button type="button" onClick={onSwitch} className="text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Create an account</button></p>
+      <p className="text-center font-body text-[0.75rem] text-muted">New to Prayosha Crystal? <button type="button" onClick={onSwitch} className="text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Create an account</button></p>
     </form>
   )
 }
@@ -230,7 +230,7 @@ const SuccessScreen: FC<{ mode: AuthMode }> = ({ mode }) => (
     <div className="w-16 h-16 rounded-full bg-sage/20 flex items-center justify-center mx-auto mb-5">
       <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="#6A8570" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
     </div>
-    <h2 className="font-display font-light text-[2rem] text-deep mb-2">{mode === 'signin' ? 'Welcome back.' : 'Welcome to Luminae.'}</h2>
+    <h2 className="font-display font-light text-[2rem] text-deep mb-2">{mode === 'signin' ? 'Welcome back.' : 'Welcome to Prayosha Crystal.'}</h2>
     <p className="font-body font-extralight text-[0.82rem] text-muted max-w-xs mx-auto leading-relaxed mb-7">
       {mode === 'signin' ? 'You\'re signed in. Your crystal collection awaits.' : 'Your account is ready. Begin your sacred stone journey.'}
     </p>
@@ -273,7 +273,7 @@ const AuthPage: FC = () => {
           <div className="relative z-10">
             <p className="inline-flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-3">
               <span className="w-6 h-px bg-gold-light" aria-hidden="true" />
-              {mode === 'signin' ? 'Welcome Back' : 'Join Luminae'}
+              {mode === 'signin' ? 'Welcome Back' : 'Join Prayosha Crystal'}
               <span className="w-6 h-px bg-gold-light" aria-hidden="true" />
             </p>
             <h1 className="font-display font-light text-[clamp(2rem,5vw,3.2rem)] text-cream">

@@ -464,9 +464,9 @@ const Navbar: FC = () => {
           <button
             onClick={() => go('/')}
             className="font-display font-light text-[clamp(1.2rem,3vw,1.5rem)] tracking-[0.15em] text-cream z-[201] bg-transparent border-none cursor-pointer hover:text-gold-light transition-colors duration-200 min-h-[44px]"
-            aria-label="Luminae — go to home"
+            aria-label="Prayosha Crystal — go to home"
           >
-            LUMINAE
+            PRAYOSHA CRYSTAL
           </button>
 
           {/* Desktop nav links */}

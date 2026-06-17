@@ -18,7 +18,7 @@ const RitualBanner: FC = () => {
         ref={textRef}
         className="reveal flex-1 flex flex-col justify-center section-p"
       >
-        <SectionLabel light>The Luminae Way</SectionLabel>
+        <SectionLabel light>The Prayosha Crystal Way</SectionLabel>
         <SectionTitle id="ritual-title" className="text-cream">
           Crystal care &amp;<br />
           <em className="italic text-rose">ritual guides</em>

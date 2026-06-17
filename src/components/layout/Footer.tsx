@@ -13,7 +13,7 @@ const Footer: FC = () => (
           to="/"
           className="font-display font-light text-[1.7rem] tracking-[0.15em] text-cream block mb-4 no-underline hover:text-gold-light transition-colors duration-200"
         >
-          LUMINAE
+          PRAYOSHA CRYSTAL
         </Link>
         <p className="font-body font-extralight text-[0.76rem] leading-relaxed text-cream/40 max-w-[240px] mb-5">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.
@@ -57,7 +57,7 @@ const Footer: FC = () => (
     {/* Bottom bar */}
     <div className="bg-deep border-t border-cream/[0.06] px-[clamp(1.25rem,5vw,4rem)] py-5 flex flex-col sm:flex-row justify-between items-center gap-2 flex-wrap">
       <p className="font-body text-[0.68rem] tracking-[0.04em] text-cream/25">
-        © {new Date().getFullYear()} Luminae Crystals. All rights reserved.
+        © {new Date().getFullYear()} Prayosha Crystal. All rights reserved.
       </p>
       <p className="font-body text-[0.68rem] text-cream/25">Made with love &amp; moonlight ✦</p>
     </div>

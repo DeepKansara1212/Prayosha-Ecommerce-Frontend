@@ -18,7 +18,7 @@ const Benefits: FC = () => {
         ref={leftRef}
         className="reveal flex flex-col justify-center section-p"
       >
-        <SectionLabel light>Why Luminae</SectionLabel>
+        <SectionLabel light>Why Prayosha Crystal</SectionLabel>
         <SectionTitle id="benefits-title" className="text-cream">
           The purest<br />
           stones, the<br />

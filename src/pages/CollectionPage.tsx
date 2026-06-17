@@ -107,7 +107,7 @@ const CollectionPage: FC<CollectionPageProps> = ({
 
         {/* Bottom strip */}
         <div className="border-t border-warm text-center" style={{ padding: 'clamp(3rem,6vw,5rem) clamp(1.25rem,5vw,4rem)' }}>
-          <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">The Luminae Promise</p>
+          <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">The Prayosha Crystal Promise</p>
           <p className="font-display font-light text-[clamp(1.4rem,3vw,2rem)] text-bark max-w-2xl mx-auto leading-relaxed">
             Every stone is hand-selected, certified authentic, and moon-cleansed before it reaches you.
             <em className="italic text-amethyst"> No exceptions.</em>
