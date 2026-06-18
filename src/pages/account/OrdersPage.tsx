@@ -81,7 +81,18 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
           <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9A8F85', margin: '0 0 10px' }}>
             {fmtDate(order.createdAt)}
           </p>
-          <StatusBadge status={order.status} />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+            <StatusBadge status={order.status} />
+            {order.awbCode && (
+              <span style={{
+                display: 'inline-block', padding: '3px 10px', borderRadius: 12,
+                background: '#F5F0E8', border: '1px solid #E2DAC8',
+                fontFamily: 'Jost', fontSize: 10, color: '#6B6057',
+              }}>
+                🚚 Tracking Available
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Price + CTA */}

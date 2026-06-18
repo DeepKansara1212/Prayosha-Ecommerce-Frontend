@@ -28,6 +28,12 @@ export interface OrderStatusEntry {
   timestamp: string
 }
 
+export interface TrackingCheckpoint {
+  time: string
+  message: string
+  location: string
+}
+
 export interface Order {
   _id: string
   orderNumber: string
@@ -41,6 +47,12 @@ export interface Order {
   subtotal: number
   discount: number
   total: number
+  trackingNumber?: string
+  awbCode?: string
+  courierName?: string
+  trackingUrl?: string
+  aftershipStatus?: string
+  trackingCheckpoints?: TrackingCheckpoint[]
   razorpayOrderId?: string
   pointsEarned: number
   hasFreeGift: boolean

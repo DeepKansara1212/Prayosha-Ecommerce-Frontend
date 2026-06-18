@@ -154,6 +154,89 @@ const Card: FC<{ title: string; children: ReactNode }> = ({ title, children }) =
   </div>
 )
 
+function fmtCheckpointDate(iso: string) {
+  return new Date(iso).toLocaleString('en-IN', {
+    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
+  })
+}
+
+function formatTrackingStatus(status?: string) {
+  if (!status) return 'In Transit'
+  return status.replace(/([A-Z])/g, ' $1').trim()
+}
+
+const TrackingSection: FC<{ order: Order }> = ({ order }) => {
+  const hasTracking = !!(order.trackingNumber || order.awbCode)
+  if (!hasTracking) return null
+
+  const awb = order.awbCode || order.trackingNumber
+  const status = formatTrackingStatus(order.aftershipStatus || order.status)
+
+  return (
+    <Card title="Shipment Tracking">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+        {order.courierName && (
+          <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
+            Courier: <span style={{ color: '#1C1A17', fontWeight: 500 }}>{order.courierName}</span>
+          </p>
+        )}
+        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
+          AWB: <span style={{ color: '#1C1A17', fontWeight: 500 }}>{awb}</span>
+        </p>
+        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
+          Status: <span style={{ color: '#7B5EA7', fontWeight: 500 }}>{status}</span>
+        </p>
+        {order.trackingUrl && (
+          <a
+            href={order.trackingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontFamily: 'Jost', fontSize: 12, color: '#7B5EA7',
+              textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            Track on {order.courierName || 'Courier'} ↗
+          </a>
+        )}
+      </div>
+
+      {order.trackingCheckpoints && order.trackingCheckpoints.length > 0 && (
+        <>
+          <div style={{ height: 1, background: '#E2DAC8', margin: '16px 0' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[...order.trackingCheckpoints].reverse().map((cp, i) => (
+              <div key={i} style={{ display: 'flex', gap: 12 }}>
+                <div style={{
+                  width: 10, height: 10, borderRadius: '50%', background: '#7B5EA7',
+                  marginTop: 4, flexShrink: 0,
+                  boxShadow: '0 0 0 2px #fff, 0 0 0 3px #7B5EA7',
+                }} />
+                <div>
+                  <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#9A8F85', margin: '0 0 4px' }}>
+                    {fmtCheckpointDate(cp.time)}
+                  </p>
+                  <p style={{
+                    fontFamily: 'Jost', fontSize: 13, fontWeight: 500,
+                    color: '#1C1A17', margin: '0 0 2px',
+                  }}>
+                    {cp.message}
+                  </p>
+                  {cp.location && (
+                    <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
+                      {cp.location}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </Card>
+  )
+}
+
 // ─── OrderDetailPage ──────────────────────────────────────────────────────────
 
 interface OrderDetailPageProps {
@@ -259,12 +342,10 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
               {/* Status tracker */}
               <Card title="Order Status">
                 <StatusTracker status={order.status} />
-                {order.status === 'shipped' && (
-                  <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '16px 0 0' }}>
-                    Tracking: <span style={{ color: '#1C1A17', fontWeight: 500 }}>—</span>
-                  </p>
-                )}
               </Card>
+
+              {/* Shipment tracking */}
+              <TrackingSection order={order} />
 
               {/* Items */}
               <Card title={`Items (${order.items.length})`}>
