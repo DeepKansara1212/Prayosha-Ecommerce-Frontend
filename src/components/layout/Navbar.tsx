@@ -48,6 +48,34 @@ interface DropdownColumn {
   items: string[]
 }
 
+const MEANING_ITEMS = [
+  'Control Anger',
+  'Success',
+  'Money Magnet',
+  'Dhanyog',
+  'Protection',
+  'Love & Relationships',
+  'Health',
+  'Chakra Balance',
+  'Antidepression',
+  'Stress Relief',
+  'Good Luck',
+  'Pregnancy',
+  'Addiction',
+  'Prosperity',
+  'Peace',
+  'Study',
+  'Concentration',
+  'Confidence',
+  'Growth',
+  'Happiness',
+  'Meditation',
+  'Motivation',
+  'Negative Energy Remover',
+  'Opportunities',
+  'Strength',
+]
+
 const DROPDOWN_COLUMNS: DropdownColumn[] = [
   {
     title: 'Purpose',
@@ -123,6 +151,8 @@ interface MegaDropdownProps {
 }
 
 const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
+  const [meaningOpen, setMeaningOpen] = useState(false)
+
   const handleItemClick = (_item: string) => {
     onNavigate('/collection')
     onClose()
@@ -153,22 +183,72 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
       {items.map((item, idx) => (
         <li key={`${item}-${idx}`}>
-          <button
-            onClick={() => handleItemClick(item)}
-            style={itemStyle}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLButtonElement
-              el.style.color = 'rgba(245,238,228,1)'
-              el.style.paddingLeft = '5px'
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLButtonElement
-              el.style.color = 'rgba(245,238,228,0.65)'
-              el.style.paddingLeft = '0'
-            }}
-          >
-            {item}
-          </button>
+          {item === 'Meaning' ? (
+            <div>
+              <button
+                onClick={() => setMeaningOpen(prev => !prev)}
+                style={itemStyle}
+                onMouseEnter={e => {
+                  const el = e.currentTarget as HTMLButtonElement
+                  el.style.color = 'rgba(245,238,228,1)'
+                  el.style.paddingLeft = '5px'
+                }}
+                onMouseLeave={e => {
+                  const el = e.currentTarget as HTMLButtonElement
+                  el.style.color = 'rgba(245,238,228,0.65)'
+                  el.style.paddingLeft = '0'
+                }}
+              >
+                {item} <span style={{ marginLeft: '0.3rem' }}>{meaningOpen ? '▴' : '▾'}</span>
+              </button>
+              {meaningOpen && (
+                <ul style={{ listStyle: 'none', padding: '0.25rem 0 0.25rem 0.7rem', margin: 0 }}>
+                  {MEANING_ITEMS.map((meaning, meaningIdx) => (
+                    <li key={`${meaning}-${meaningIdx}`}>
+                      <button
+                        onClick={() => handleItemClick(meaning)}
+                        style={{
+                          ...itemStyle,
+                          padding: '0.18rem 0',
+                          fontSize: '0.74rem',
+                          color: 'rgba(245,238,228,0.58)',
+                        }}
+                        onMouseEnter={e => {
+                          const el = e.currentTarget as HTMLButtonElement
+                          el.style.color = 'rgba(245,238,228,1)'
+                          el.style.paddingLeft = '5px'
+                        }}
+                        onMouseLeave={e => {
+                          const el = e.currentTarget as HTMLButtonElement
+                          el.style.color = 'rgba(245,238,228,0.58)'
+                          el.style.paddingLeft = '0'
+                        }}
+                      >
+                        {meaning}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => handleItemClick(item)}
+              style={itemStyle}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLButtonElement
+                el.style.color = 'rgba(245,238,228,1)'
+                el.style.paddingLeft = '5px'
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLButtonElement
+                el.style.color = 'rgba(245,238,228,0.65)'
+                el.style.paddingLeft = '0'
+              }}
+            >
+              {item}
+            </button>
+          )}
         </li>
       ))}
     </ul>
