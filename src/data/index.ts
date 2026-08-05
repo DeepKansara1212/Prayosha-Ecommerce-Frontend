@@ -168,6 +168,8 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
       { label: 'Ritual Library',  href: '/blog' },
       { label: 'Chakra Charts',   href: '/blog' },
       { label: 'Journal',         href: '/blog' },
+      { label: 'Bracelet Calculator',  href: '/bracelet-calculator' },
+      { label: 'Rudraksha Finder',     href: '/rudraksha-calculator' },
     ],
   },
   {

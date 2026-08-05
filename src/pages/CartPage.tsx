@@ -476,6 +476,7 @@ const CartPage: FC<CartPageProps> = ({
               reviewCount: 0,
               isNew: false,
               isBestseller: false,
+              hasFreeGift: false,
               relatedIds: [],
             }
             return { product: fallback, qty: item.quantity }

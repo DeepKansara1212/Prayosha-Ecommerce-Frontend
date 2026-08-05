@@ -3,6 +3,7 @@ import AccountLayout from './AccountLayout'
 import * as ordersApi from '@/api/orders.api'
 import type { Order, OrderStatus } from '@/api/orders.api'
 import StatusTimeline, { StatusTimelineSkeleton } from '@/components/ui/StatusTimeline'
+import FreeGiftBanner from '@/components/ui/FreeGiftBanner'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -333,6 +334,13 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
               Placed on {fmtDate(order.createdAt)}
             </p>
           </div>
+
+          {/* Free gift banner */}
+          {order.hasFreeGift && (
+            <div style={{ marginBottom: 20 }}>
+              <FreeGiftBanner />
+            </div>
+          )}
 
           {/* Two-column layout on desktop */}
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 300px', gap: 20 }} className="block md:grid">

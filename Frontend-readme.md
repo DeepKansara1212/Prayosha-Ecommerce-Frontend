@@ -153,6 +153,8 @@ Defined in `src/App.tsx`. Product URLs use **slug** as `:id` (e.g. `/product/ame
 | `/b2b` | B2B / bulk inquiry (WhatsApp redirect) | Public |
 | `/blog` | Blog listing (API) | Public |
 | `/blog/:slug` | Blog article (API) | Public |
+| `/bracelet-calculator` | Bracelet (Rashi) calculator | Public |
+| `/rudraksha-calculator` | Rudraksha calculator | Public |
 | `/auth/login` | OTP login | Public |
 | `/auth/register` | Register | Public |
 | `/auth/forgot` | Forgot password (OTP) | Public |
@@ -243,10 +245,11 @@ Shared client: `src/api/client.ts` (`apiClient`).
 | `settings.api.ts` | `getPublicSettings` → `/settings` (returns `freeGiftEnabled`, `whatsappNumber`, `whatsappDefaultMessage`); exports `PublicSettings` type |
 | `search.api.ts` | `searchProducts(q, limit)` → `/search` |
 | `addresses.api.ts` | Thin wrappers around auth address endpoints |
+| `calculators.api.ts` | `submitBraceletCalculator`, `submitRudrakshaCalculator` → `/calculators/*`; `getPurposes` → `/purposes` (public, active only); `searchLocations` → `/location/search` (Open-Meteo place search, no key required) |
 
 ### Product adapter (`src/hooks/useProducts.ts`)
 
-Maps `ApiProduct` → `ProductDetail` for UI: slug as `id`, price formatting, badge labels, chakra, images, ratings, stock, etc. Used by collection, detail, featured, and search hooks.
+Maps `ApiProduct` → `ProductDetail` for UI: slug as `id`, price formatting, badge labels, chakra, images, ratings, stock, etc. Used by collection, detail, featured, and search hooks. `adapt()` is exported (not just the hooks) so pages that receive raw `ApiProduct[]` outside a React Query hook — e.g. the calculator pages' mutation responses — can reuse the same conversion.
 
 ---
 
@@ -353,6 +356,29 @@ Shared `_AuthShell` layout:
 - Listing: category filter, featured hero card, grid
 - Post: multi-section renderer (paragraph, heading, subheading, quote, list)
 - Related posts from same fetch
+
+### Astrology calculators (`/bracelet-calculator`, `/rudraksha-calculator`)
+
+Public lead-capture tools — pure product recommendation, not full astrology reports. Both share `src/pages/_CalculatorShared.tsx` (`FormField`, `SelectField`, `LocationSearchField`, regex constants mirrored from the backend Zod schemas), matching the `_AuthShell.tsx` colocated-shared-file convention.
+
+**Place of Birth — `LocationSearchField`**
+
+Neither calculator lets the user type lat/lng/timezone by hand. `LocationSearchField` (in `_CalculatorShared.tsx`) debounces the typed place name (350ms, minimum 2 characters) and queries the backend's `GET /location/search` (Open-Meteo under the hood, no API key) via `searchLocations()` in `calculators.api.ts`. Up to 5 candidates render as `"name, state, country"` — the same free-text name can resolve to several real places (e.g. "Ahmedabad" exists in both India and Pakistan), so the user must explicitly pick one rather than the app silently guessing. Once picked, the field collapses to the selected `displayName` with a "Change" action to reopen search; loading, no-match, and provider-error states are all handled inline. The selected object (`SelectedLocation`: `displayName`, `name`, `state?`, `country`, `countryCode`, `latitude`, `longitude`, `timezone`) is tracked as page-level `useState` (not through React Hook Form, since it isn't a native input) and validated manually before submit — the submit handler blocks with "Please select your place of birth" if nothing was picked yet.
+
+**Bracelet Calculator** (`BraceletCalculatorPage.tsx`)
+
+- Fields: Name, Date of Birth, Place of Birth (`LocationSearchField`), Mobile — Time of Birth is hidden until needed
+- On submit, the backend computes the customer's sidereal Vedic Moon Rashi server-side using the selected location's IANA `timezone`. If the Moon changed sign on that calendar day and birth time is required to disambiguate, the API returns `{ requiresBirthTime: true }` (never a guess); the page reveals a Time of Birth field, shows the exact copy *"Birth time is required for an accurate recommendation."* via `toast.info`, and lets the user resubmit
+- On success, `recommendedProducts` render through the existing `ProductGrid`/`ProductCard` — **the Rashi itself is never returned by the API or shown in the UI**
+- Empty state (`EmptyState`) if no bracelets are mapped yet; `ProductCardSkeleton` grid while the mutation is pending
+
+**Rudraksha Calculator** (`RudrakshaCalculatorPage.tsx`)
+
+- Purpose `<select>` populated from `getPurposes()` (public, active-only), plus Name, DOB, optional Time of Birth, Place of Birth (`LocationSearchField`), Mobile
+- Resolves Purpose → Rudraksha type(s) → products via the backend's admin-managed mapping tables (no client-side astrology); the selected location is captured for the lead record only, not used in this calculation
+- Same result rendering (`ProductGrid`/`EmptyState`/`Skeleton`) as the Bracelet Calculator
+
+Both forms use React Hook Form + Zod for their native fields, validated with the same rules as `Backend/src/validations/calculator.validation.ts`. Footer links to both pages live under "Learn" in `src/data/index.ts`. The Navbar mega-menu is intentionally left untouched (its `DROPDOWN_COLUMNS` items are all unlinked decorative strings site-wide already, including an existing "Zodiac Sign" stub) — linking the calculators there is a separate, larger change.
 
 ### B2B inquiry (`/b2b`)
 
@@ -499,6 +525,7 @@ Frontend/
       settings.api.ts
       search.api.ts
       addresses.api.ts
+      calculators.api.ts
     components/
       admin/
         BannerManagementPanel.tsx
@@ -534,14 +561,17 @@ Frontend/
       B2BPage.tsx
       BlogPage.tsx
       BlogPostPage.tsx
+      BraceletCalculatorPage.tsx
       CartPage.tsx
       CollectionPage.tsx
       ContactPage.tsx
       NotFoundPage.tsx
       PrivacyPage.tsx
       ProductDetailPage.tsx
+      RudrakshaCalculatorPage.tsx
       TermsPage.tsx
       WishlistPage.tsx
+      _CalculatorShared.tsx
     store/
       authStore.ts
       cartStore.ts
@@ -576,6 +606,7 @@ Frontend/
 - **Cart display** merges API line items with `COLLECTION_PRODUCTS` for thumbnails; products only in DB may show minimal info until enriched from API snapshots on add-to-cart.
 - **Newsletter** on homepage is UI-only; wire to `POST /newsletter/subscribe` when ready.
 - **Two admin surfaces:** lightweight `/admin` in this app vs full `Admin/` project for products, orders, blogs, etc.
+- **Known issue:** `npm run build` (`tsc -b`) currently fails across several unrelated pre-existing files (`SearchOverlay.tsx`, section components, `data/collection.ts`, `LoginPage.tsx`, `CartPage.tsx`, `CheckoutPage.tsx`) — not caused by any specific feature. `npx vite build` alone succeeds and bundles the app correctly.
 - Run `npm run build` and `npm run lint` before pushing.
 
 ### Recommended workflow
@@ -608,6 +639,8 @@ Frontend/
 | Account rewards | ✓ | API |
 | Account addresses / profile | ✓ | API |
 | Blog list + post | ✓ | API |
+| Bracelet calculator (Rashi, never exposed) | ✓ | API |
+| Rudraksha calculator (Purpose → type → products) | ✓ | API |
 | Embedded admin (banners) | ✓ | API |
 | Newsletter signup | UI only | — |
 | WhatsApp chat widget (FAB) | ✓ | Public settings API |

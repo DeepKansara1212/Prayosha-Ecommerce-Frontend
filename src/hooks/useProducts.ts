@@ -31,10 +31,22 @@ const BADGE_MAP: Record<string, string> = {
   'GIFT SET': 'Gifting',
 }
 
-function adapt(p: ApiProduct): ProductDetail {
-  const dims = p.dimensions
-    ? `${p.dimensions.l} × ${p.dimensions.w} × ${p.dimensions.h} cm`
-    : 'N/A'
+// Products default to inheriting their category's shipping profile — mirrors the
+// same useCategoryShipping resolution the backend applies for order fulfillment.
+function resolveShipping(p: ApiProduct) {
+  const useCategoryShipping = p.useCategoryShipping ?? true
+  if (useCategoryShipping) {
+    return typeof p.category === 'object' ? p.category.shipping : undefined
+  }
+  return p.shipping
+}
+
+export function adapt(p: ApiProduct): ProductDetail {
+  const shipping = resolveShipping(p)
+  const dims =
+    shipping?.length != null && shipping?.breadth != null && shipping?.height != null
+      ? `${shipping.length} × ${shipping.breadth} × ${shipping.height} cm`
+      : 'N/A'
 
   const properties: string[] = p.metaphysicalProperties
     ? p.metaphysicalProperties.split(/\n|\.(?=\s[A-Z])/).map(s => s.trim()).filter(Boolean)
@@ -58,13 +70,14 @@ function adapt(p: ApiProduct): ProductDetail {
     properties,
     howToUse: p.careInstructions ?? '',
     dimensions: dims,
-    weight: p.weight != null ? `${p.weight} g` : 'N/A',
+    weight: shipping?.weight != null ? `${shipping.weight} g` : 'N/A',
     inStock: (p.stock ?? 0) > 0,
     stockCount: p.stock ?? 0,
     rating: p.ratings?.average ?? 0,
     reviewCount: p.ratings?.count ?? 0,
     isNew: p.badge === 'NEW',
     isBestseller: p.badge === 'BESTSELLER',
+    hasFreeGift: p.hasFreeGift ?? false,
     relatedIds: p.relatedSlugs ?? [],
   }
 }

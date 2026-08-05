@@ -1,6 +1,8 @@
 import type { FC } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import type { ProductDetail } from '@/types'
 import { cn } from '@/lib/utils'
+import { getPublicSettings } from '@/api/settings.api'
 
 interface ProductCardProps {
   product: ProductDetail
@@ -29,6 +31,13 @@ const StarRating: FC<{ rating: number }> = ({ rating }) => (
 
 const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWishlist }) => {
   const lowStock = product.inStock && product.stockCount <= 5
+
+  const { data: settings } = useQuery({
+    queryKey: ['public-settings'],
+    queryFn: getPublicSettings,
+    staleTime: 5 * 60 * 1000,
+  })
+  const showFreeGift = product.hasFreeGift || !!settings?.freeGiftEnabled
 
   return (
     <article
@@ -69,6 +78,11 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
           {lowStock && (
             <span className="font-body text-[0.55rem] uppercase tracking-[0.18em] px-2.5 py-1 bg-deep/80 text-gold-light backdrop-blur-sm">
               Only {product.stockCount} left
+            </span>
+          )}
+          {showFreeGift && (
+            <span className="font-body text-[0.55rem] uppercase tracking-[0.18em] px-2.5 py-1 bg-gold text-deep flex items-center gap-1">
+              <span aria-hidden="true">🎁</span> Free Gift
             </span>
           )}
         </div>

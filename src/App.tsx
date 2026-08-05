@@ -24,6 +24,8 @@ import AboutPage         from '@/pages/AboutPage'
 import ContactPage       from '@/pages/ContactPage'
 import WishlistPage      from '@/pages/WishlistPage'
 import CartPage          from '@/pages/CartPage'
+import BraceletCalculatorPage  from '@/pages/BraceletCalculatorPage'
+import RudrakshaCalculatorPage from '@/pages/RudrakshaCalculatorPage'
 
 // Auth pages
 import LoginPage          from '@/pages/auth/LoginPage'
@@ -239,6 +241,10 @@ const App: FC = () => {
             onAddToCart={addToCart}
           />
         } />
+
+        {/* Astrology calculators */}
+        <Route path="/bracelet-calculator"  element={<BraceletCalculatorPage />} />
+        <Route path="/rudraksha-calculator" element={<RudrakshaCalculatorPage />} />
 
         {/* Static pages */}
         <Route path="/about"   element={<AboutPage />} />

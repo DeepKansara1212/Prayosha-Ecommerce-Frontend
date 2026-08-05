@@ -134,5 +134,6 @@ export interface ProductDetail {
   reviewCount: number
   isNew: boolean
   isBestseller: boolean
+  hasFreeGift: boolean
   relatedIds: string[]
 }

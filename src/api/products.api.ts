@@ -2,6 +2,13 @@ import { apiClient } from './client'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export interface ApiProductShipping {
+  weight?: number
+  length?: number
+  breadth?: number
+  height?: number
+}
+
 export interface ApiProduct {
   _id: string
   slug: string
@@ -11,18 +18,19 @@ export interface ApiProduct {
   price: number
   comparePrice?: number
   images: string[]
-  category: string | { name: string; slug: string }
+  category: string | { name: string; slug: string; shipping?: ApiProductShipping }
   tags: string[]
   chakra?: string
   badge?: 'BESTSELLER' | 'NEW' | 'LIMITED' | 'RARE' | 'GIFT SET'
   stock: number
   lowStockThreshold: number
-  weight?: number
-  dimensions?: { l: number; w: number; h: number }
+  useCategoryShipping?: boolean
+  shipping?: ApiProductShipping
   careInstructions?: string
   metaphysicalProperties?: string
   isFeatured: boolean
   isActive: boolean
+  hasFreeGift?: boolean
   ratings: { average: number; count: number }
   // optional frontend-display fields (may be added to backend later)
   emoji?: string
