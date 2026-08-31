@@ -1,62 +1,56 @@
-import { useRef, type FC } from 'react'
-import { CRYSTAL_CARDS } from '@/data'
+import { type FC } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useCategoryShowcase, type CategoryShowcase } from '@/hooks/useProducts'
 import SectionLabel from '@/components/ui/SectionLabel'
 import SectionTitle from '@/components/ui/SectionTitle'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { cn } from '@/lib/utils'
-import type { CrystalCard } from '@/types'
 
 interface CrystalCardProps {
-  card: CrystalCard
+  showcase: CategoryShowcase
+  onNavigate: (slug: string) => void
 }
 
-const CrystalCardItem: FC<CrystalCardProps> = ({ card }) => {
-  const isLarge = card.large === true
+const CrystalCardItem: FC<CrystalCardProps> = ({ showcase, onNavigate }) => {
+  const hasImage = !!showcase.image
 
   return (
     <article
-      className={cn(
-        'crystal-card relative overflow-hidden cursor-pointer group',
-        isLarge && 'sm:row-span-2',
-      )}
-      aria-label={card.name}
+      className="crystal-card relative overflow-hidden cursor-pointer group"
+      aria-label={showcase.name}
+      onClick={() => onNavigate(showcase.slug)}
     >
-      {/* Gem background */}
+      {/* Gem background / image */}
       <div
         className={cn(
-          card.gemClass,
-          'w-full flex items-center justify-center transition-transform duration-[600ms] group-hover:scale-105',
-          isLarge
-            ? 'aspect-[3/4] text-[clamp(4rem,8vw,8rem)]'
-            : 'aspect-square text-[clamp(3rem,6vw,5rem)]',
+          !hasImage && showcase.bgClass,
+          'w-full aspect-square flex items-center justify-center overflow-hidden text-[clamp(3rem,6vw,5rem)]',
+          'transition-transform duration-[600ms] group-hover:scale-105',
         )}
         aria-hidden="true"
       >
-        {card.emoji}
+        {hasImage
+          ? <img src={showcase.image} alt="" className="w-full h-full object-cover" />
+          : showcase.emoji
+        }
       </div>
 
       {/* Overlay */}
       <div className="absolute inset-0 flex flex-col justify-end p-5 card-overlay group-hover:card-overlay-hover transition-all duration-400">
         <p className="font-body text-tag uppercase tracking-[0.22em] text-gold-light mb-1">
-          {card.tag}
+          {showcase.count} {showcase.count === 1 ? 'piece' : 'pieces'}
         </p>
-        <h3
-          className={cn(
-            'font-display font-light text-cream mb-1',
-            isLarge
-              ? 'text-[clamp(1.4rem,3vw,2.2rem)]'
-              : 'text-[clamp(1.1rem,2.5vw,1.5rem)]',
-          )}
-        >
-          {card.name}
+        <h3 className="font-display font-light text-cream mb-1 text-[clamp(1.1rem,2.5vw,1.5rem)]">
+          {showcase.name}
         </h3>
-        <p className="font-body text-[0.78rem] text-cream/70">{card.price}</p>
+        <p className="font-body text-[0.78rem] text-cream/70">Shop the collection</p>
       </div>
 
-      {/* Add button — appears on hover */}
+      {/* Arrow — appears on hover */}
       <button
+        onClick={e => { e.stopPropagation(); onNavigate(showcase.slug) }}
         className="absolute top-3 right-3 w-8 h-8 bg-gold text-deep flex items-center justify-center text-lg opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 font-light leading-none"
-        aria-label={`Add ${card.name} to cart`}
+        aria-label={`Shop ${showcase.name}`}
       >
         +
       </button>
@@ -64,9 +58,18 @@ const CrystalCardItem: FC<CrystalCardProps> = ({ card }) => {
   )
 }
 
+const SkeletonCard: FC = () => (
+  <div className="animate-pulse bg-warm">
+    <div className="w-full aspect-square" />
+  </div>
+)
+
 const Collections: FC = () => {
+  const navigate  = useNavigate()
   const headerRef = useScrollReveal<HTMLDivElement>()
   const gridRef   = useScrollReveal<HTMLDivElement>()
+
+  const { showcase, isLoading } = useCategoryShowcase()
 
   return (
     <section
@@ -97,14 +100,19 @@ const Collections: FC = () => {
         className="reveal grid gap-4
           grid-cols-1
           xs:grid-cols-2
-          sm:grid-cols-2
-          md:grid-cols-[2fr_1fr_1fr]
-          md:[grid-template-rows:auto_auto]
+          md:grid-cols-3
         "
       >
-        {CRYSTAL_CARDS.map(card => (
-          <CrystalCardItem key={card.id} card={card} />
-        ))}
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+          : showcase.map(item => (
+              <CrystalCardItem
+                key={item.slug}
+                showcase={item}
+                onNavigate={slug => navigate(`/collection?category=${encodeURIComponent(slug)}`)}
+              />
+            ))
+        }
       </div>
     </section>
   )

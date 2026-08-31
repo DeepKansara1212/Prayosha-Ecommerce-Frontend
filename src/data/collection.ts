@@ -10,7 +10,15 @@ export const CATEGORIES: ProductCategory[] = [
   'Gift Sets',
 ]
 
-export const COLLECTION_PRODUCTS: ProductDetail[] = [
+type CollectionProductSeed = Omit<ProductDetail, 'images' | 'hasFreeGift'>
+
+const withProductDefaults = (product: CollectionProductSeed): ProductDetail => ({
+  ...product,
+  images: [],
+  hasFreeGift: false,
+})
+
+const RAW_COLLECTION_PRODUCTS = [
   {
     id: 'amethyst-cathedral',
     name: 'Amethyst Cathedral',
@@ -595,4 +603,6 @@ export const COLLECTION_PRODUCTS: ProductDetail[] = [
     isBestseller: false,
     relatedIds: ['black-tourmaline-raw', 'obsidian-sphere', 'clear-quartz-point'],
   },
-]
+] satisfies CollectionProductSeed[]
+
+export const COLLECTION_PRODUCTS: ProductDetail[] = RAW_COLLECTION_PRODUCTS.map(withProductDefaults)

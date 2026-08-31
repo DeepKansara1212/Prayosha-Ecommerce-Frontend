@@ -1,10 +1,12 @@
 import { create } from 'zustand'
 import * as wishlistApi from '@/api/wishlist.api'
+import type { ApiProduct } from '@/api/products.api'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface WishlistState {
-  productIds: string[] // slugs — match COLLECTION_PRODUCTS[n].id
+  productIds: string[] // slugs, derived from `products`
+  products: ApiProduct[] // full product snapshot from the wishlist API response
   isLoading: boolean
 
   fetchWishlist(): Promise<void>
@@ -18,6 +20,7 @@ interface WishlistState {
 
 export const useWishlistStore = create<WishlistState>((set, get) => ({
   productIds: [],
+  products: [],
   isLoading: false,
 
   fetchWishlist: async () => {
@@ -26,6 +29,7 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
       const wishlist = await wishlistApi.getWishlist()
       set({
         productIds: wishlist.products.map(p => p.slug),
+        products: wishlist.products,
         isLoading: false,
       })
     } catch {
@@ -40,7 +44,7 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
     try {
       await wishlistApi.addToWishlist(productId)
       const wishlist = await wishlistApi.getWishlist()
-      set({ productIds: wishlist.products.map(p => p.slug) })
+      set({ productIds: wishlist.products.map(p => p.slug), products: wishlist.products })
     } catch (err) {
       set({ productIds: prev })
       throw err
@@ -60,7 +64,7 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
       }
       // Re-sync to pick up any server-side changes
       const wishlist = await wishlistApi.getWishlist()
-      set({ productIds: wishlist.products.map(p => p.slug) })
+      set({ productIds: wishlist.products.map(p => p.slug), products: wishlist.products })
     } catch {
       set({ productIds: prev }) // revert optimistic update
     }

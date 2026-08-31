@@ -1,6 +1,6 @@
 import { useState, type FC } from 'react'
-import { useNavigate } from 'react-router-dom'
-import type { ProductCategory, SortOption } from '@/types'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import type { SortOption } from '@/types'
 import { useProducts } from '@/hooks/useProducts'
 
 import Navbar         from '@/components/layout/Navbar'
@@ -31,15 +31,16 @@ const CollectionPage: FC<CollectionPageProps> = ({
   onNavigateToProduct,
 }) => {
   const navigate = useNavigate()
-  const [category, setCategory] = useState<ProductCategory>('All')
+  const [searchParams] = useSearchParams()
+  const [category, setCategory] = useState<string>(searchParams.get('category') ?? '')
   const [sort, setSort]         = useState<SortOption>('featured')
   const [page, setPage]         = useState(1)
 
-  const handleCategory = (c: ProductCategory) => { setCategory(c); setPage(1) }
-  const handleSort     = (s: SortOption)      => { setSort(s);     setPage(1) }
+  const handleCategory = (slug: string) => { setCategory(slug); setPage(1) }
+  const handleSort     = (s: SortOption) => { setSort(s);       setPage(1) }
 
   const params = {
-    category: category !== 'All' ? category : undefined,
+    category: category || undefined,
     sort,
     page,
     limit: 12,
@@ -83,10 +84,10 @@ const CollectionPage: FC<CollectionPageProps> = ({
           ) : products.length === 0 ? (
             <EmptyState
               icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" /></svg>}
-              title="No crystals found"
-              description="Try adjusting your filters or browsing all categories."
-              actionLabel="Clear Filters"
-              onAction={() => setCategory('All')}
+              title={category ? 'No products in this category yet' : 'No crystals found'}
+              description={category ? 'Check back soon — new pieces are added regularly.' : 'Try adjusting your filters or browsing all categories.'}
+              actionLabel="Browse All Collections"
+              onAction={() => setCategory('')}
             />
           ) : (
             <>

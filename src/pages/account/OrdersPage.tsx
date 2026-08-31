@@ -83,7 +83,7 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
             <StatusBadge status={order.status} />
-            {order.awbCode && (
+            {order.awbNumber && (
               <span style={{
                 display: 'inline-block', padding: '3px 10px', borderRadius: 12,
                 background: '#F5F0E8', border: '1px solid #E2DAC8',

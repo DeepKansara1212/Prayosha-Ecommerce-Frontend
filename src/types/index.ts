@@ -77,7 +77,7 @@ export interface BlogPost {
 
 export interface RewardTransaction {
   _id: string
-  order: { orderNumber: string; total: number; createdAt: string }
+  order: { orderNumber: string; total: number; createdAt: string } | null
   pointsEarned: number
   orderTotal: number
   createdAt: string

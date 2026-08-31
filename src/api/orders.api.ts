@@ -48,10 +48,10 @@ export interface Order {
   discount: number
   total: number
   trackingNumber?: string
-  awbCode?: string
-  courierName?: string
+  awbNumber?: string
+  carrier?: string
   trackingUrl?: string
-  aftershipStatus?: string
+  shippingStatus?: string
   trackingCheckpoints?: TrackingCheckpoint[]
   razorpayOrderId?: string
   pointsEarned: number

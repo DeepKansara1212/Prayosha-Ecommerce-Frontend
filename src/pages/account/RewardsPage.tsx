@@ -226,7 +226,7 @@ const RewardsPage: FC = () => {
               }}
             >
               <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#1C1A17', margin: 0 }}>
-                #{tx.order.orderNumber}
+                {tx.order ? `#${tx.order.orderNumber}` : '—'}
               </p>
               <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
                 {fmtDate(tx.createdAt)}

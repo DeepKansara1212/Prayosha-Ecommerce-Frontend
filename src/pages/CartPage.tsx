@@ -2,9 +2,9 @@ import { useState, useMemo, useCallback, type FC, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar  from '@/components/layout/Navbar'
 import Footer  from '@/components/layout/Footer'
-import { COLLECTION_PRODUCTS } from '@/data/collection'
+import { adapt, useFeaturedProducts } from '@/hooks/useProducts'
 import { cn } from '@/lib/utils'
-import type { ProductDetail, ProductCategory, ChakraType } from '@/types'
+import type { ProductDetail } from '@/types'
 import type { StoreCartItem } from '@/store/cartStore'
 import EmptyState from '@/components/ui/EmptyState'
 import { toast } from '@/store/toastStore'
@@ -402,14 +402,14 @@ const CartPage: FC<CartPageProps> = ({
   wishlistIds,
   onUpdateQty,
   onRemoveItem,
-  onMoveToWishlist,
   onNavigateToCollection,
   onNavigateToWishlist,
-  onClearCart,
 }) => {
   const navigate = useNavigate()
   const [checkedOut, setCheckedOut] = useState(false)
   const [movingIds, setMovingIds] = useState<Set<string>>(new Set())
+
+  const { data: featuredProducts = [] } = useFeaturedProducts()
 
   const coupon        = useCartStore(s => s.coupon)
   const applyCoupon   = useCartStore(s => s.applyCoupon)
@@ -441,50 +441,13 @@ const CartPage: FC<CartPageProps> = ({
     }
   }, [movingIds, wishlistProductIds, wishlistAddToWishlist, removeItem])
 
-  // Resolve products from IDs — prefer static data (has emoji/bgClass), fall back to API snapshot
+  // Resolve products straight from the cart API's product snapshot on each item —
+  // a product missing briefly (optimistic add, before the server responds) is skipped.
   const cartProducts: Array<{ product: ProductDetail; qty: number }> = useMemo(
     () =>
       items
-        .map(item => {
-          const staticProduct = COLLECTION_PRODUCTS.find(p => p.id === item.productId)
-          if (staticProduct) return { product: staticProduct, qty: item.quantity }
-
-          // Fallback: build a minimal ProductDetail from the API snapshot stored in the cart item
-          if (item.name) {
-            const fallback: ProductDetail = {
-              id: item.productId,
-              name: item.name,
-              subtitle: '',
-              category: 'All' as ProductCategory,
-              price: item.priceAtAdd,
-              priceDisplay: '₹' + item.priceAtAdd.toLocaleString('en-IN'),
-              images: item.images ?? [],
-              emoji: '💎',
-              bgClass: 'bg-warm',
-              badge: undefined,
-              chakra: 'Crown' as ChakraType,
-              origin: '',
-              intention: '',
-              description: '',
-              properties: [],
-              howToUse: '',
-              dimensions: '',
-              weight: '',
-              inStock: (item.stock ?? 0) > 0,
-              stockCount: item.stock ?? 99,
-              rating: 0,
-              reviewCount: 0,
-              isNew: false,
-              isBestseller: false,
-              hasFreeGift: false,
-              relatedIds: [],
-            }
-            return { product: fallback, qty: item.quantity }
-          }
-
-          return null
-        })
-        .filter((x): x is { product: ProductDetail; qty: number } => x !== null),
+        .filter((item): item is StoreCartItem & { product: NonNullable<StoreCartItem['product']> } => !!item.product)
+        .map(item => ({ product: adapt(item.product), qty: item.quantity })),
     [items],
   )
 
@@ -609,13 +572,15 @@ const CartPage: FC<CartPageProps> = ({
                     You might also love
                   </p>
                   <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                    {COLLECTION_PRODUCTS
-                      .filter(p => !items.some(i => i.productId === p.id) && p.isBestseller)
+                    {featuredProducts
+                      .filter(p => !items.some(i => i.productId === p.id))
                       .slice(0, 4)
                       .map(p => (
                         <div key={p.id} className="flex-none w-32 cursor-pointer group">
-                          <div className={cn(p.bgClass, 'w-32 h-32 flex items-center justify-center text-3xl mb-2 transition-transform duration-300 group-hover:scale-105')} aria-hidden="true">
-                            {p.emoji}
+                          <div className={cn(p.bgClass, 'w-32 h-32 flex items-center justify-center text-3xl mb-2 overflow-hidden transition-transform duration-300 group-hover:scale-105')} aria-hidden="true">
+                            {p.images?.[0]
+                              ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                              : p.emoji}
                           </div>
                           <p className="font-display text-[0.85rem] font-light text-deep leading-tight truncate">{p.name}</p>
                           <p className="font-body text-[0.72rem] text-muted">{p.priceDisplay}</p>

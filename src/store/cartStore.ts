@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { Cart } from '@/api/cart.api'
 import * as cartApi from '@/api/cart.api'
+import type { ApiProduct } from '@/api/products.api'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -13,10 +14,9 @@ export interface StoreCartItem {
   productId: string   // slug from backend
   quantity: number
   priceAtAdd: number
-  // Snapshot kept so CartPage can render even when slug doesn't match static data
-  name?: string
-  images?: string[]
-  stock?: number
+  // Full product snapshot from the cart API response, used to render line items.
+  // Absent only during the brief window before an optimistic add is confirmed.
+  product?: ApiProduct
 }
 
 export interface Coupon {
@@ -69,9 +69,7 @@ function fromApiCart(cart: Cart): Pick<CartState, 'items' | 'coupon'> {
       productId: i.product.slug,
       quantity: i.quantity,
       priceAtAdd: i.priceAtAdd,
-      name: i.product.name,
-      images: i.product.images,
-      stock: i.product.stock,
+      product: i.product,
     })),
     coupon: cart.couponApplied
       ? { code: cart.couponApplied, discountAmount: 0 }

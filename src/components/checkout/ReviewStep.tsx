@@ -8,7 +8,7 @@ import {
   SHIPPING_COST,
 } from '@/store/cartStore'
 import { validateCoupon } from '@/api/cart.api'
-import { COLLECTION_PRODUCTS } from '@/data/collection'
+import { adapt } from '@/hooks/useProducts'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -65,21 +65,24 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
           Order Items
         </p>
         {items.map(item => {
-          const product = COLLECTION_PRODUCTS.find(p => p.id === item.productId)
-          if (!product) return null
+          if (!item.product) return null
+          const product = adapt(item.product)
           return (
             <div key={item.productId} style={{
               display: 'flex', alignItems: 'center', gap: 14,
               padding: '12px 0', borderBottom: '1px solid #E2DAC8',
             }}>
               <div
-                className={product.bgClass ?? ''}
+                className={product.images.length === 0 ? (product.bgClass ?? '') : ''}
                 style={{
                   width: 56, height: 56, flexShrink: 0, borderRadius: 4,
                   display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24,
+                  overflow: 'hidden',
                 }}
               >
-                {product.emoji}
+                {product.images.length > 0
+                  ? <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : product.emoji}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, type FC, type KeyboardEvent } from 'react'
+import { useState, useRef, useEffect, useCallback, type FC, type KeyboardEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { searchProducts, type SearchResult } from '@/api/search.api'
 import EmptyState from '@/components/ui/EmptyState'

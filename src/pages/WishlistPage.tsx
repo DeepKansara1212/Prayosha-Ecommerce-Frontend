@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect, useRef, type FC } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef, type FC } from 'react'
 import Navbar  from '@/components/layout/Navbar'
 import Footer  from '@/components/layout/Footer'
-import { COLLECTION_PRODUCTS } from '@/data/collection'
+import { adapt } from '@/hooks/useProducts'
+import { useWishlistStore } from '@/store/wishlistStore'
 import { cn } from '@/lib/utils'
 import type { ProductDetail } from '@/types'
 import EmptyState from '@/components/ui/EmptyState'
@@ -49,10 +50,12 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
       {/* Product visual */}
       <div className="relative overflow-hidden cursor-pointer" onClick={onViewDetails}>
         <div
-          className={cn(product.bgClass, 'w-full aspect-square flex items-center justify-center text-[clamp(3rem,8vw,4.5rem)] transition-transform duration-500 group-hover:scale-105')}
+          className={cn(product.images.length === 0 && product.bgClass, 'w-full aspect-square flex items-center justify-center text-[clamp(3rem,8vw,4.5rem)] overflow-hidden transition-transform duration-500 group-hover:scale-105')}
           aria-hidden="true"
         >
-          {product.emoji}
+          {product.images.length > 0
+            ? <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+            : product.emoji}
         </div>
 
         {/* Badge */}
@@ -145,7 +148,8 @@ const WishlistPage: FC<WishlistPageProps> = ({
   const [drawerProduct, setDrawerProduct] = useState<ProductDetail | null>(null)
   const drawerRef = useRef<HTMLDivElement>(null)
 
-  const wishlistProducts = COLLECTION_PRODUCTS.filter(p => wishlistIds.has(p.id))
+  const wishlistApiProducts = useWishlistStore(s => s.products)
+  const wishlistProducts = useMemo(() => wishlistApiProducts.map(adapt), [wishlistApiProducts])
 
   // Focus trap + Escape key for drawer
   useEffect(() => {
@@ -335,8 +339,10 @@ const WishlistPage: FC<WishlistPageProps> = ({
               </svg>
             </button>
 
-            <div className={cn(drawerProduct.bgClass, 'w-full aspect-[4/3] flex items-center justify-center text-[7rem]')} aria-hidden="true">
-              {drawerProduct.emoji}
+            <div className={cn(drawerProduct.images.length === 0 && drawerProduct.bgClass, 'w-full aspect-[4/3] flex items-center justify-center text-[7rem] overflow-hidden')} aria-hidden="true">
+              {drawerProduct.images.length > 0
+                ? <img src={drawerProduct.images[0]} alt={drawerProduct.name} className="w-full h-full object-cover" />
+                : drawerProduct.emoji}
             </div>
 
             <div className="p-6 sm:p-8">

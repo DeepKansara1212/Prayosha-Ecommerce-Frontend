@@ -167,18 +167,18 @@ function formatTrackingStatus(status?: string) {
 }
 
 const TrackingSection: FC<{ order: Order }> = ({ order }) => {
-  const hasTracking = !!(order.trackingNumber || order.awbCode)
+  const hasTracking = !!(order.trackingNumber || order.awbNumber)
   if (!hasTracking) return null
 
-  const awb = order.awbCode || order.trackingNumber
-  const status = formatTrackingStatus(order.aftershipStatus || order.status)
+  const awb = order.awbNumber || order.trackingNumber
+  const status = formatTrackingStatus(order.shippingStatus || order.status)
 
   return (
     <Card title="Shipment Tracking">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-        {order.courierName && (
+        {order.carrier && (
           <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
-            Courier: <span style={{ color: '#1C1A17', fontWeight: 500 }}>{order.courierName}</span>
+            Courier: <span style={{ color: '#1C1A17', fontWeight: 500 }}>{order.carrier}</span>
           </p>
         )}
         <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
@@ -197,7 +197,7 @@ const TrackingSection: FC<{ order: Order }> = ({ order }) => {
               textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
             }}
           >
-            Track on {order.courierName || 'Courier'} ↗
+            Track on {order.carrier || 'Courier'} ↗
           </a>
         )}
       </div>

@@ -2,7 +2,6 @@ import { useMemo, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
-import { COLLECTION_PRODUCTS } from '@/data/collection'
 import type { Order, OrderSuccessResponse } from '@/api/orders.api'
 import FreeGiftBanner from '@/components/ui/FreeGiftBanner'
 
@@ -39,14 +38,7 @@ const CheckoutSuccessPage: FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // Match static product by name to get emoji/bgClass for display
-  const orderItems = useMemo(() => {
-    if (!order) return []
-    return order.items.map(item => ({
-      ...item,
-      staticProduct: COLLECTION_PRODUCTS.find(p => p.name === item.name),
-    }))
-  }, [order])
+  const orderItems = order?.items ?? []
 
   return (
     <>
@@ -166,10 +158,9 @@ const CheckoutSuccessPage: FC = () => {
                       }}>
                         {/* Thumbnail */}
                         <div
-                          className={item.staticProduct?.bgClass ?? ''}
                           style={{
                             width: 60, height: 60, flexShrink: 0, borderRadius: 4,
-                            background: item.staticProduct?.bgClass ? undefined : '#D8D0C4',
+                            background: '#D8D0C4',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             fontSize: 26, overflow: 'hidden',
                           }}
@@ -177,7 +168,7 @@ const CheckoutSuccessPage: FC = () => {
                           {item.image ? (
                             <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
-                            item.staticProduct?.emoji ?? '💎'
+                            '💎'
                           )}
                         </div>
 

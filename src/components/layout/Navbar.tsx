@@ -2,8 +2,19 @@ import React, { useState, useRef, useEffect, type FC } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { useSearchOverlay } from '@/hooks/useSearchOverlay'
+import { useCategories } from '@/hooks/useCategories'
 import SearchOverlay from '@/components/search/SearchOverlay'
-import { cn } from '@/lib/utils'
+import { cn, slugify } from '@/lib/utils'
+import type { ApiCategory } from '@/api/categories.api'
+
+// Resolves a mega-menu label to a real admin category's slug when one exists
+// (matched by name, so a category with a custom slug still resolves correctly);
+// otherwise falls back to a best-effort slug that will start working automatically
+// once admin creates a matching category with the default auto-slug.
+function categoryPath(label: string, categories: ApiCategory[]): string {
+  const match = categories.find(c => c.name.trim().toLowerCase() === label.trim().toLowerCase())
+  return `/collection?category=${encodeURIComponent(match?.slug ?? slugify(label))}`
+}
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -135,11 +146,13 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Collections', path: '/collection', hasDropdown: true },
-  { label: 'Blog',        path: '/blog' },
-  { label: 'About Us',    path: '/about' },
-  { label: 'Contact',     path: '/contact' },
-  { label: 'B2B',         path: '/b2b' },
+  { label: 'Collections',         path: '/collection', hasDropdown: true },
+  { label: 'Blog',                path: '/blog' },
+  { label: 'Bracelet Calculator', path: '/bracelet-calculator' },
+  { label: 'Rudraksha Calculator',path: '/rudraksha-calculator' },
+  { label: 'About Us',            path: '/about' },
+  { label: 'Contact',             path: '/contact' },
+  { label: 'B2B',                 path: '/b2b' },
 ]
 
 // ─── Mega Dropdown ────────────────────────────────────────────────────────────
@@ -152,9 +165,10 @@ interface MegaDropdownProps {
 
 const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
   const [meaningOpen, setMeaningOpen] = useState(false)
+  const { data: categories = [] } = useCategories()
 
-  const handleItemClick = (_item: string) => {
-    onNavigate('/collection')
+  const handleItemClick = (item: string) => {
+    onNavigate(categoryPath(item, categories))
     onClose()
   }
 
@@ -355,6 +369,7 @@ interface MobileAccordionProps {
 
 const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => {
   const [openCol, setOpenCol] = useState<string | null>(null)
+  const { data: categories = [] } = useCategories()
 
   return (
     <div className="w-full px-6 mt-2" style={{ maxHeight: '55vh', overflowY: 'auto' }}>
@@ -376,7 +391,7 @@ const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => 
               {col.items.map((item, idx) => (
                 <button
                   key={`${item}-${idx}`}
-                  onClick={() => onNavigate('/collection')}
+                  onClick={() => onNavigate(categoryPath(item, categories))}
                   style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', letterSpacing: '0.06em', color: 'rgba(245,238,228,0.6)', padding: '0.2rem 0', textAlign: 'left', minHeight: '44px' }}
                 >
                   {item}
@@ -543,10 +558,10 @@ const Navbar: FC = () => {
           {/* Logo */}
           <button
             onClick={() => go('/')}
-            className="font-display font-light text-[clamp(1.2rem,3vw,1.5rem)] tracking-[0.15em] text-cream z-[201] bg-transparent border-none cursor-pointer hover:text-gold-light transition-colors duration-200 min-h-[44px]"
+            className="flex items-center z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
             aria-label="Prayosha Crystal — go to home"
           >
-            PRAYOSHA CRYSTAL
+            <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-9 md:h-11 w-auto object-contain" />
           </button>
 
           {/* Desktop nav links */}

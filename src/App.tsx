@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect, type FC } from 'react'
+import { useMemo, useCallback, useEffect, Suspense, lazy, type FC } from 'react'
 import { Routes, Route, Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import CustomCursor from '@/components/ui/CustomCursor'
@@ -13,56 +13,38 @@ import Marquee          from '@/components/sections/Marquee'
 import Collections      from '@/components/sections/Collections'
 import Benefits         from '@/components/sections/Benefits'
 import FeaturedProducts from '@/components/sections/FeaturedProducts'
-import RitualBanner     from '@/components/sections/RitualBanner'
 import Testimonials     from '@/components/sections/Testimonials'
-import Newsletter       from '@/components/sections/Newsletter'
 
-// Pages
-import CollectionPage    from '@/pages/CollectionPage'
-import ProductDetailPage from '@/pages/ProductDetailPage'
-import AboutPage         from '@/pages/AboutPage'
-import ContactPage       from '@/pages/ContactPage'
-import WishlistPage      from '@/pages/WishlistPage'
-import CartPage          from '@/pages/CartPage'
-import BraceletCalculatorPage  from '@/pages/BraceletCalculatorPage'
-import RudrakshaCalculatorPage from '@/pages/RudrakshaCalculatorPage'
-
-// Auth pages
-import LoginPage          from '@/pages/auth/LoginPage'
-import RegisterPage       from '@/pages/auth/RegisterPage'
-import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
-import ResetPasswordPage  from '@/pages/auth/ResetPasswordPage'
-
-// Account pages
-import OrdersPage      from '@/pages/account/OrdersPage'
-import OrderDetailPage from '@/pages/account/OrderDetailPage'
-import AddressesPage   from '@/pages/account/AddressesPage'
-import ProfilePage     from '@/pages/account/ProfilePage'
-import RewardsPage     from '@/pages/account/RewardsPage'
-
-// Checkout pages
-import CheckoutPage        from '@/pages/checkout/CheckoutPage'
-import CheckoutSuccessPage from '@/pages/checkout/CheckoutSuccessPage'
-import CheckoutFailedPage  from '@/pages/checkout/CheckoutFailedPage'
-
-// Blog pages
-import BlogPage     from '@/pages/BlogPage'
-import BlogPostPage from '@/pages/BlogPostPage'
-
-// Legal pages
-import TermsPage   from '@/pages/TermsPage'
-import PrivacyPage from '@/pages/PrivacyPage'
-
-// B2B
-import B2BPage from '@/pages/B2BPage'
-
-// Admin pages
-import AdminLayout        from '@/pages/admin/AdminLayout'
-import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
-import HeroBannersPage    from '@/pages/admin/HeroBannersPage'
-
-// 404
-import NotFoundPage from '@/pages/NotFoundPage'
+// Route chunks
+const CollectionPage = lazy(() => import('@/pages/CollectionPage'))
+const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'))
+const AboutPage = lazy(() => import('@/pages/AboutPage'))
+const ContactPage = lazy(() => import('@/pages/ContactPage'))
+const WishlistPage = lazy(() => import('@/pages/WishlistPage'))
+const CartPage = lazy(() => import('@/pages/CartPage'))
+const BraceletCalculatorPage = lazy(() => import('@/pages/BraceletCalculatorPage'))
+const RudrakshaCalculatorPage = lazy(() => import('@/pages/RudrakshaCalculatorPage'))
+const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
+const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'))
+const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('@/pages/auth/ResetPasswordPage'))
+const OrdersPage = lazy(() => import('@/pages/account/OrdersPage'))
+const OrderDetailPage = lazy(() => import('@/pages/account/OrderDetailPage'))
+const AddressesPage = lazy(() => import('@/pages/account/AddressesPage'))
+const ProfilePage = lazy(() => import('@/pages/account/ProfilePage'))
+const RewardsPage = lazy(() => import('@/pages/account/RewardsPage'))
+const CheckoutPage = lazy(() => import('@/pages/checkout/CheckoutPage'))
+const CheckoutSuccessPage = lazy(() => import('@/pages/checkout/CheckoutSuccessPage'))
+const CheckoutFailedPage = lazy(() => import('@/pages/checkout/CheckoutFailedPage'))
+const BlogPage = lazy(() => import('@/pages/BlogPage'))
+const BlogPostPage = lazy(() => import('@/pages/BlogPostPage'))
+const TermsPage = lazy(() => import('@/pages/TermsPage'))
+const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'))
+const B2BPage = lazy(() => import('@/pages/B2BPage'))
+const AdminLayout = lazy(() => import('@/pages/admin/AdminLayout'))
+const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'))
+const HeroBannersPage = lazy(() => import('@/pages/admin/HeroBannersPage'))
+const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 
 // Stores
 import { useAuthStore }     from '@/store/authStore'
@@ -80,9 +62,7 @@ const HomePage: FC = () => (
       <Collections />
       <Benefits />
       <FeaturedProducts />
-      <RitualBanner />
       <Testimonials />
-      <Newsletter />
     </main>
     <Footer />
   </>
@@ -137,6 +117,22 @@ const OrderDetailRoute: FC = () => {
   if (!num) return <Navigate to="/account/orders" replace />
   return <OrderDetailPage orderNumber={num} />
 }
+
+const RouteFallback: FC = () => (
+  <div style={{
+    minHeight: '50vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: 'Jost, sans-serif',
+    fontSize: 12,
+    letterSpacing: '0.2em',
+    textTransform: 'uppercase',
+    color: '#6B6057',
+  }}>
+    Loading…
+  </div>
+)
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
@@ -219,107 +215,109 @@ const App: FC = () => {
       <ToastContainer />
       <WhatsAppChatButton />
 
-      <Routes>
-        {/* Home */}
-        <Route path="/" element={<HomePage />} />
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          {/* Home */}
+          <Route path="/" element={<HomePage />} />
 
-        {/* Shop */}
-        <Route path="/collection" element={
-          <CollectionPage
-            wishlistIds={wishlistIds}
-            cartIds={cartIds}
-            onToggleWishlist={toggleWishlist}
-            onAddToCart={addToCart}
-            onNavigateToProduct={(id) => navigate(`/product/${id}`)}
-          />
-        } />
-        <Route path="/product/:id" element={
-          <ProductRoute
-            wishlistIds={wishlistIds}
-            cartIds={cartIds}
-            onToggleWishlist={toggleWishlist}
-            onAddToCart={addToCart}
-          />
-        } />
+          {/* Shop */}
+          <Route path="/collection" element={
+            <CollectionPage
+              wishlistIds={wishlistIds}
+              cartIds={cartIds}
+              onToggleWishlist={toggleWishlist}
+              onAddToCart={addToCart}
+              onNavigateToProduct={(id) => navigate(`/product/${id}`)}
+            />
+          } />
+          <Route path="/product/:id" element={
+            <ProductRoute
+              wishlistIds={wishlistIds}
+              cartIds={cartIds}
+              onToggleWishlist={toggleWishlist}
+              onAddToCart={addToCart}
+            />
+          } />
 
-        {/* Astrology calculators */}
-        <Route path="/bracelet-calculator"  element={<BraceletCalculatorPage />} />
-        <Route path="/rudraksha-calculator" element={<RudrakshaCalculatorPage />} />
+          {/* Astrology calculators */}
+          <Route path="/bracelet-calculator"  element={<BraceletCalculatorPage />} />
+          <Route path="/rudraksha-calculator" element={<RudrakshaCalculatorPage />} />
 
-        {/* Static pages */}
-        <Route path="/about"   element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/b2b"     element={<B2BPage />} />
-        <Route path="/terms"   element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
+          {/* Static pages */}
+          <Route path="/about"   element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/b2b"     element={<B2BPage />} />
+          <Route path="/terms"   element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
-        {/* Auth */}
-        <Route path="/auth/login"    element={<LoginPage />} />
-        <Route path="/auth/register" element={<RegisterPage />} />
-        <Route path="/auth/forgot"   element={<ForgotPasswordPage />} />
-        <Route path="/auth/reset"    element={<ResetPasswordPage />} />
+          {/* Auth */}
+          <Route path="/auth/login"    element={<LoginPage />} />
+          <Route path="/auth/register" element={<RegisterPage />} />
+          <Route path="/auth/forgot"   element={<ForgotPasswordPage />} />
+          <Route path="/auth/reset"    element={<ResetPasswordPage />} />
 
-        {/* Cart & Wishlist */}
-        <Route path="/account/wishlist" element={
-          <WishlistPage
-            wishlistIds={wishlistIds}
-            cartIds={cartIds}
-            onRemoveFromWishlist={removeFromWishlist}
-            onMoveToCart={(id) => { addToCart(id); navigate('/cart') }}
-            onNavigateToCollection={() => navigate('/collection')}
-            onNavigateToCart={() => navigate('/cart')}
-          />
-        } />
-        <Route path="/cart" element={
-          <CartPage
-            items={cartItems}
-            wishlistIds={wishlistIds}
-            onUpdateQty={updateCartQty}
-            onRemoveItem={removeFromCart}
-            onMoveToWishlist={moveToWishlist}
-            onNavigateToCollection={() => navigate('/collection')}
-            onNavigateToWishlist={() => navigate('/account/wishlist')}
-            onClearCart={clearCart}
-          />
-        } />
+          {/* Cart & Wishlist */}
+          <Route path="/account/wishlist" element={
+            <WishlistPage
+              wishlistIds={wishlistIds}
+              cartIds={cartIds}
+              onRemoveFromWishlist={removeFromWishlist}
+              onMoveToCart={(id) => { addToCart(id); navigate('/cart') }}
+              onNavigateToCollection={() => navigate('/collection')}
+              onNavigateToCart={() => navigate('/cart')}
+            />
+          } />
+          <Route path="/cart" element={
+            <CartPage
+              items={cartItems}
+              wishlistIds={wishlistIds}
+              onUpdateQty={updateCartQty}
+              onRemoveItem={removeFromCart}
+              onMoveToWishlist={moveToWishlist}
+              onNavigateToCollection={() => navigate('/collection')}
+              onNavigateToWishlist={() => navigate('/account/wishlist')}
+              onClearCart={clearCart}
+            />
+          } />
 
-        {/* Checkout */}
-        <Route path="/checkout"         element={<CheckoutPage />} />
-        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-        <Route path="/checkout/failed"  element={<CheckoutFailedPage />} />
+          {/* Checkout */}
+          <Route path="/checkout"         element={<CheckoutPage />} />
+          <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+          <Route path="/checkout/failed"  element={<CheckoutFailedPage />} />
 
-        {/* Account */}
-        <Route path="/account"               element={<Navigate to="/account/orders" replace />} />
-        <Route path="/account/orders"        element={<OrdersPage />} />
-        <Route path="/account/orders/:num"   element={<OrderDetailRoute />} />
-        <Route path="/account/rewards"       element={<RewardsPage />} />
-        <Route path="/account/addresses"     element={<AddressesPage />} />
-        <Route path="/account/profile"       element={<ProfilePage />} />
+          {/* Account */}
+          <Route path="/account"               element={<Navigate to="/account/orders" replace />} />
+          <Route path="/account/orders"        element={<OrdersPage />} />
+          <Route path="/account/orders/:num"   element={<OrderDetailRoute />} />
+          <Route path="/account/rewards"       element={<RewardsPage />} />
+          <Route path="/account/addresses"     element={<AddressesPage />} />
+          <Route path="/account/profile"       element={<ProfilePage />} />
 
-        {/* Blog */}
-        <Route path="/blog" element={
-          <BlogPage onNavigateToPost={(slug) => navigate(`/blog/${slug}`)} />
-        } />
-        <Route path="/blog/:slug" element={<BlogPostRoute />} />
+          {/* Blog */}
+          <Route path="/blog" element={
+            <BlogPage onNavigateToPost={(slug) => navigate(`/blog/${slug}`)} />
+          } />
+          <Route path="/blog/:slug" element={<BlogPostRoute />} />
 
-        {/* Admin */}
-        <Route path="/admin" element={
-          <AdminLayout>
-            <AdminDashboardPage />
-          </AdminLayout>
-        } />
-        <Route path="/admin/hero-banners" element={
-          <AdminLayout>
-            <HeroBannersPage />
-          </AdminLayout>
-        } />
+          {/* Admin */}
+          <Route path="/admin" element={
+            <AdminLayout>
+              <AdminDashboardPage />
+            </AdminLayout>
+          } />
+          <Route path="/admin/hero-banners" element={
+            <AdminLayout>
+              <HeroBannersPage />
+            </AdminLayout>
+          } />
 
-        {/* Legacy hash-style redirects */}
-        <Route path="/wishlist" element={<Navigate to="/account/wishlist" replace />} />
+          {/* Legacy hash-style redirects */}
+          <Route path="/wishlist" element={<Navigate to="/account/wishlist" replace />} />
 
-        {/* 404 fallback */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          {/* 404 fallback */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </>
   )
 }

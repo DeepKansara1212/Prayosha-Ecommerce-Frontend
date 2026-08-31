@@ -1,8 +1,14 @@
 import type { FC } from 'react'
 import { Link } from 'react-router-dom'
+import { FaFacebookF, FaInstagram, FaYoutube, FaPinterestP } from 'react-icons/fa'
 import { FOOTER_COLUMNS } from '@/data'
 
-const SOCIALS = ['In', 'Ig', 'Yt', 'Pi'] as const
+const SOCIALS = [
+  { label: 'Facebook', Icon: FaFacebookF, href: 'https://www.facebook.com/prayoshacrystals' },
+  { label: 'Instagram', Icon: FaInstagram, href: 'https://www.instagram.com/prayoshacrystals/' },
+  { label: 'YouTube', Icon: FaYoutube, href: 'https://www.youtube.com/@PRAYOSHACRYSTALS' },
+  { label: 'Pinterest', Icon: FaPinterestP, href: 'https://www.pinterest.com/prayoshacrystals/' },
+] as const
 
 const Footer: FC = () => (
   <footer aria-label="Site footer">
@@ -11,22 +17,41 @@ const Footer: FC = () => (
       <div>
         <Link
           to="/"
-          className="font-display font-light text-[1.7rem] tracking-[0.15em] text-cream block mb-4 no-underline hover:text-gold-light transition-colors duration-200"
+          className="inline-block mb-4 no-underline opacity-100 hover:opacity-80 transition-opacity duration-200"
         >
-          PRAYOSHA CRYSTAL
+          <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-11 w-auto object-contain" />
         </Link>
         <p className="font-body font-extralight text-[0.76rem] leading-relaxed text-cream/40 max-w-[240px] mb-5">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.
         </p>
+        <div className="flex flex-col gap-1.5 mb-5">
+          <a
+            href="mailto:prayoshacrytals@gmail.com"
+            className="font-body font-extralight text-[0.78rem] text-cream/45 no-underline transition-colors duration-300 hover:text-cream"
+          >
+            prayoshacrytals@gmail.com
+          </a>
+          <a
+            href="tel:+919429415057"
+            className="font-body font-extralight text-[0.78rem] text-cream/45 no-underline transition-colors duration-300 hover:text-cream"
+          >
+            +91 94294 15057
+          </a>
+          <p className="font-body font-extralight text-[0.78rem] leading-relaxed text-cream/45 max-w-[240px]">
+            SHOP NO.7, OPPO. BAPS SWAMINARAYAN TEMPLE, Khambhat, 388620
+          </p>
+        </div>
         <div className="flex gap-3">
-          {SOCIALS.map(s => (
+          {SOCIALS.map(({ label, Icon, href }) => (
             <a
-              key={s}
-              href="#"
-              aria-label={`Follow us on ${s}`}
-              className="w-[44px] h-[44px] border border-cream/15 flex items-center justify-center text-cream/50 text-[0.72rem] no-underline transition-[border-color,color] duration-300 hover:border-gold hover:text-gold"
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Follow us on ${label}`}
+              className="w-[44px] h-[44px] border border-cream/15 flex items-center justify-center text-cream/50 no-underline transition-[border-color,color] duration-300 hover:border-gold hover:text-gold"
             >
-              {s}
+              <Icon size={16} />
             </a>
           ))}
         </div>

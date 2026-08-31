@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, type FC } from 'react'
+import { useState, useEffect, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 import { useAuthStore } from '@/store/authStore'
@@ -10,7 +10,7 @@ import {
   SHIPPING_THRESHOLD,
   SHIPPING_COST,
 } from '@/store/cartStore'
-import { COLLECTION_PRODUCTS } from '@/data/collection'
+import { adapt } from '@/hooks/useProducts'
 import AddressStep from '@/components/checkout/AddressStep'
 import ReviewStep  from '@/components/checkout/ReviewStep'
 import PaymentStep from '@/components/checkout/PaymentStep'
@@ -198,21 +198,24 @@ const OrderSidebar: FC = () => {
         {/* Items */}
         <div style={{ marginBottom: 20 }}>
           {items.map(item => {
-            const product = COLLECTION_PRODUCTS.find(p => p.id === item.productId)
-            if (!product) return null
+            if (!item.product) return null
+            const product = adapt(item.product)
             return (
               <div key={item.productId} style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '9px 0', borderBottom: '1px solid #E2DAC8',
               }}>
                 <div
-                  className={product.bgClass ?? ''}
+                  className={product.images.length === 0 ? (product.bgClass ?? '') : ''}
                   style={{
                     width: 48, height: 48, flexShrink: 0, borderRadius: 4,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
+                    overflow: 'hidden',
                   }}
                 >
-                  {product.emoji}
+                  {product.images.length > 0
+                    ? <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    : product.emoji}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
@@ -319,11 +322,6 @@ const CheckoutPage: FC = () => {
   useEffect(() => {
     if (items.length === 0) navigate('/collection', { replace: true })
   }, [items.length, navigate])
-
-  const orderItems = useMemo(
-    () => items.map(i => ({ productId: i.productId, quantity: i.quantity })),
-    [items],
-  )
 
   if (!user || items.length === 0) return null
 

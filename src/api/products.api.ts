@@ -74,6 +74,17 @@ export async function getFeaturedProducts(): Promise<ApiProduct[]> {
   return res.data.data.products
 }
 
+export interface CategorySummaryEntry {
+  _id: string
+  count: number
+  image?: string
+}
+
+export async function getCategorySummary(): Promise<CategorySummaryEntry[]> {
+  const res = await apiClient.get<{ data: { summary: CategorySummaryEntry[] } }>('/products/category-summary')
+  return res.data.data.summary
+}
+
 export async function getProductBySlug(slug: string): Promise<ApiProduct> {
   const res = await apiClient.get<{ data: { product: ApiProduct } }>(`/products/${slug}`)
   return res.data.data.product

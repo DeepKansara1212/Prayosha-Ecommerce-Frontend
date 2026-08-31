@@ -12,3 +12,12 @@ export function scrollTo(href: string) {
 
 export const prefersReducedMotion = (): boolean =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** Mirrors the backend's Category slug auto-generation (category.model.ts pre-validate hook) */
+export function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}

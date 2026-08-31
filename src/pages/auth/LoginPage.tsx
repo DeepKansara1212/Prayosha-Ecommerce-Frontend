@@ -141,7 +141,9 @@ const Step2: FC<{ phone: string; onBack: () => void }> = ({ phone, onBack }) => 
         {loading ? 'Signing in…' : 'Login'}
       </button>
 
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <AuthLink onClick={onBack}>Back</AuthLink>
+        <span style={{ color: '#E2DAC8' }}>·</span>
         <AuthLink onClick={resending ? undefined : resendOtp}>
           {resending ? 'Resending…' : 'Resend OTP'}
         </AuthLink>

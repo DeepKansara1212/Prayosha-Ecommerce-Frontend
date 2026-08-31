@@ -34,7 +34,7 @@ const Benefits: FC = () => {
         ref={rightRef}
         className="reveal grid grid-cols-1 sm:grid-cols-2 border-t border-cream/[0.08] md:border-t-0 md:border-l md:border-cream/[0.08]"
       >
-        {BENEFITS.map((b, i) => (
+        {BENEFITS.map((b) => (
           <article
             key={b.id}
             className="
