@@ -1,4 +1,4 @@
-import { useState, useCallback, type FC } from 'react'
+import { useState, useEffect, useCallback, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { ProductDetail } from '@/types'
 import { useProduct, useRelatedProducts } from '@/hooks/useProducts'
@@ -51,9 +51,11 @@ const StarRating: FC<{ rating: number; reviewCount: number }> = ({ rating, revie
 
 const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
   const [active, setActive] = useState(0)
-  const hasImages = product.images.length > 0
+  const hasMedia = product.images.length > 0 || !!product.video
 
-  if (!hasImages) {
+  useEffect(() => setActive(0), [product.id])
+
+  if (!hasMedia) {
     return (
       <div className={cn(product.bgClass, 'w-full aspect-square sm:aspect-[4/3] flex items-center justify-center relative overflow-hidden rounded-sm')}>
         <span className="text-[clamp(6rem,20vw,12rem)] select-none">{product.emoji}</span>
@@ -92,15 +94,39 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
             <img src={url} alt="" className="w-full h-full object-cover" />
           </button>
         ))}
+        {product.video && (
+          <button
+            onClick={() => setActive(product.images.length)}
+            className={cn(
+              'flex-none w-16 h-16 sm:w-20 sm:h-20 transition-all duration-200 overflow-hidden rounded-sm bg-deep relative',
+              active === product.images.length
+                ? 'ring-2 ring-gold ring-offset-2 ring-offset-cream opacity-100'
+                : 'opacity-60 hover:opacity-85',
+            )}
+            aria-label="View product video"
+          >
+            <video src={product.video} muted preload="metadata" className="w-full h-full object-cover" />
+            <span className="absolute inset-0 flex items-center justify-center text-cream text-lg" aria-hidden="true">▶</span>
+          </button>
+        )}
       </div>
 
       {/* Main image */}
       <div className="flex-1 aspect-square sm:aspect-[4/3] relative overflow-hidden rounded-sm bg-warm">
-        <img
-          src={product.images[active]}
-          alt={product.name}
-          className="w-full h-full object-cover transition-opacity duration-300"
-        />
+        {active < product.images.length
+          ? <img
+              src={product.images[active]}
+              alt={product.name}
+              className="w-full h-full object-cover transition-opacity duration-300"
+            />
+          : <video
+              src={product.video}
+              controls
+              playsInline
+              preload="metadata"
+              className="w-full h-full object-cover"
+              aria-label={`${product.name} product video`}
+            />}
         {product.badge && (
           <span className={cn(
             'absolute top-4 left-4 font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-1.5',
@@ -113,9 +139,9 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
             {product.badge}
           </span>
         )}
-        {product.images.length > 1 && (
+        {product.images.length + (product.video ? 1 : 0) > 1 && (
           <span className="absolute bottom-3 right-3 font-body text-[0.6rem] uppercase tracking-[0.15em] text-cream/70 bg-deep/50 backdrop-blur-sm px-2 py-1">
-            {active + 1} / {product.images.length}
+            {active + 1} / {product.images.length + (product.video ? 1 : 0)}
           </span>
         )}
       </div>

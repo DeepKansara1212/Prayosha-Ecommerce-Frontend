@@ -18,6 +18,7 @@ export interface ApiProduct {
   price: number
   comparePrice?: number
   images: string[]
+  video?: string
   category: string | { name: string; slug: string; shipping?: ApiProductShipping }
   tags: string[]
   chakra?: string

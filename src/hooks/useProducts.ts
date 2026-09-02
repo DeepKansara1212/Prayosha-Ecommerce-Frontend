@@ -62,6 +62,7 @@ export function adapt(p: ApiProduct): ProductDetail {
     price: p.price,
     priceDisplay: '₹' + p.price.toLocaleString('en-IN'),
     images: p.images ?? [],
+    video: p.video,
     emoji: p.emoji ?? '💎',
     bgClass: p.bgClass ?? 'bg-warm',
     badge: p.badge ? BADGE_MAP[p.badge] : undefined,

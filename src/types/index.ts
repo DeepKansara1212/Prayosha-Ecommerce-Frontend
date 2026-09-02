@@ -117,6 +117,7 @@ export interface ProductDetail {
   price: number
   priceDisplay: string
   images: string[]
+  video?: string
   emoji: string
   bgClass: string
   badge?: string
