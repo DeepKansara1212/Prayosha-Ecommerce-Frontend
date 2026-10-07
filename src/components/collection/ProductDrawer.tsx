@@ -187,7 +187,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                 <div className="flex items-center gap-3 mb-4">
                   <span className="flex gap-0.5">
                     {[1,2,3,4,5].map(n => (
-                      <span key={n} className={cn('text-xs', n <= Math.floor(product.rating) ? 'text-gold' : 'text-warm')} aria-hidden="true">★</span>
+                      <span key={n} className={cn('text-xs', n <= Math.floor(product.rating) ? 'text-gold' : 'text-bark')} aria-hidden="true">★</span>
                     ))}
                   </span>
                   <span className="font-body text-[0.7rem] text-muted">{product.rating} · {product.reviewCount} reviews</span>

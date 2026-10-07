@@ -18,7 +18,7 @@ const StarRating: FC<{ rating: number }> = ({ rating }) => (
         key={n}
         className={cn(
           'text-[0.55rem]',
-          n <= Math.floor(rating) ? 'text-gold' : 'text-warm',
+          n <= Math.floor(rating) ? 'text-gold' : 'text-bark',
         )}
         aria-hidden="true"
       >

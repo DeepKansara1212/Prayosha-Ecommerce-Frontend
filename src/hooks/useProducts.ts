@@ -47,7 +47,7 @@ export function adapt(p: ApiProduct): ProductDetail {
   const shipping = resolveShipping(p)
   const dims =
     shipping?.length != null && shipping?.breadth != null && shipping?.height != null
-      ? `${shipping.length} × ${shipping.breadth} × ${shipping.height} cm`
+      ? `${shipping.length} × ${shipping.breadth} × ${shipping.height}`
       : 'N/A'
 
   const properties: string[] = p.metaphysicalProperties
@@ -56,6 +56,7 @@ export function adapt(p: ApiProduct): ProductDetail {
 
   return {
     id: p.slug,
+    sku: p.sku,
     name: p.name,
     subtitle: p.shortDescription ?? '',
     category: str(p.category) as ProductCategory,
@@ -71,9 +72,9 @@ export function adapt(p: ApiProduct): ProductDetail {
     intention: p.tags?.join(' · ') ?? '',
     description: p.description,
     properties,
-    howToUse: p.careInstructions ?? '',
+    howToUse: p.howToUse ?? p.careInstructions ?? '',
     dimensions: dims,
-    weight: shipping?.weight != null ? `${shipping.weight} g` : 'N/A',
+    weight: shipping?.weight != null ? String(shipping.weight) : 'N/A',
     inStock: (p.stock ?? 0) > 0,
     stockCount: p.stock ?? 0,
     rating: p.ratings?.average ?? 0,

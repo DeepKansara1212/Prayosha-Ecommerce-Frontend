@@ -16,6 +16,7 @@ import ReviewStep  from '@/components/checkout/ReviewStep'
 import PaymentStep from '@/components/checkout/PaymentStep'
 import { useRazorpay } from '@/hooks/useRazorpay'
 import * as ordersApi from '@/api/orders.api'
+import { trackMetaPurchaseOnce } from '@/lib/metaPixel'
 
 // ─── CSS ──────────────────────────────────────────────────────────────────────
 
@@ -112,7 +113,7 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
               width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: done ? '#5A8A6A' : active ? '#7B5EA7' : '#E2DAC8',
-              color: done || active ? '#fff' : '#9E9590',
+              color: done || active ? '#fff' : '#5A4638',
               fontFamily: 'Jost', fontSize: 11, fontWeight: 500,
               transition: 'background 250ms',
             }}>
@@ -125,7 +126,7 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
                 : 'Jost, system-ui, sans-serif',
               fontSize: active ? 18 : 13,
               fontWeight: active ? 400 : done ? 400 : 300,
-              color: done ? '#5A8A6A' : active ? '#7B5EA7' : '#9E9590',
+              color: done ? '#5A8A6A' : active ? '#7B5EA7' : '#5A4638',
               whiteSpace: 'nowrap',
               transition: 'color 200ms',
             }}>
@@ -224,7 +225,7 @@ const OrderSidebar: FC = () => {
                   }}>
                     {product.name}
                   </p>
-                  <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#9E9590', margin: 0 }}>
+                  <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#5A4638', margin: 0 }}>
                     Qty {item.quantity}
                   </p>
                 </div>
@@ -282,7 +283,7 @@ const OrderSidebar: FC = () => {
           {[['🔒', 'Secure'], ['📦', 'Insured'], ['✦', 'Authentic']].map(([icon, label]) => (
             <div key={label} style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 16, margin: '0 0 4px' }}>{icon}</p>
-              <p style={{ fontFamily: 'Jost', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#9E9590', margin: 0 }}>
+              <p style={{ fontFamily: 'Jost', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A4638', margin: 0 }}>
                 {label}
               </p>
             </div>
@@ -333,6 +334,7 @@ const CheckoutPage: FC = () => {
         addressId: selectedAddressId,
         couponCode: coupon?.code,
       })
+      trackMetaPurchaseOnce(result.order)
       sessionStorage.setItem('prayosha_last_order', JSON.stringify(result))
       await clearCart()
       navigate('/checkout/success', { replace: true })
@@ -350,6 +352,7 @@ const CheckoutPage: FC = () => {
       amount,
       currency,
       async (result) => {
+        trackMetaPurchaseOnce(result.order)
         sessionStorage.setItem('prayosha_last_order', JSON.stringify(result))
         await clearCart()
         navigate('/checkout/success', { replace: true })

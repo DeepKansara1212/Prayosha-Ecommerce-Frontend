@@ -35,7 +35,7 @@ const Pagination: FC<PaginationProps> = ({ page, totalPages, onPage }) => {
         className={cn(
           'w-9 h-9 flex items-center justify-center border font-body text-[0.65rem] transition-all duration-200',
           page === 1
-            ? 'border-warm text-warm cursor-not-allowed'
+            ? 'border-warm text-bark cursor-not-allowed'
             : 'border-warm text-bark hover:border-muted hover:text-deep',
         )}
       >
@@ -74,7 +74,7 @@ const Pagination: FC<PaginationProps> = ({ page, totalPages, onPage }) => {
         className={cn(
           'w-9 h-9 flex items-center justify-center border font-body text-[0.65rem] transition-all duration-200',
           page === totalPages
-            ? 'border-warm text-warm cursor-not-allowed'
+            ? 'border-warm text-bark cursor-not-allowed'
             : 'border-warm text-bark hover:border-muted hover:text-deep',
         )}
       >

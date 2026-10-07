@@ -53,7 +53,7 @@ const ReviewCard: FC<{ review: Review }> = ({ review }) => (
           </span>
         )}
       </div>
-      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 11, color: '#9E9590', flexShrink: 0, margin: 0 }}>
+      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 11, color: '#5A4638', flexShrink: 0, margin: 0 }}>
         {formatDate(review.createdAt)}
       </p>
     </div>
@@ -68,7 +68,7 @@ const ReviewCard: FC<{ review: Review }> = ({ review }) => (
       </p>
     )}
 
-    <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, fontWeight: 300, color: '#3A3530', lineHeight: 1.65, margin: 0 }}>
+    <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, fontWeight: 400, color: '#3A3530', lineHeight: 1.65, margin: 0 }}>
       {review.body}
     </p>
   </div>
@@ -108,7 +108,7 @@ const ReviewsList: FC<ReviewsListProps> = ({ slug }) => {
 
   if (isFetching && allReviews.length === 0) {
     return (
-      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 13, color: '#9E9590', padding: '32px 0' }}>
+      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 13, color: '#5A4638', padding: '32px 0' }}>
         Loading reviews…
       </p>
     )
@@ -116,7 +116,7 @@ const ReviewsList: FC<ReviewsListProps> = ({ slug }) => {
 
   if (!isFetching && total === 0 && allReviews.length === 0) {
     return (
-      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, color: '#9E9590', padding: '32px 0' }}>
+      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, color: '#5A4638', padding: '32px 0' }}>
         No reviews yet. Be the first to share your experience.
       </p>
     )

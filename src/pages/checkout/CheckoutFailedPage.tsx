@@ -131,7 +131,7 @@ const CheckoutFailedPage: FC = () => {
             onClick={goCollection}
             style={{
               marginTop: 20, background: 'none', border: 'none', cursor: 'pointer',
-              fontFamily: 'Jost', fontSize: 12, color: '#9E9590',
+              fontFamily: 'Jost', fontSize: 12, color: '#5A4638',
               textDecoration: 'underline', textUnderlineOffset: 3,
             }}
           >

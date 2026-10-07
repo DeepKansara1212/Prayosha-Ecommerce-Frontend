@@ -30,6 +30,12 @@
 }
 
 @layer utilities {
+  /* Keep small Jost copy readable; display headings keep their light weight. */
+  .font-body.font-extralight,
+  .font-body.font-light {
+    font-weight: 400;
+  }
+
   /* ── Scroll reveal ─────────────────────────────────── */
   .reveal {
     opacity: 0;

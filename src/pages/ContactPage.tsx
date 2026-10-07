@@ -110,13 +110,28 @@ const Field: FC<InputProps> = ({ id, label, value, onChange, error, type = 'text
 )
 
 // ─── Contact info block ───────────────────────────────────────────────────────
+// NOTE: This is the single source of truth for the studio address. The map
+// embed below reads from STUDIO_ADDRESS so the two can never drift apart again.
+
+const STUDIO_ADDRESS = 'SHOP NO.7, OPPO. BAPS SWAMINARAYAN TEMPLE, Khambhat, 388620'
 
 const INFO_ITEMS = [
-  { icon: '📍', label: 'Studio', value: '14 Vittal Mallya Road, Indiranagar, Bangalore — 560 038' },
-  { icon: '📧', label: 'Email', value: 'hello@prayoshacrystal.com' },
-  { icon: '📞', label: 'Phone', value: '+91 98765 43210 · Mon–Sat, 10am–6pm IST' },
-  { icon: '🌐', label: 'Social', value: '@prayosha.crystal on Instagram' },
+  { icon: '📍', label: 'Studio', value: STUDIO_ADDRESS },
+  { icon: '📧', label: 'Email', value: 'prayoshacrytals@gmail.com' },
+  { icon: '📞', label: 'Phone', value: '+91 94294 15057' },
 ]
+
+const BRANCHES = [
+  { city: 'Khambhat', state: 'Gujarat', location: STUDIO_ADDRESS },
+  { city: 'Surat', state: 'Gujarat', location: 'Surat, Gujarat, India' },
+  { city: 'Pune', state: 'Maharashtra', location: 'Pune, Maharashtra, India' },
+  { city: 'Delhi', state: 'India', location: 'Delhi, India' },
+]
+
+// Google Maps embed URL (no API key required) — encodes the address as a query.
+const MAPS_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(STUDIO_ADDRESS)}&output=embed`
+// "Get Directions" deep link — opens full Google Maps in a new tab.
+const MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(STUDIO_ADDRESS)}`
 
 // ─── ContactPage ──────────────────────────────────────────────────────────────
 
@@ -153,41 +168,12 @@ const ContactPage: FC = () => {
 
   const revealRef1 = useScrollReveal<HTMLDivElement>()
   const revealRef2 = useScrollReveal<HTMLDivElement>()
+  const revealRef3 = useScrollReveal<HTMLDivElement>()
 
   return (
     <>
       <Navbar />
       <main id="main-content" className="bg-cream">
-
-        {/* ── Hero ── */}
-        <div
-          className="relative overflow-hidden flex items-end"
-          style={{
-            minHeight: 'clamp(340px, 45vh, 520px)',
-            paddingTop: '96px',
-            background: 'radial-gradient(ellipse at 70% 50%, #1E4A58 0%, #1A2530 50%, #1C1410 100%)',
-          }}
-        >
-          <svg className="absolute left-0 top-0 w-1/2 h-full opacity-10 pointer-events-none" viewBox="0 0 500 500" fill="none" aria-hidden="true">
-            <polygon points="200,50 420,160 420,340 200,450 -20,340 -20,160" stroke="#B8956A" strokeWidth="0.8" fill="none" />
-            <circle cx="200" cy="250" r="150" stroke="#B8956A" strokeWidth="0.4" fill="none" opacity="0.4" />
-          </svg>
-          <div className="absolute top-1/3 right-1/4 w-72 h-72 rounded-full pointer-events-none" style={{ background: '#5B8FA0', opacity: 0.18, filter: 'blur(80px)' }} aria-hidden="true" />
-
-          <div className="relative z-10 animate-fadeUp" style={{ padding: 'clamp(3rem,7vw,5rem) clamp(1.25rem,5vw,4rem)' }}>
-            <p className="flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-5">
-              <span className="w-8 h-px bg-gold-light" aria-hidden="true" />
-              Get in Touch
-            </p>
-            <h1 className="font-display font-light text-[clamp(2.5rem,7vw,4.5rem)] leading-[1.05] text-cream mb-4">
-              We'd love to hear<br />
-              <em className="italic text-gold-light">from you</em>
-            </h1>
-            <p className="font-body font-extralight text-[0.88rem] leading-[1.85] text-cream/60 max-w-lg">
-              Questions about crystals, your order, or finding your perfect stone — our team responds within 24 hours.
-            </p>
-          </div>
-        </div>
 
         {/* ── Main content ── */}
         <div style={{ padding: 'clamp(3.5rem,7vw,6rem) clamp(1.25rem,5vw,4rem)' }}>
@@ -309,8 +295,7 @@ const ContactPage: FC = () => {
                 <h3 className="font-display font-light text-[1.1rem] text-deep mb-4">Studio hours</h3>
                 <div className="space-y-2">
                   {[
-                    { day: 'Monday – Friday', hours: '10:00 am – 6:00 pm' },
-                    { day: 'Saturday',        hours: '11:00 am – 4:00 pm' },
+                    { day: 'Monday – Saturday', hours: '9:00 am – 6:00 pm' },
                     { day: 'Sunday',          hours: 'Closed' },
                   ].map(({ day, hours }) => (
                     <div key={day} className="flex justify-between font-body text-[0.75rem]">
@@ -364,26 +349,84 @@ const ContactPage: FC = () => {
           </div>
         </div>
 
-        {/* ── Map placeholder ── */}
-        <div
-          className="relative overflow-hidden flex items-center justify-center"
-          style={{ height: 'clamp(200px, 35vh, 400px)', background: 'radial-gradient(ellipse at 50% 50%, #2A1A2E 0%, #1C1410 100%)' }}
-          aria-label="Studio location map — Indiranagar, Bangalore"
-        >
-          <svg className="absolute inset-0 w-full h-full opacity-10 pointer-events-none" viewBox="0 0 800 400" fill="none" aria-hidden="true">
-            {[...Array(8)].map((_, i) => (
-              <line key={i} x1={i * 120} y1="0" x2={i * 120} y2="400" stroke="#B8956A" strokeWidth="0.4" />
-            ))}
-            {[...Array(5)].map((_, i) => (
-              <line key={i} x1="0" y1={i * 90} x2="800" y2={i * 90} stroke="#B8956A" strokeWidth="0.4" />
-            ))}
-          </svg>
-          <div className="relative z-10 text-center">
-            <div className="w-12 h-12 rounded-full bg-gold flex items-center justify-center mx-auto mb-3">
-              <span className="text-xl" aria-hidden="true">📍</span>
+        {/* ── Our branches ── */}
+        <section aria-labelledby="branches-heading" className="section-p">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-10">
+              <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">Closer to you</p>
+              <h2 id="branches-heading" className="font-display font-light text-[clamp(2rem,4vw,3rem)] text-deep">
+                Our <em className="italic text-amethyst">branches</em>
+              </h2>
+              <p className="font-body font-extralight text-[0.82rem] text-muted mt-3">
+                Find Prayosha Crystals across India.
+              </p>
             </div>
-            <p className="font-display font-light text-[1.1rem] text-cream mb-1">Prayosha Crystal Studio</p>
-            <p className="font-body font-extralight text-[0.72rem] text-cream/55">14 Vittal Mallya Road, Indiranagar, Bangalore</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              {BRANCHES.map(({ city, state, location }, index) => (
+                <article
+                  key={city}
+                  className="group relative overflow-hidden border border-warm bg-cream p-6 sm:p-7 transition-colors duration-300 hover:bg-warm/50"
+                >
+                  <div className="absolute left-0 top-0 h-0.5 w-full origin-left scale-x-0 bg-gold transition-transform duration-300 group-hover:scale-x-100" />
+                  <div className="flex items-center justify-between mb-8">
+                    <span className="font-body text-[0.62rem] tracking-[0.2em] text-gold">
+                      0{index + 1}
+                    </span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="w-5 h-5 text-gold"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
+                      <circle cx="12" cy="10" r="2.5" />
+                    </svg>
+                  </div>
+                  <h3 className="font-display font-light text-[1.8rem] leading-none text-deep">{city}</h3>
+                  <p className="font-body text-[0.68rem] uppercase tracking-[0.18em] text-muted mt-2">{state}</p>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 mt-7 font-body text-[0.62rem] uppercase tracking-[0.16em] text-gold transition-colors hover:text-bark"
+                    aria-label={`Find our ${city} branch on Google Maps`}
+                  >
+                    Find on map <span aria-hidden="true">→</span>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Map ── */}
+        <div ref={revealRef3} className="reveal relative overflow-hidden">
+          <iframe
+            title={`Map showing our studio location: ${STUDIO_ADDRESS}`}
+            src={MAPS_EMBED_URL}
+            style={{ border: 0, width: '100%', height: 'clamp(280px, 40vh, 440px)', display: 'block', filter: 'grayscale(0.15) contrast(1.05)' }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+
+          {/* Floating info card over the map */}
+          <div className="absolute left-4 bottom-4 sm:left-8 sm:bottom-8 bg-cream shadow-lg p-5 sm:p-6 max-w-[280px]">
+            <p className="font-body text-[0.6rem] uppercase tracking-[0.2em] text-gold mb-2">Visit our studio</p>
+            <p className="font-display font-normal text-[1rem] text-deep mb-1">Prayosha Crystals</p>
+            <p className="font-body font-extralight text-[0.75rem] text-bark leading-relaxed mb-4">{STUDIO_ADDRESS}</p>
+            <a
+              href={MAPS_DIRECTIONS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-body text-[0.68rem] uppercase tracking-[0.15em] text-gold hover:text-gold-light transition-colors"
+            >
+              Get Directions <span aria-hidden="true">→</span>
+            </a>
           </div>
         </div>
       </main>

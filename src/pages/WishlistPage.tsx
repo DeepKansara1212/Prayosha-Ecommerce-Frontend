@@ -233,7 +233,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
               Stones you <em className="italic text-rose">love</em>
             </h1>
             {wishlistProducts.length > 0 && (
-              <p className="font-body font-extralight text-[0.8rem] text-cream/55">
+              <p className="font-body font-normal text-[0.8rem] text-cream/85">
                 {wishlistProducts.length} {wishlistProducts.length === 1 ? 'stone' : 'stones'} saved
               </p>
             )}

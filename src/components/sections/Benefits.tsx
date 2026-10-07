@@ -24,7 +24,7 @@ const Benefits: FC = () => {
           stones, the<br />
           <em className="italic text-gold-light">purest intent</em>
         </SectionTitle>
-        <p className="font-body font-extralight text-[0.83rem] leading-[1.9] text-cream/55 mt-5 max-w-[380px] md:max-w-none">
+        <p className="font-body font-normal text-[0.83rem] leading-[1.9] text-cream/85 mt-5 max-w-[380px] md:max-w-none">
           Every crystal in our collection is traceable to its source. We work directly with ethical miners across India, Brazil, Madagascar, and Morocco — ensuring fair trade practices and genuine stones every time.
         </p>
       </div>
@@ -48,7 +48,7 @@ const Benefits: FC = () => {
             <h3 className="font-display text-[1.1rem] font-normal text-cream mb-2">
               {b.title}
             </h3>
-            <p className="font-body font-extralight text-[0.76rem] leading-[1.8] text-cream/50">
+            <p className="font-body font-normal text-[0.76rem] leading-[1.8] text-cream/80">
               {b.description}
             </p>
           </article>

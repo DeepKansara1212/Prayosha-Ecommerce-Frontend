@@ -12,6 +12,7 @@ import type { ApiCategory } from '@/api/categories.api'
 // otherwise falls back to a best-effort slug that will start working automatically
 // once admin creates a matching category with the default auto-slug.
 function categoryPath(label: string, categories: ApiCategory[]): string {
+  if (label.trim().toLowerCase() === 'meaning') return '/collection'
   const match = categories.find(c => c.name.trim().toLowerCase() === label.trim().toLowerCase())
   return `/collection?category=${encodeURIComponent(match?.slug ?? slugify(label))}`
 }
@@ -176,7 +177,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
     background: 'none', border: 'none', padding: '0.28rem 0', cursor: 'pointer',
     display: 'block', width: '100%', textAlign: 'left',
     fontSize: '0.8rem', letterSpacing: '0.04em',
-    color: 'rgba(245,238,228,0.65)', transition: 'color 0.15s ease, padding-left 0.15s ease',
+    color: 'rgba(61,43,31,0.82)', transition: 'color 0.15s ease, padding-left 0.15s ease',
     lineHeight: 1.45, whiteSpace: 'normal', wordBreak: 'break-word',
   }
 
@@ -199,22 +200,32 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
         <li key={`${item}-${idx}`}>
           {item === 'Meaning' ? (
             <div>
-              <button
-                onClick={() => setMeaningOpen(prev => !prev)}
-                style={itemStyle}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLButtonElement
-                  el.style.color = 'rgba(245,238,228,1)'
-                  el.style.paddingLeft = '5px'
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLButtonElement
-                  el.style.color = 'rgba(245,238,228,0.65)'
-                  el.style.paddingLeft = '0'
-                }}
-              >
-                {item} <span style={{ marginLeft: '0.3rem' }}>{meaningOpen ? '▴' : '▾'}</span>
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <button
+                  onClick={() => handleItemClick(item)}
+                  style={{ ...itemStyle, flex: 1 }}
+                          onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLButtonElement
+                            el.style.color = 'rgba(28,20,16,1)'
+                    el.style.paddingLeft = '5px'
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLButtonElement
+                            el.style.color = 'rgba(61,43,31,0.82)'
+                    el.style.paddingLeft = '0'
+                  }}
+                >
+                  {item}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Expand Meaning options"
+                  onClick={() => setMeaningOpen(prev => !prev)}
+                  style={{ ...itemStyle, width: 'auto', padding: '0.28rem 0.35rem', flexShrink: 0 }}
+                >
+                  {meaningOpen ? '▴' : '▾'}
+                </button>
+              </div>
               {meaningOpen && (
                 <ul style={{ listStyle: 'none', padding: '0.25rem 0 0.25rem 0.7rem', margin: 0 }}>
                   {MEANING_ITEMS.map((meaning, meaningIdx) => (
@@ -225,16 +236,16 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                           ...itemStyle,
                           padding: '0.18rem 0',
                           fontSize: '0.74rem',
-                          color: 'rgba(245,238,228,0.58)',
+                          color: 'rgba(61,43,31,0.72)',
                         }}
                         onMouseEnter={e => {
                           const el = e.currentTarget as HTMLButtonElement
-                          el.style.color = 'rgba(245,238,228,1)'
+                          el.style.color = 'rgba(28,20,16,1)'
                           el.style.paddingLeft = '5px'
                         }}
                         onMouseLeave={e => {
                           const el = e.currentTarget as HTMLButtonElement
-                          el.style.color = 'rgba(245,238,228,0.58)'
+                          el.style.color = 'rgba(61,43,31,0.72)'
                           el.style.paddingLeft = '0'
                         }}
                       >
@@ -251,12 +262,12 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
               style={itemStyle}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLButtonElement
-                el.style.color = 'rgba(245,238,228,1)'
+                el.style.color = 'rgba(28,20,16,1)'
                 el.style.paddingLeft = '5px'
               }}
               onMouseLeave={e => {
                 const el = e.currentTarget as HTMLButtonElement
-                el.style.color = 'rgba(245,238,228,0.65)'
+                el.style.color = 'rgba(61,43,31,0.82)'
                 el.style.paddingLeft = '0'
               }}
             >
@@ -278,7 +289,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
           : 'opacity-0 -translate-y-2 pointer-events-none',
       )}
       style={{
-        background: 'rgba(18, 12, 8, 0.98)', backdropFilter: 'blur(20px)',
+        background: 'rgba(237, 229, 216, 0.98)', backdropFilter: 'blur(20px)',
         borderTop: '1px solid rgba(184,149,106,0.15)',
         borderBottom: '1px solid rgba(184,149,106,0.08)',
         boxShadow: '0 24px 60px rgba(0,0,0,0.65)',
@@ -288,7 +299,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
       <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(184,149,106,0.4) 30%, rgba(184,149,106,0.4) 70%, transparent)' }} />
 
       <div style={{ padding: '2rem clamp(1.5rem, 5vw, 4rem) 1.75rem' }}>
-        <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(184,149,106,0.5)', marginBottom: '1.5rem' }}>
+        <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(61,43,31,0.72)', marginBottom: '1.5rem' }}>
           Browse Collections
         </p>
 
@@ -315,7 +326,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                 </div>
 
                 {col.items.length === 0 ? (
-                  <span style={{ fontSize: '0.72rem', color: 'rgba(245,238,228,0.2)', letterSpacing: '0.08em' }}>Coming soon</span>
+                  <span style={{ fontSize: '0.72rem', color: 'rgba(61,43,31,0.62)', letterSpacing: '0.08em' }}>Coming soon</span>
                 ) : isMultiCol ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '0.75rem' }}>
                     {[col.items.slice(0, Math.ceil(col.items.length / 2)), col.items.slice(Math.ceil(col.items.length / 2))].map((half, hIdx) => (
@@ -323,8 +334,8 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                         {half.map((item, idx) => (
                           <li key={`${item}-${idx}`}>
                             <button onClick={() => handleItemClick(item)} style={itemStyle}
-                              onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(245,238,228,1)'; el.style.paddingLeft = '5px' }}
-                              onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(245,238,228,0.65)'; el.style.paddingLeft = '0' }}>
+                              onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(28,20,16,1)'; el.style.paddingLeft = '5px' }}
+                              onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(61,43,31,0.82)'; el.style.paddingLeft = '0' }}>
                               {item}
                             </button>
                           </li>
@@ -339,7 +350,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
         </div>
 
         <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(184,149,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <p style={{ fontSize: '0.62rem', letterSpacing: '0.16em', color: 'rgba(245,238,228,0.28)', textTransform: 'uppercase' }}>
+          <p style={{ fontSize: '0.62rem', letterSpacing: '0.16em', color: 'rgba(61,43,31,0.72)', textTransform: 'uppercase' }}>
             All handcrafted · Ethically sourced
           </p>
           <button
@@ -347,11 +358,11 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
             style={{
               background: 'none', border: '1px solid rgba(184,149,106,0.35)', padding: '0.45rem 1.4rem',
               cursor: 'pointer', fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase',
-              color: 'rgba(184,149,106,0.85)', transition: 'border-color 0.2s, color 0.2s, background 0.2s',
+              color: 'rgba(61,43,31,0.9)', transition: 'border-color 0.2s, color 0.2s, background 0.2s',
               borderRadius: '1px', whiteSpace: 'nowrap', minHeight: '44px',
             }}
-            onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.borderColor = 'rgba(184,149,106,0.8)'; el.style.color = 'rgba(245,238,228,1)'; el.style.background = 'rgba(184,149,106,0.08)' }}
-            onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.borderColor = 'rgba(184,149,106,0.35)'; el.style.color = 'rgba(184,149,106,0.85)'; el.style.background = 'none' }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.borderColor = 'rgba(184,149,106,0.8)'; el.style.color = 'rgba(28,20,16,1)'; el.style.background = 'rgba(184,149,106,0.12)' }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.borderColor = 'rgba(184,149,106,0.35)'; el.style.color = 'rgba(61,43,31,0.9)'; el.style.background = 'none' }}
           >
             View All Collections
           </button>
@@ -380,7 +391,7 @@ const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => 
             className="w-full flex items-center justify-between py-3 bg-transparent border-none cursor-pointer min-h-[44px]"
             aria-expanded={openCol === col.title}
           >
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: openCol === col.title ? 'rgba(184,149,106,1)' : 'rgba(245,238,228,0.65)', transition: 'color 0.2s' }}>
+            <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: openCol === col.title ? 'rgba(61,43,31,1)' : 'rgba(61,43,31,0.82)', transition: 'color 0.2s' }}>
               {col.title}
             </span>
             <ChevronDownIcon open={openCol === col.title} />
@@ -392,13 +403,13 @@ const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => 
                 <button
                   key={`${item}-${idx}`}
                   onClick={() => onNavigate(categoryPath(item, categories))}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', letterSpacing: '0.06em', color: 'rgba(245,238,228,0.6)', padding: '0.2rem 0', textAlign: 'left', minHeight: '44px' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', letterSpacing: '0.06em', color: 'rgba(61,43,31,0.82)', padding: '0.2rem 0', textAlign: 'left', minHeight: '44px' }}
                 >
                   {item}
                 </button>
               ))}
               {col.items.length === 0 && (
-                <span style={{ fontSize: '0.65rem', color: 'rgba(245,238,228,0.25)' }}>Coming soon</span>
+                <span style={{ fontSize: '0.65rem', color: 'rgba(61,43,31,0.62)' }}>Coming soon</span>
               )}
             </div>
           </div>
@@ -465,7 +476,7 @@ const Navbar: FC = () => {
       {/* ── Mobile full-screen drawer ── */}
       <div
         className={cn(
-          'fixed inset-0 z-[199] bg-deep transition-opacity duration-350',
+          'fixed inset-0 z-[199] bg-warm transition-opacity duration-350',
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
         )}
         style={{
@@ -485,7 +496,7 @@ const Navbar: FC = () => {
               onClick={() => go('/collection')}
               className={cn(
                 'font-display font-light tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200',
-                isActive('/collection') ? 'text-gold-light opacity-100' : 'text-cream opacity-75 hover:opacity-100 hover:text-gold-light',
+                isActive('/collection') ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
               )}
               style={{ fontSize: 'clamp(1.6rem,6vw,2.5rem)' }}
             >
@@ -493,7 +504,7 @@ const Navbar: FC = () => {
             </button>
             <button
               onClick={() => setMobileCollectionOpen(v => !v)}
-              className="bg-transparent border-none cursor-pointer text-cream opacity-75 hover:opacity-100 transition-all duration-200 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="bg-transparent border-none cursor-pointer text-bark opacity-90 hover:opacity-100 transition-all duration-200 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-expanded={mobileCollectionOpen}
               aria-label="Toggle collection categories"
             >
@@ -513,7 +524,7 @@ const Navbar: FC = () => {
             onClick={() => go(item.path)}
             className={cn(
               'font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]',
-              isActive(item.path) ? 'text-gold-light opacity-100' : 'text-cream opacity-75 hover:opacity-100 hover:text-gold-light',
+              isActive(item.path) ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
             )}
           >
             {item.label}
@@ -532,7 +543,7 @@ const Navbar: FC = () => {
             <button
               key={label}
               onClick={() => go(path)}
-              className="flex flex-col items-center gap-1.5 text-cream opacity-70 hover:opacity-100 bg-transparent border-none cursor-pointer transition-opacity min-w-[44px] min-h-[44px] justify-center"
+              className="flex flex-col items-center gap-1.5 text-bark opacity-90 hover:opacity-100 bg-transparent border-none cursor-pointer transition-opacity min-w-[44px] min-h-[44px] justify-center"
               aria-label={label}
             >
               <Icon />
@@ -552,7 +563,7 @@ const Navbar: FC = () => {
             'flex items-center justify-between',
             'px-[clamp(1.25rem,5vw,4rem)] py-5',
             'transition-all duration-400',
-            'bg-[rgba(28,20,16,0.97)] backdrop-blur-[12px] shadow-[0_1px_0_rgba(184,149,106,0.12)]',
+            'bg-warm backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]',
           )}
         >
           {/* Logo */}
@@ -561,7 +572,7 @@ const Navbar: FC = () => {
             className="flex items-center z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
             aria-label="Prayosha Crystal — go to home"
           >
-            <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-9 md:h-11 w-auto object-contain" />
+            <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-10 md:h-12 w-auto object-contain mix-blend-multiply" />
           </button>
 
           {/* Desktop nav links */}
@@ -579,8 +590,8 @@ const Navbar: FC = () => {
                     'font-body text-[0.72rem] tracking-[0.2em] uppercase transition-all duration-200 bg-transparent border-none cursor-pointer relative pb-0.5 flex items-center gap-1.5 min-h-[44px]',
                     'after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gold-light after:transition-all after:duration-300',
                     isActive(item.path) || (item.hasDropdown && dropdownOpen)
-                      ? 'text-gold-light after:w-full'
-                      : 'text-cream/80 hover:text-cream after:w-0 hover:after:w-full',
+                      ? 'text-deep after:w-full'
+                      : 'text-bark hover:text-deep after:w-0 hover:after:w-full',
                   )}
                   aria-expanded={item.hasDropdown ? dropdownOpen : undefined}
                 >
@@ -592,11 +603,11 @@ const Navbar: FC = () => {
           </ul>
 
           {/* Icon group */}
-          <div className="flex items-center gap-4 text-cream">
+          <div className="flex items-center gap-4 text-bark">
             <button
               onClick={openSearch}
               aria-label="Open search"
-              className="opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-cream min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="opacity-90 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-bark min-w-[44px] min-h-[44px] flex items-center justify-center"
             >
               <SearchIcon />
             </button>

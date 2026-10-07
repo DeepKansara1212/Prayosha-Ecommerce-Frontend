@@ -177,7 +177,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
               lineHeight: 1.65,
             }}
           />
-          <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 11, color: '#9E9590', margin: '4px 0 0' }}>
+          <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 11, color: '#5A4638', margin: '4px 0 0' }}>
             {body.trim().length} / 20 characters minimum
           </p>
         </div>
@@ -193,7 +193,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
             letterSpacing: '0.22em',
             textTransform: 'uppercase' as const,
             background: isValid && !mutation.isPending ? '#C49A3C' : '#E2DAC8',
-            color: isValid && !mutation.isPending ? '#1C1A17' : '#9E9590',
+            color: isValid && !mutation.isPending ? '#1C1A17' : '#5A4638',
             border: 'none',
             cursor: isValid && !mutation.isPending ? 'pointer' : 'not-allowed',
             transition: 'background 0.2s, color 0.2s',

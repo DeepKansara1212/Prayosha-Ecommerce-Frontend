@@ -29,7 +29,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 const GOLD    = '#C49A3C'
 const PURPLE  = '#7B5EA7'
-const GREY    = '#9E9590'
+const GREY    = '#5A4638'
 const BORDER_INACTIVE = '#E2DAC8'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

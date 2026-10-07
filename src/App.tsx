@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useNavigate, useParams } from 'react-router-do
 import CustomCursor from '@/components/ui/CustomCursor'
 import ToastContainer from '@/components/ui/Toast'
 import WhatsAppChatButton from '@/components/ui/WhatsAppChatButton'
+import MetaPixel from '@/components/ui/MetaPixel'
 import Navbar   from '@/components/layout/Navbar'
 import Footer   from '@/components/layout/Footer'
 
@@ -178,8 +179,8 @@ const App: FC = () => {
   }, [accessToken])
 
   // ── Cart actions ──────────────────────────────────────────────────────────
-  const addToCart = useCallback((id: string) => {
-    void addItemStore(id, 1)
+  const addToCart = useCallback((id: string, quantity = 1) => {
+    void addItemStore(id, quantity)
   }, [addItemStore])
 
   const updateCartQty = useCallback((id: string, qty: number) => {
@@ -211,6 +212,7 @@ const App: FC = () => {
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
+      <MetaPixel />
       <CustomCursor />
       <ToastContainer />
       <WhatsAppChatButton />

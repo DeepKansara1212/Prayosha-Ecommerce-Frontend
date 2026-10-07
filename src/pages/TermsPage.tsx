@@ -142,7 +142,7 @@ const TermsPage: FC = () => (
           <h1 className="font-display font-light text-[clamp(2.2rem,6vw,4rem)] leading-[1.05] text-cream mb-4">
             Terms &amp; Conditions
           </h1>
-          <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-cream/55 max-w-lg">
+          <p className="font-body font-normal text-[0.82rem] leading-[1.9] text-cream/85 max-w-lg">
             Please read these terms carefully before using our website or placing an order. Last updated: 1 May 2025.
           </p>
         </div>

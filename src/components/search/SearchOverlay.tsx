@@ -23,7 +23,7 @@ const OVERLAY_CSS = `
     0%, 100% { opacity: 1; }
     50%       { opacity: 0.45; }
   }
-  .sr-input::placeholder { color: #9E9590; }
+  .sr-input::placeholder { color: #5A4638; }
 `
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -333,7 +333,7 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                         </p>
                         <p style={{
                           fontFamily: 'Jost, sans-serif', fontSize: 11,
-                          color: '#9E9590', margin: '2px 0 0',
+                          color: '#5A4638', margin: '2px 0 0',
                           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                         }}>
                           {result.category}

@@ -58,6 +58,7 @@ Create `.env.local` at the project root:
 ```text
 VITE_API_URL=http://localhost:8000/api/v1
 VITE_RAZORPAY_KEY_ID=<your_razorpay_test_key>
+VITE_META_PIXEL_ID=<your_meta_pixel_id>
 ```
 
 Run development:
@@ -104,8 +105,15 @@ npm run lint
 |---|---|---|
 | `VITE_API_URL` | Recommended | API base including `/api/v1`. Default in code: `http://localhost:8000/api/v1` |
 | `VITE_RAZORPAY_KEY_ID` | For online pay | Razorpay key passed to checkout |
+| `VITE_META_PIXEL_ID` | Optional | Meta Events Manager Pixel ID; Pixel remains off until a visitor accepts optional marketing cookies |
 
 Declared in `src/env.d.ts`.
+
+### Meta Pixel events
+
+After marketing-cookie consent, the storefront sends `PageView` on client-side route changes, `ViewContent` on product pages, `AddToCart` after the cart API succeeds, `InitiateCheckout` on checkout entry, and `Purchase` only after COD order creation or server-verified Razorpay payment. Commerce events use product SKU for `content_ids`; configure the Meta catalog to use the same SKU values. Purchase events use the order number as the event ID and are stored locally to avoid firing again when revisiting the confirmation flow.
+
+The consent banner allows visitors to accept or reject optional marketing cookies. Their choice can be changed from the Cookie preferences control in the Privacy Policy. Configure the same Pixel ID in the deployment environment; do not put a Conversions API access token in a `VITE_*` variable.
 
 ---
 

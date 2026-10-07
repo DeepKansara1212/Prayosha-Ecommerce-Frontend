@@ -75,7 +75,7 @@ const NotFoundPage: FC = () => (
 
           {/* Subtext */}
           <p
-            className="font-body font-extralight text-cream/55 max-w-xs leading-relaxed mb-10"
+            className="font-body font-normal text-cream/85 max-w-xs leading-relaxed mb-10"
             style={{ fontSize: 'clamp(0.8rem,2vw,0.9rem)' }}
           >
             The crystal you're looking for may have found a new home.

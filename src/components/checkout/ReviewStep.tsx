@@ -91,7 +91,7 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
                 }}>
                   {product.name}
                 </p>
-                <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9E9590', margin: 0 }}>
+                <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#5A4638', margin: 0 }}>
                   Qty: {item.quantity}
                 </p>
               </div>

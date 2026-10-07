@@ -5,7 +5,6 @@ import { useProducts } from '@/hooks/useProducts'
 
 import Navbar         from '@/components/layout/Navbar'
 import Footer         from '@/components/layout/Footer'
-import CollectionHero from '@/components/collection/CollectionHero'
 import FilterBar      from '@/components/collection/FilterBar'
 import ProductGrid    from '@/components/collection/ProductGrid'
 import Pagination     from '@/components/ui/Pagination'
@@ -33,14 +32,20 @@ const CollectionPage: FC<CollectionPageProps> = ({
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [category, setCategory] = useState<string>(searchParams.get('category') ?? '')
+  const [purpose, setPurpose]   = useState<string>(searchParams.get('purpose') ?? '')
+  const [subCategory, setSubCategory] = useState<string>(searchParams.get('subCategory') ?? '')
   const [sort, setSort]         = useState<SortOption>('featured')
   const [page, setPage]         = useState(1)
 
-  const handleCategory = (slug: string) => { setCategory(slug); setPage(1) }
+  const handleCategory = (slug: string) => { setCategory(slug); setSubCategory(''); setPage(1) }
+  const handlePurpose  = (id: string) => { setPurpose(id);  setPage(1) }
+  const handleSubCategory = (id: string) => { setSubCategory(id); setPage(1) }
   const handleSort     = (s: SortOption) => { setSort(s);       setPage(1) }
 
   const params = {
     category: category || undefined,
+    purpose: purpose || undefined,
+    subCategory: subCategory || undefined,
     sort,
     page,
     limit: 12,
@@ -58,13 +63,15 @@ const CollectionPage: FC<CollectionPageProps> = ({
     <>
       <Navbar />
       <main id="main-content">
-        <CollectionHero />
-
         <FilterBar
           active={category}
+          purpose={purpose}
+          subCategory={subCategory}
           sort={sort}
           total={pagination?.total ?? 0}
           onCategory={handleCategory}
+          onPurpose={handlePurpose}
+          onSubCategory={handleSubCategory}
           onSort={handleSort}
         />
 

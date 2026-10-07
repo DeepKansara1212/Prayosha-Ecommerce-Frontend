@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { Cart } from '@/api/cart.api'
 import * as cartApi from '@/api/cart.api'
 import type { ApiProduct } from '@/api/products.api'
+import { trackMetaEvent } from '@/lib/metaPixel'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -109,6 +110,17 @@ export const useCartStore = create<CartState>((set, get) => ({
     try {
       const cart = await cartApi.addItem(productId, quantity)
       set(fromApiCart(cart))
+      const product = cart.items.find(item => item.product.slug === productId)?.product
+      if (product) {
+        trackMetaEvent('AddToCart', {
+          content_ids: [product.sku],
+          content_type: 'product',
+          content_name: product.name,
+          contents: [{ id: product.sku, quantity, item_price: product.price }],
+          value: product.price * quantity,
+          currency: 'INR',
+        })
+      }
     } catch {
       set({ items: prev }) // revert optimistic update
     }

@@ -3,6 +3,7 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { cn } from '@/lib/utils'
+import { requestCookiePreferences } from '@/lib/metaPixel'
 
 // ─── Content ──────────────────────────────────────────────────────────────────
 
@@ -60,7 +61,7 @@ const SECTIONS: Section[] = [
     id: 'cookies',
     title: 'Cookies & Tracking',
     body: [
-      'Our Website may use cookies to enhance your browsing experience. You may disable cookies through your browser settings, but some features may not work properly.',
+      'We use essential technologies to operate the Website. With your permission, Meta Pixel uses cookies and similar technologies to measure visits and shopping actions and help us understand the effectiveness of our advertising. You can reject or withdraw optional marketing consent at any time using Cookie preferences below.',
     ],
   },
   {
@@ -138,7 +139,7 @@ const PrivacyPage: FC = () => (
           <h1 className="font-display font-light text-[clamp(2.2rem,6vw,4rem)] leading-[1.05] text-cream mb-4">
             Privacy Policy
           </h1>
-          <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-cream/55 max-w-lg">
+          <p className="font-body font-normal text-[0.82rem] leading-[1.9] text-cream/85 max-w-lg">
             How we collect, use, and protect your personal information. Last updated: 1 May 2025.
           </p>
         </div>
@@ -204,6 +205,16 @@ const PrivacyPage: FC = () => (
                         </li>
                       ))}
                     </ul>
+                  )}
+
+                  {s.id === 'cookies' && (
+                    <button
+                      type="button"
+                      onClick={requestCookiePreferences}
+                      className="border border-bark/30 px-4 py-2 font-body text-xs text-bark transition-colors hover:border-deep hover:text-deep"
+                    >
+                      Cookie preferences
+                    </button>
                   )}
 
                   {s.contact && (

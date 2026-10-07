@@ -139,7 +139,7 @@ const WhatsAppChatButton: FC = () => {
               >
                 Chat with us on WhatsApp
               </h2>
-              <p className="font-body text-[0.72rem] mt-0.5" style={{ color: '#9E9590' }}>
+              <p className="font-body text-[0.72rem] mt-0.5" style={{ color: '#5A4638' }}>
                 Typically replies within minutes
               </p>
             </div>
@@ -147,7 +147,7 @@ const WhatsAppChatButton: FC = () => {
               onClick={() => { setCardOpen(false); fabRef.current?.focus() }}
               aria-label="Close chat"
               className="flex-none w-7 h-7 flex items-center justify-center rounded-full bg-transparent border-none cursor-pointer"
-              style={{ color: '#9E9590' }}
+              style={{ color: '#5A4638' }}
             >
               <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" aria-hidden="true">
                 <path d="M18 6 6 18M6 6l12 12" />

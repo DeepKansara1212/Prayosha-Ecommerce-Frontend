@@ -111,6 +111,7 @@ export type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'newest' | 'n
 
 export interface ProductDetail {
   id: string
+  sku?: string
   name: string
   subtitle: string
   category: ProductCategory

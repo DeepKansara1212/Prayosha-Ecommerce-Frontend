@@ -37,9 +37,9 @@ const CrystalCardItem: FC<CrystalCardProps> = ({ showcase, onNavigate }) => {
 
       {/* Overlay */}
       <div className="absolute inset-0 flex flex-col justify-end p-5 card-overlay group-hover:card-overlay-hover transition-all duration-400">
-        <p className="font-body text-tag uppercase tracking-[0.22em] text-gold-light mb-1">
+        {/* <p className="font-body text-tag uppercase tracking-[0.22em] text-gold-light mb-1">
           {showcase.count} {showcase.count === 1 ? 'piece' : 'pieces'}
-        </p>
+        </p> */}
         <h3 className="font-display font-light text-cream mb-1 text-[clamp(1.1rem,2.5vw,1.5rem)]">
           {showcase.name}
         </h3>
@@ -98,14 +98,15 @@ const Collections: FC = () => {
       <div
         ref={gridRef}
         className="reveal grid gap-4
-          grid-cols-1
-          xs:grid-cols-2
-          md:grid-cols-3
+          grid-cols-2
+          sm:grid-cols-3
+          md:grid-cols-4
+          lg:grid-cols-6
         "
       >
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-          : showcase.map(item => (
+          : showcase.slice(0, 6).map(item => (
               <CrystalCardItem
                 key={item.slug}
                 showcase={item}

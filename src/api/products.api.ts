@@ -3,15 +3,16 @@ import { apiClient } from './client'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface ApiProductShipping {
-  weight?: number
-  length?: number
-  breadth?: number
-  height?: number
+  weight?: string
+  length?: string
+  breadth?: string
+  height?: string
 }
 
 export interface ApiProduct {
   _id: string
   slug: string
+  sku: string
   name: string
   description: string
   shortDescription?: string
@@ -28,6 +29,7 @@ export interface ApiProduct {
   useCategoryShipping?: boolean
   shipping?: ApiProductShipping
   careInstructions?: string
+  howToUse?: string
   metaphysicalProperties?: string
   isFeatured: boolean
   isActive: boolean
@@ -49,6 +51,8 @@ export interface ProductQueryParams {
   maxPrice?: number
   badge?: string
   chakra?: string
+  purpose?: string
+  subCategory?: string
   inStock?: boolean
   page?: number
   limit?: number

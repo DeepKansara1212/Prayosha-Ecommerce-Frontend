@@ -274,7 +274,7 @@ const B2BPage: FC = () => {
                 </div>
 
                 <div className="mt-6 pt-5 border-t" style={{ borderColor: '#E2DAC8' }}>
-                  <p className="font-body text-[0.62rem] uppercase tracking-[0.18em] mb-1" style={{ color: '#9E9590' }}>
+                  <p className="font-body text-[0.62rem] uppercase tracking-[0.18em] mb-1" style={{ color: '#5A4638' }}>
                     Typical response time
                   </p>
                   <p className="font-body font-light text-[0.82rem]" style={{ color: '#6B6057' }}>
@@ -297,7 +297,7 @@ const B2BPage: FC = () => {
                     className="block font-body text-[0.78rem] py-2 border-b last:border-0 transition-colors duration-200 hover:text-gold"
                     style={{ color: '#6B6057', borderColor: '#E2DAC8' }}
                   >
-                    {label} <span style={{ color: '#9E9590', opacity: 0.5 }}>→</span>
+                    {label} <span style={{ color: '#5A4638', opacity: 0.7 }}>→</span>
                   </Link>
                 ))}
               </div>

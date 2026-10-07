@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/authStore'
 import {
   AuthShell, FormField, PasswordField, FormError, AuthLink,
 } from './_AuthShell'
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
 
@@ -29,6 +30,7 @@ const RegisterPage: FC = () => {
   const navigate       = useNavigate()
   const accessToken    = useAuthStore(s => s.accessToken)
   const registerAction = useAuthStore(s => s.register)
+  const googleLogin    = useAuthStore(s => s.googleLogin)
 
   useEffect(() => {
     if (accessToken) navigate('/', { replace: true })
@@ -86,6 +88,10 @@ const RegisterPage: FC = () => {
           {loading ? 'Creating account…' : 'Create Account'}
         </button>
       </form>
+
+      <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #E2DAC8' }}>
+        <GoogleSignInButton onCredential={async credential => { await googleLogin(credential); navigate('/'); window.scrollTo({ top: 0 }) }} />
+      </div>
 
       <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
         Already have an account? <AuthLink onClick={() => navigate('/auth/login')}>Sign in</AuthLink>

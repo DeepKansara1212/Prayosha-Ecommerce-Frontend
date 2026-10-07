@@ -12,7 +12,7 @@ const config: Config = {
         'gold-light': '#D4AE85',
         deep:         '#1C1410',
         bark:         '#3D2B1F',
-        muted:        '#7A6657',
+        muted:        '#5A4638',
         amethyst:     '#7C5C8A',
         rose:         '#C9837A',
         aqua:         '#5B8FA0',

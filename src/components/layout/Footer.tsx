@@ -12,32 +12,32 @@ const SOCIALS = [
 
 const Footer: FC = () => (
   <footer aria-label="Site footer">
-    <div className="bg-deep section-p grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10">
+    <div className="bg-warm section-p grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10">
       {/* Brand */}
       <div>
         <Link
           to="/"
           className="inline-block mb-4 no-underline opacity-100 hover:opacity-80 transition-opacity duration-200"
         >
-          <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-11 w-auto object-contain" />
+          <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-14 w-auto object-contain mix-blend-multiply" />
         </Link>
-        <p className="font-body font-extralight text-[0.76rem] leading-relaxed text-cream/40 max-w-[240px] mb-5">
+        <p className="font-body font-normal text-[0.76rem] leading-relaxed text-bark max-w-[240px] mb-5">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.
         </p>
         <div className="flex flex-col gap-1.5 mb-5">
           <a
             href="mailto:prayoshacrytals@gmail.com"
-            className="font-body font-extralight text-[0.78rem] text-cream/45 no-underline transition-colors duration-300 hover:text-cream"
+            className="font-body font-normal text-[0.78rem] text-bark no-underline transition-colors duration-300 hover:text-deep"
           >
             prayoshacrytals@gmail.com
           </a>
           <a
             href="tel:+919429415057"
-            className="font-body font-extralight text-[0.78rem] text-cream/45 no-underline transition-colors duration-300 hover:text-cream"
+            className="font-body font-normal text-[0.78rem] text-bark no-underline transition-colors duration-300 hover:text-deep"
           >
             +91 94294 15057
           </a>
-          <p className="font-body font-extralight text-[0.78rem] leading-relaxed text-cream/45 max-w-[240px]">
+          <p className="font-body font-normal text-[0.78rem] leading-relaxed text-bark max-w-[240px]">
             SHOP NO.7, OPPO. BAPS SWAMINARAYAN TEMPLE, Khambhat, 388620
           </p>
         </div>
@@ -49,7 +49,7 @@ const Footer: FC = () => (
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Follow us on ${label}`}
-              className="w-[44px] h-[44px] border border-cream/15 flex items-center justify-center text-cream/50 no-underline transition-[border-color,color] duration-300 hover:border-gold hover:text-gold"
+              className="w-[44px] h-[44px] border border-bark/20 flex items-center justify-center text-bark no-underline transition-[border-color,color] duration-300 hover:border-gold hover:text-deep"
             >
               <Icon size={16} />
             </a>
@@ -60,7 +60,7 @@ const Footer: FC = () => (
       {/* Link columns */}
       {FOOTER_COLUMNS.map(col => (
         <div key={col.heading}>
-          <h5 className="font-body text-label uppercase tracking-[0.3em] text-gold-light mb-4">
+          <h5 className="font-body text-label uppercase tracking-[0.3em] text-deep mb-4">
             {col.heading}
           </h5>
           <ul className="list-none space-y-[0.55rem]">
@@ -68,7 +68,7 @@ const Footer: FC = () => (
               <li key={link.label}>
                 <Link
                   to={link.href}
-                  className="font-body font-extralight text-[0.78rem] text-cream/45 no-underline transition-colors duration-300 hover:text-cream"
+                  className="font-body font-normal text-[0.78rem] text-bark no-underline transition-colors duration-300 hover:text-deep"
                 >
                   {link.label}
                 </Link>
@@ -80,11 +80,11 @@ const Footer: FC = () => (
     </div>
 
     {/* Bottom bar */}
-    <div className="bg-deep border-t border-cream/[0.06] px-[clamp(1.25rem,5vw,4rem)] py-5 flex flex-col sm:flex-row justify-between items-center gap-2 flex-wrap">
-      <p className="font-body text-[0.68rem] tracking-[0.04em] text-cream/25">
+    <div className="bg-warm border-t border-bark/10 px-[clamp(1.25rem,5vw,4rem)] py-5 flex flex-col sm:flex-row justify-between items-center gap-2 flex-wrap">
+      <p className="font-body text-[0.68rem] tracking-[0.04em] text-bark">
         © {new Date().getFullYear()} Prayosha Crystal. All rights reserved.
       </p>
-      <p className="font-body text-[0.68rem] text-cream/25">Made with love &amp; moonlight ✦</p>
+      <p className="font-body text-[0.68rem] text-bark">Made with love &amp; moonlight ✦</p>
     </div>
   </footer>
 )

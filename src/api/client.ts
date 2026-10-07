@@ -1,77 +1,90 @@
-import axios from 'axios'
-import type { InternalAxiosRequestConfig } from 'axios'
+import axios from "axios";
+import type { InternalAxiosRequestConfig } from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api/v1'
+const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 
-export const apiClient = axios.create({ baseURL: BASE_URL })
+// withCredentials is required for the httpOnly refreshToken cookie to be sent
+// back to the API. The backend CORS config already sets credentials: true.
+export const apiClient = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+});
 
 // ─── Request: attach access token ────────────────────────────────────────────
 
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('accessToken')
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
+  const token = localStorage.getItem("accessToken");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 // ─── Response: 401 → refresh → retry ─────────────────────────────────────────
 
-let refreshing = false
-const pendingQueue: Array<(token: string | null) => void> = []
+let refreshing = false;
+const pendingQueue: Array<(token: string | null) => void> = [];
 
 function flushQueue(token: string | null) {
-  pendingQueue.splice(0).forEach(fn => fn(token))
+  pendingQueue.splice(0).forEach((fn) => fn(token));
 }
 
 function clearAuth() {
-  localStorage.removeItem('accessToken')
-  localStorage.removeItem('refreshToken')
-  localStorage.removeItem('prayosha-auth')
-  window.location.href = '/auth/login'
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("prayosha-auth");
+  window.location.href = "/auth/login";
 }
 
 apiClient.interceptors.response.use(
-  res => res,
-  async error => {
-    const config = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+  (res) => res,
+  async (error) => {
+    const config = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
-    const is401 = error.response?.status === 401
-    const isRefreshEndpoint = (config.url ?? '').includes('refresh-token')
+    const is401 = error.response?.status === 401;
+    const isRefreshEndpoint = (config.url ?? "").includes("refresh-token");
 
     if (!is401 || config._retry || isRefreshEndpoint) {
-      const message = error.response?.data?.message
-      return Promise.reject(message ? new Error(message) : error)
+      const message = error.response?.data?.message;
+      return Promise.reject(message ? new Error(message) : error);
     }
 
-    config._retry = true
+    config._retry = true;
 
     // Queue concurrent requests while a refresh is already in-flight
     if (refreshing) {
       return new Promise((resolve, reject) => {
-        pendingQueue.push(token => {
-          if (!token) return reject(error)
-          config.headers.Authorization = `Bearer ${token}`
-          resolve(apiClient(config))
-        })
-      })
+        pendingQueue.push((token) => {
+          if (!token) return reject(error);
+          config.headers.Authorization = `Bearer ${token}`;
+          resolve(apiClient(config));
+        });
+      });
     }
 
-    refreshing = true
+    refreshing = true;
 
     try {
-      const refreshToken = localStorage.getItem('refreshToken')
-      const { data } = await axios.post(`${BASE_URL}/auth/refresh-token`, { refreshToken })
-      const newToken: string = data.data.accessToken
-      localStorage.setItem('accessToken', newToken)
-      config.headers.Authorization = `Bearer ${newToken}`
-      flushQueue(newToken)
-      return apiClient(config)
+      const refreshToken = localStorage.getItem("refreshToken");
+      const { data } = await axios.post(
+        `${BASE_URL}/auth/refresh-token`,
+        { refreshToken },
+        { withCredentials: true },
+      );
+      const newToken: string = data.data.accessToken;
+      localStorage.setItem("accessToken", newToken);
+      config.headers.Authorization = `Bearer ${newToken}`;
+      flushQueue(newToken);
+      return apiClient(config);
     } catch (refreshError: unknown) {
-      flushQueue(null)
-      clearAuth()
-      const message = (refreshError as { response?: { data?: { message?: string } } })?.response?.data?.message
-      return Promise.reject(message ? new Error(message) : error)
+      flushQueue(null);
+      clearAuth();
+      const message = (
+        refreshError as { response?: { data?: { message?: string } } }
+      )?.response?.data?.message;
+      return Promise.reject(message ? new Error(message) : error);
     } finally {
-      refreshing = false
+      refreshing = false;
     }
   },
-)
+);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type FC } from 'react'
+import { useState, useEffect, useCallback, useRef, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { ProductDetail } from '@/types'
 import { useProduct, useRelatedProducts } from '@/hooks/useProducts'
@@ -10,6 +10,12 @@ import ReviewForm from '@/components/product/ReviewForm'
 import { ProductDetailSkeleton } from '@/components/ui/Skeleton'
 import EmptyState from '@/components/ui/EmptyState'
 import { toast } from '@/store/toastStore'
+import {
+  getMarketingConsent,
+  subscribeToMarketingConsent,
+  trackMetaEvent,
+  type MarketingConsent,
+} from '@/lib/metaPixel'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -18,7 +24,7 @@ interface ProductDetailPageProps {
   wishlistIds: Set<string>
   cartIds: Set<string>
   onToggleWishlist: (id: string) => void
-  onAddToCart: (id: string) => void
+  onAddToCart: (id: string, quantity?: number) => void
   onNavigateToCollection: () => void
   onNavigateToProduct: (id: string) => void
   onNavigateToCart: () => void
@@ -37,7 +43,7 @@ const StarRating: FC<{ rating: number; reviewCount: number }> = ({ rating, revie
   <div className="flex items-center gap-2">
     <div className="flex gap-0.5" aria-label={`${rating} out of 5 stars`}>
       {[1,2,3,4,5].map(n => (
-        <svg key={n} viewBox="0 0 12 12" className="w-4 h-4" fill={n <= Math.floor(rating) ? '#B8956A' : '#EDE5D8'}>
+        <svg key={n} viewBox="0 0 12 12" className="w-4 h-4" fill={n <= Math.floor(rating) ? '#B8956A' : '#3D2B1F'}>
           <path d="M6 1l1.2 3.7H11L8.1 6.6l1.2 3.7L6 8.3 2.7 10.3l1.2-3.7L1 4.7h3.8z" />
         </svg>
       ))}
@@ -209,14 +215,37 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
   const [qty, setQty]               = useState(1)
   const [addedToCart, setAddedToCart]   = useState(false)
   const [activeTab, setActiveTab]       = useState<'description'|'details'|'reviews'>('description')
+  const [marketingConsent, setMarketingConsentState] = useState<MarketingConsent>(getMarketingConsent)
 
   const isWishlisted = wishlistIds.has(productId)
   const isInCart     = cartIds.has(productId)
   const chakraColour = product ? (CHAKRA_COLOURS[product.chakra] ?? '#7C5C8A') : '#7C5C8A'
+  const viewedProductSku = useRef<string | null>(null)
+  const descriptionLines = product?.description
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean) ?? []
+
+  useEffect(() => subscribeToMarketingConsent(() => setMarketingConsentState(getMarketingConsent())), [])
+
+  useEffect(() => {
+    if (!product || marketingConsent !== 'granted') return
+    const contentId = product.sku ?? product.id
+    if (viewedProductSku.current === contentId) return
+    const tracked = trackMetaEvent('ViewContent', {
+      content_ids: [contentId],
+      content_type: 'product',
+      content_name: product.name,
+      content_category: product.category,
+      value: product.price,
+      currency: 'INR',
+    })
+    if (tracked) viewedProductSku.current = contentId
+  }, [product, marketingConsent])
 
   const handleAddToCart = useCallback(() => {
     if (!product) return
-    for (let i = 0; i < qty; i++) onAddToCart(product.id)
+    onAddToCart(product.id, qty)
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2500)
     toast.success('Added to cart')
@@ -370,7 +399,6 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center gap-4 flex-wrap">
                   <QuantitySelector qty={qty} max={product.stockCount} onChange={setQty} />
-                  <p className="font-body text-[0.68rem] text-muted">{product.stockCount} units available</p>
                 </div>
 
                 <button
@@ -467,7 +495,18 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
             <div className="py-8 max-w-3xl">
               {activeTab === 'description' && (
                 <div>
-                  <p className="font-body font-extralight text-[0.85rem] leading-[2] text-bark mb-8">{product.description}</p>
+                  {descriptionLines.length > 1 ? (
+                    <ul className="space-y-3 mb-8">
+                      {descriptionLines.map((line, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                          <p className="font-body font-extralight text-[0.85rem] leading-[2] text-bark">{line}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="font-body font-extralight text-[0.85rem] leading-[2] text-bark mb-8">{descriptionLines[0] ?? product.description}</p>
+                  )}
                   <p className="font-body text-[0.62rem] uppercase tracking-[0.25em] text-gold mb-4">Properties & Benefits</p>
                   <ul className="space-y-3">
                     {product.properties.map((p, i) => (

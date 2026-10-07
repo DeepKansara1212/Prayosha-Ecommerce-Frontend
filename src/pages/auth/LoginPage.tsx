@@ -8,6 +8,7 @@ import * as authApi from '@/api/auth.api'
 import {
   AuthShell, FormField, PasswordField, FormError, AuthLink,
 } from './_AuthShell'
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
 
@@ -157,6 +158,7 @@ const Step2: FC<{ phone: string; onBack: () => void }> = ({ phone, onBack }) => 
 const LoginPage: FC = () => {
   const navigate    = useNavigate()
   const accessToken = useAuthStore(s => s.accessToken)
+  const googleLogin = useAuthStore(s => s.googleLogin)
 
   useEffect(() => {
     if (accessToken) navigate('/', { replace: true })
@@ -184,6 +186,10 @@ const LoginPage: FC = () => {
         ? <Step1 onSuccess={p => { setPhone(p); setStep(2) }} />
         : <Step2 phone={phone} onBack={() => setStep(1)} />
       }
+
+      <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #E2DAC8' }}>
+        <GoogleSignInButton onCredential={async credential => { await googleLogin(credential); navigate('/'); window.scrollTo({ top: 0 }) }} />
+      </div>
 
       <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', display: 'flex', flexWrap: 'wrap', gap: '6px 16px', justifyContent: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
         <span>New here? <AuthLink onClick={() => navigate('/auth/register')}>Create account</AuthLink></span>

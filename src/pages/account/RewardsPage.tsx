@@ -129,7 +129,7 @@ const RewardsPage: FC = () => {
       }}>
         <p style={{
           fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase',
-          letterSpacing: '0.22em', color: '#9E9590', margin: '0 0 20px',
+            letterSpacing: '0.22em', color: '#5A4638', margin: '0 0 20px',
         }}>
           How It Works
         </p>
@@ -169,7 +169,7 @@ const RewardsPage: FC = () => {
         <div style={{ padding: '16px 24px', borderBottom: '1px solid #E2DAC8' }}>
           <p style={{
             fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase',
-            letterSpacing: '0.22em', color: '#9E9590', margin: 0,
+            letterSpacing: '0.22em', color: '#5A4638', margin: 0,
           }}>
             Transaction History
           </p>
