@@ -42,7 +42,7 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
   return (
     <article
       className={cn(
-        'group bg-cream border border-warm transition-all duration-350',
+        'group bg-cream border border-warm transition-all duration-350 flex h-full flex-col',
         removing && 'opacity-0 scale-95',
       )}
       aria-label={product.name}
@@ -94,18 +94,45 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
       </div>
 
       {/* Info */}
-      <div className="p-4 border-t border-warm">
-        <p className="font-body text-[0.58rem] uppercase tracking-[0.2em] text-muted mb-1">
+      <div className="p-4 border-t border-warm flex flex-1 flex-col">
+        <p
+          className="font-body text-[0.58rem] uppercase tracking-[0.2em] text-muted mb-1 leading-[1.4]"
+          style={{
+            minHeight: '2.8em',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+            overflow: 'hidden',
+          }}
+        >
           {product.category}
         </p>
-        <h3 className="font-display text-[1.1rem] font-normal text-deep leading-tight mb-0.5">
+        <h3
+          className="font-display text-[1.1rem] font-normal text-deep leading-tight mb-0.5"
+          style={{
+            minHeight: '2.4em',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+            overflow: 'hidden',
+          }}
+        >
           {product.name}
         </h3>
-        <p className="font-body font-extralight text-[0.72rem] text-muted mb-3 leading-snug line-clamp-1">
+        <p
+          className="font-body font-extralight text-[0.72rem] text-muted mb-3 leading-snug"
+          style={{
+            minHeight: '2.75em',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+            overflow: 'hidden',
+          }}
+        >
           {product.intention}
         </p>
 
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 mt-auto">
           <span className="font-display text-[1.05rem] font-light text-bark">{product.priceDisplay}</span>
           <span className={cn(
             'font-body text-[0.58rem] uppercase tracking-[0.12em]',

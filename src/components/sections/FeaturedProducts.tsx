@@ -24,7 +24,7 @@ const SkeletonCard: FC = () => (
 
 const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void }> = ({ product, onNavigate }) => (
   <article
-    className="product-card bg-cream cursor-pointer group transition-transform duration-300 hover:-translate-y-1"
+    className="product-card bg-cream cursor-pointer group flex h-full flex-col transition-transform duration-300 hover:-translate-y-1"
     aria-label={`View ${product.name}`}
     onClick={() => onNavigate(product.id)}
   >
@@ -42,14 +42,23 @@ const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void
       }
     </div>
 
-    <div className="px-4 pt-4 pb-5">
-      <p className="font-body text-tag uppercase tracking-[0.22em] text-muted mb-1">
+    <div className="px-4 pt-4 pb-5 flex flex-1 flex-col">
+      <p className="font-body text-tag uppercase tracking-[0.22em] text-muted mb-1 min-h-[1.25rem]">
         {product.category}
       </p>
-      <h3 className="font-display text-[1.1rem] font-normal text-deep mb-3">
+      <h3
+        className="font-display text-[1.1rem] font-normal text-deep mb-3 leading-[1.2]"
+        style={{
+          minHeight: '4.8em',
+          display: '-webkit-box',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 4,
+          overflow: 'hidden',
+        }}
+      >
         {product.name}
       </h3>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mt-auto">
         <span className="font-body text-price text-bark">{product.priceDisplay}</span>
         <button
           onClick={e => { e.stopPropagation(); onNavigate(product.id) }}

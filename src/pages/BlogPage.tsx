@@ -17,19 +17,24 @@ const CATEGORIES: Array<"All" | BlogCategory> = [
   "Spiritual Practice",
 ];
 
+function getPostImage(post: BlogPost): string | undefined {
+  return post.content.find((section) => section.type === "image" && section.image)?.image
+    ?? post.images[0];
+}
+
 // ─── Shared card image area ───────────────────────────────────────────────────
 
 const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
   <div
     className="w-full relative overflow-hidden flex items-center justify-center"
     style={{
-      aspectRatio: tall ? "16/9" : "4/3",
+      aspectRatio: "1",
       background: post.gradient,
     }}
   >
-    {post.images[0] && (
+    {getPostImage(post) && (
       <img
-        src={post.images[0]}
+        src={getPostImage(post)}
         alt={post.title}
         className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         loading="lazy"
@@ -42,7 +47,7 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
         backgroundImage:
           "radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)",
         backgroundSize: "22px 22px",
-        opacity: post.images[0] ? 0 : 0.35,
+        opacity: getPostImage(post) ? 0 : 0.35,
       }}
     />
     <div
@@ -52,10 +57,10 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
         height: "45%",
         background: "rgba(255,255,255,0.08)",
         filter: "blur(28px)",
-        opacity: post.images[0] ? 0 : 1,
+        opacity: getPostImage(post) ? 0 : 1,
       }}
     />
-    {!post.images[0] && <span
+    {!getPostImage(post) && <span
       className="select-none relative z-10"
       style={{
         fontSize: tall ? "clamp(3.5rem,6vw,5.5rem)" : "clamp(3rem,5vw,4rem)",
@@ -63,12 +68,6 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
     >
       {post.emoji}
     </span>}
-    <div
-      className="absolute bottom-0 left-0 right-0 h-12"
-      style={{
-        background: "linear-gradient(to bottom, transparent, rgba(0,0,0,0.35))",
-      }}
-    />
   </div>
 );
 
@@ -148,125 +147,38 @@ const PostCard: FC<PostCardProps> = ({ post, onNavigate }) => (
 
 const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
   <article
-    className="group cursor-pointer relative overflow-hidden"
+    className="group cursor-pointer grid grid-cols-1 md:grid-cols-[minmax(220px,0.8fr)_1.2fr] gap-0 overflow-hidden"
     style={{
-      background: post.gradient,
-      minHeight: "clamp(340px, 42vh, 500px)",
-      border: "1px solid rgba(255,255,255,0.06)",
+      background: "#F5F0E8",
+      border: "1px solid rgba(196,184,154,0.55)",
+      boxShadow: "0 2px 10px rgba(28,20,16,0.07)",
     }}
     onClick={() => onNavigate(post.slug)}
     aria-label={`Featured: ${post.title}`}
   >
-    {post.images[0] && (
-      <img
-        src={post.images[0]}
-        alt={post.title}
-        className="absolute inset-0 h-full w-full object-cover"
-        fetchPriority="high"
-        onError={event => { event.currentTarget.style.display = "none" }}
-      />
-    )}
     <div
-      className="absolute inset-0 pointer-events-none"
+      className="relative overflow-hidden flex items-center justify-center"
       style={{
-        backgroundImage:
-          "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",
-        backgroundSize: "24px 24px",
-        opacity: post.images[0] ? 0 : 0.3,
+        aspectRatio: "1",
+        background: post.gradient,
       }}
-    />
-
-    <div
-      className="absolute inset-0 flex items-center justify-end pointer-events-none select-none"
-      style={{
-        paddingRight: "clamp(2rem,6vw,6rem)",
-        opacity: post.images[0] ? 0 : 0.08,
-        fontSize: "clamp(9rem,18vw,18rem)",
-      }}
-      aria-hidden="true"
     >
-      {post.emoji}
+      {getPostImage(post) ? (
+        <img src={getPostImage(post)} alt="" className="absolute inset-0 h-full w-full object-cover" fetchPriority="high" />
+      ) : (
+        <span className="select-none" style={{ fontSize: "clamp(5rem,12vw,9rem)" }}>{post.emoji}</span>
+      )}
     </div>
 
-    <div
-      className="absolute inset-0 pointer-events-none"
-      style={{
-        background:
-          post.images[0]
-            ? "linear-gradient(0deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.08) 100%)"
-            : "linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)",
-      }}
-    />
-
-    <div
-      className="relative z-10 flex flex-col justify-end h-full"
-      style={{
-        padding: "clamp(2.5rem,5vw,4rem) clamp(1.5rem,5vw,4rem)",
-        minHeight: "clamp(340px, 42vh, 500px)",
-      }}
-    >
-      <p
-        className="font-body text-[0.58rem] uppercase tracking-[0.3em] mb-3"
-        style={{ color: "rgba(196,184,154,0.9)" }}
-      >
-        ✦ Featured Article
-      </p>
-
+    <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
+      <p className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-gold mb-4">✦ Featured Article</p>
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <span
-          className="font-body text-[0.6rem] uppercase tracking-[0.2em] px-3 py-1"
-          style={{
-            border: "1px solid rgba(165,132,200,0.6)",
-            color: "#C4A8E8",
-            background: "rgba(123,94,167,0.15)",
-          }}
-        >
-          {post.category}
-        </span>
-        <span
-          className="font-body text-[0.62rem]"
-          style={{ color: "rgba(245,240,232,0.55)" }}
-        >
-          {post.readTime}
-        </span>
+        <span className="font-body text-[0.6rem] uppercase tracking-[0.2em] px-3 py-1 border" style={{ borderColor: "rgba(123,94,167,0.45)", color: "#7B5EA7" }}>{post.category}</span>
+        <span className="font-body text-[0.62rem] text-muted">{post.date} · {post.readTime}</span>
       </div>
-
-      <h2
-        className="font-display font-light text-cream leading-tight mb-4"
-        style={{
-          fontSize: "clamp(1.8rem,4.5vw,3.2rem)",
-          textShadow: "0 2px 12px rgba(0,0,0,0.4)",
-        }}
-      >
-        {post.title}
-      </h2>
-
-      <p
-        className="font-body font-extralight text-[0.84rem] leading-[1.8] max-w-2xl mb-6"
-        style={{ color: "rgba(245,240,232,0.65)" }}
-      >
-        {post.excerpt}
-      </p>
-
-      <button
-        className="inline-flex items-center gap-2 font-body text-[0.68rem] uppercase tracking-[0.2em] self-start bg-transparent border-none cursor-pointer p-0 transition-colors duration-200"
-        style={{ color: "#C49A3C" }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onNavigate(post.slug);
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.color = "#F5F0E8";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.color = "#C49A3C";
-        }}
-      >
-        Read Article
-        <span className="transition-transform duration-200 group-hover:translate-x-1">
-          →
-        </span>
-      </button>
+      <h2 className="font-display font-light text-deep leading-tight mb-4" style={{ fontSize: "clamp(1.7rem,3.5vw,2.8rem)" }}>{post.title}</h2>
+      <p className="font-body font-extralight text-[0.84rem] leading-[1.9] text-bark mb-6">{post.excerpt}</p>
+      <span className="inline-flex items-center gap-2 font-body text-[0.68rem] uppercase tracking-[0.2em] text-gold">Read Article <span>→</span></span>
     </div>
   </article>
 );
@@ -304,6 +216,16 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
     <>
       <Navbar />
       <main id="main-content">
+        <section className="bg-cream" style={{ padding: "clamp(3.5rem,7vw,6rem) clamp(1.25rem,5vw,4rem) clamp(2rem,4vw,3rem)" }}>
+          <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">Prayosha Crystal Journal</p>
+          <h1 className="font-display font-light text-deep leading-tight mb-3" style={{ fontSize: "clamp(2.3rem,5vw,4rem)" }}>
+            Stories for a more <em className="italic text-amethyst">intentional life</em>
+          </h1>
+          <p className="font-body font-extralight text-[0.86rem] leading-[1.9] text-muted max-w-2xl">
+            Explore crystal wisdom, rituals, and thoughtful ways to bring a little more meaning into each day.
+          </p>
+        </section>
+
         {/* ── Category filter ── */}
         <div
           style={{

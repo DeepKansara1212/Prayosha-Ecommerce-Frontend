@@ -50,12 +50,15 @@ export type BlogCategory =
   | 'Gemstone Spotlight'
   | 'Spiritual Practice'
 
-export type BlogSectionType = 'paragraph' | 'heading' | 'subheading' | 'quote' | 'list'
+export type BlogSectionType = 'paragraph' | 'heading' | 'subheading' | 'quote' | 'list' | 'image'
 
 export interface BlogSection {
   type: BlogSectionType
   text?: string
   items?: string[]
+  image?: string
+  title?: string
+  description?: string
 }
 
 export interface BlogPost {

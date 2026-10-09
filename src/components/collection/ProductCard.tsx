@@ -41,7 +41,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
 
   return (
     <article
-      className="group bg-cream cursor-pointer relative"
+      className="group bg-cream cursor-pointer relative flex h-full flex-col"
       onClick={() => onSelect(product)}
       aria-label={`View ${product.name} details`}
     >
@@ -111,20 +111,49 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
       </div>
 
       {/* Info */}
-      <div className="p-4 border-t border-warm">
-        <p className="font-body text-[0.58rem] uppercase tracking-[0.22em] text-muted mb-1">
+      <div className="p-4 border-t border-warm flex flex-1 flex-col">
+        <p
+          className="font-body text-[0.58rem] uppercase tracking-[0.22em] text-muted mb-1 leading-[1.4]"
+          style={{
+            minHeight: '2.8em',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+            overflow: 'hidden',
+          }}
+        >
           {product.category} · {product.chakra} Chakra
         </p>
-        <h3 className="font-display text-[1.1rem] font-normal text-deep mb-0.5 leading-tight">
+        <h3
+          className="font-display text-[1.1rem] font-normal text-deep mb-0.5 leading-tight"
+          style={{
+            minHeight: '2.4em',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+            overflow: 'hidden',
+          }}
+        >
           {product.name}
         </h3>
-        <p className="font-body font-extralight text-[0.72rem] text-muted mb-3 leading-snug">
+        <p
+          className="font-body font-extralight text-[0.72rem] text-muted mb-3 leading-snug"
+          style={{
+            minHeight: '6.875em',
+            display: '-webkit-box',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 5,
+            overflow: 'hidden',
+          }}
+        >
           {product.subtitle}
         </p>
 
-        <StarRating rating={product.rating} />
+        <div className="min-h-[1rem]">
+          <StarRating rating={product.rating} />
+        </div>
 
-        <div className="flex items-center justify-between mt-3">
+        <div className="flex items-center justify-between mt-auto pt-3">
           <span className="font-display text-[1.1rem] font-light text-bark">
             {product.priceDisplay}
           </span>

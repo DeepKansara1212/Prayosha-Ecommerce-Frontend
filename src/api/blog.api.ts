@@ -32,7 +32,7 @@ const CATEGORY_STYLE: Record<BlogPost['category'], { emoji: string; gradient: st
 function mapBlog(raw: ApiBlog): BlogPost {
   const style = CATEGORY_STYLE[raw.category]
   const date = raw.date ?? raw.createdAt
-  const wordCount = `${raw.excerpt} ${raw.content.map(section => section.text ?? '').join(' ')}`
+  const wordCount = `${raw.excerpt} ${raw.content.map(section => section.text ?? section.description ?? '').join(' ')}`
     .trim()
     .split(/\s+/)
     .filter(Boolean)

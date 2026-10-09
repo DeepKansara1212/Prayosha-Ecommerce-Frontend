@@ -5,6 +5,7 @@ export interface ApiSubCategory {
   name: string
   slug: string
   parentCategory: string
+  image?: string
   isActive: boolean
   sortOrder: number
 }
