@@ -33,26 +33,18 @@ const BADGE_MAP: Record<string, string> = {
   'GIFT SET': 'Gifting',
 }
 
-// Products default to inheriting their category's shipping profile — mirrors the
-// same useCategoryShipping resolution the backend applies for order fulfillment.
-function resolveShipping(p: ApiProduct) {
-  const useCategoryShipping = p.useCategoryShipping ?? true
-  if (useCategoryShipping) {
-    return typeof p.category === 'object' ? p.category.shipping : undefined
-  }
-  return p.shipping
-}
-
 export function adapt(p: ApiProduct): ProductDetail {
-  const shipping = resolveShipping(p)
-  const dims =
-    shipping?.length != null && shipping?.breadth != null && shipping?.height != null
-      ? `${shipping.length} × ${shipping.breadth} × ${shipping.height}`
-      : 'N/A'
-
   const properties: string[] = p.metaphysicalProperties
-    ? p.metaphysicalProperties.split(/\n|\.(?=\s[A-Z])/).map(s => s.trim()).filter(Boolean)
+    ? p.metaphysicalProperties.split(/\r?\n/).map(s => s.trim()).filter(Boolean)
     : []
+  const howToUse = (p.howToUse ?? '')
+    .split(/\r?\n/)
+    .map(step => step.trim())
+    .filter(Boolean)
+  const careInstructions = (p.careInstructions ?? '')
+    .split(/\r?\n/)
+    .map(instruction => instruction.trim())
+    .filter(Boolean)
 
   return {
     id: p.slug,
@@ -60,8 +52,8 @@ export function adapt(p: ApiProduct): ProductDetail {
     name: p.name,
     subtitle: p.shortDescription ?? '',
     category: str(p.category) as ProductCategory,
-    price: p.price,
-    priceDisplay: '₹' + p.price.toLocaleString('en-IN'),
+    ...(p.price !== undefined && { price: p.price }),
+    priceDisplay: p.price !== undefined ? '₹' + p.price.toLocaleString('en-IN') : 'Price on request',
     images: p.images ?? [],
     video: p.video,
     emoji: p.emoji ?? '💎',
@@ -72,9 +64,15 @@ export function adapt(p: ApiProduct): ProductDetail {
     intention: p.tags?.join(' · ') ?? '',
     description: p.description,
     properties,
-    howToUse: p.howToUse ?? p.careInstructions ?? '',
-    dimensions: dims,
-    weight: shipping?.weight != null ? String(shipping.weight) : 'N/A',
+    howToUse,
+    careInstructions,
+    productDetails: {
+      ...(p.productDetails ?? {}),
+      dimensions: p.dimensions ?? p.productDetails?.dimensions,
+      size: p.size ?? p.productDetails?.size,
+    },
+    dimensions: p.dimensions ?? p.productDetails?.dimensions,
+    size: p.size ?? p.productDetails?.size,
     inStock: (p.stock ?? 0) > 0,
     stockCount: p.stock ?? 0,
     rating: p.ratings?.average ?? 0,

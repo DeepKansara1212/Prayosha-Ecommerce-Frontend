@@ -126,7 +126,9 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
 
           {/* Line total */}
           <span className="font-display text-[1.1rem] font-light text-deep">
-            ₹{(product.price * qty).toLocaleString('en-IN')}
+            {product.price === undefined
+              ? 'Price on request'
+              : `₹${(product.price * qty).toLocaleString('en-IN')}`}
           </span>
 
           {/* Move to wishlist */}
@@ -253,11 +255,12 @@ interface SummaryProps {
   onPromoRemove: () => void
   onCheckout: () => void
   itemCount: number
+  canCheckout: boolean
 }
 
 const OrderSummary: FC<SummaryProps> = ({
   subtotal, discountAmount, appliedCode,
-  onPromoApply, onPromoRemove, onCheckout, itemCount,
+  onPromoApply, onPromoRemove, onCheckout, itemCount, canCheckout,
 }) => {
   const discountedSubtotal = subtotal - discountAmount
   const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
@@ -341,11 +344,17 @@ const OrderSummary: FC<SummaryProps> = ({
       {/* Checkout button */}
       <button
         onClick={onCheckout}
+        disabled={!canCheckout}
         className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-deep text-cream hover:bg-bark transition-colors duration-200"
         aria-label="Proceed to checkout"
       >
         Proceed to Checkout
       </button>
+      {!canCheckout && (
+        <p role="alert" className="mt-3 font-body text-[0.72rem] leading-relaxed text-rose">
+          Remove products marked “Price on request” before checkout.
+        </p>
+      )}
 
       {/* Trust signals */}
       <div className="mt-5 pt-5 border-t border-warm/60 grid grid-cols-3 gap-3">
@@ -452,9 +461,10 @@ const CartPage: FC<CartPageProps> = ({
   )
 
   const subtotal = useMemo(
-    () => cartProducts.reduce((acc, { product, qty }) => acc + product.price * qty, 0),
+    () => cartProducts.reduce((acc, { product, qty }) => acc + (product.price ?? 0) * qty, 0),
     [cartProducts],
   )
+  const canCheckout = cartProducts.every(({ product }) => product.price !== undefined)
 
   const itemCount = useMemo(
     () => cartProducts.reduce((acc, { qty }) => acc + qty, 0),
@@ -599,6 +609,7 @@ const CartPage: FC<CartPageProps> = ({
                 onPromoRemove={removeCoupon}
                 onCheckout={handleCheckout}
                 itemCount={itemCount}
+                canCheckout={canCheckout}
               />
             </div>
           )}

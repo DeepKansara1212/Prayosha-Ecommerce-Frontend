@@ -1,8 +1,10 @@
 import { useState, type FC, type FormEvent, type ChangeEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { cn } from '@/lib/utils'
+import { sendContactMessage } from '@/api/contact.api'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -136,14 +138,26 @@ const MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=
 // ─── ContactPage ──────────────────────────────────────────────────────────────
 
 const ContactPage: FC = () => {
-  const [form, setForm]       = useState<ContactForm>({ name: '', email: '', subject: SUBJECTS[0], message: '' })
+  const [searchParams] = useSearchParams()
+  const inquiryProduct = searchParams.get('product')?.slice(0, 100)
+  const inquiryProductUrl = searchParams.get('productUrl') ?? undefined
+  const [form, setForm]       = useState<ContactForm>(() => ({
+    name: '',
+    email: '',
+    subject: inquiryProduct ? 'Product enquiry' : SUBJECTS[0],
+    message: inquiryProduct
+      ? `I'd like to enquire about ${inquiryProduct}. Please share more information and pricing.`
+      : '',
+  }))
   const [errors, setErrors]   = useState<ContactErrors>({})
   const [loading, setLoading] = useState(false)
   const [sent, setSent]       = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const set = <K extends keyof ContactForm>(k: K, v: ContactForm[K]) => {
     setForm(f => ({ ...f, [k]: v }))
     setErrors(e => ({ ...e, [k]: undefined }))
+    setSubmitError('')
   }
 
   const validate = (): ContactErrors => {
@@ -161,9 +175,15 @@ const ContactPage: FC = () => {
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
     setLoading(true)
-    await new Promise(r => setTimeout(r, 1400))
-    setLoading(false)
-    setSent(true)
+    setSubmitError('')
+    try {
+      await sendContactMessage({ ...form, productUrl: inquiryProductUrl })
+      setSent(true)
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Unable to send your message. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const revealRef1 = useScrollReveal<HTMLDivElement>()
@@ -176,7 +196,12 @@ const ContactPage: FC = () => {
       <main id="main-content" className="bg-cream">
 
         {/* ── Main content ── */}
-        <div style={{ padding: 'clamp(3.5rem,7vw,6rem) clamp(1.25rem,5vw,4rem)' }}>
+        <div style={{
+          paddingTop: 'calc(88px + clamp(2rem,5vw,4rem))',
+          paddingBottom: 'clamp(3.5rem,7vw,6rem)',
+          paddingLeft: 'clamp(1.25rem,5vw,4rem)',
+          paddingRight: 'clamp(1.25rem,5vw,4rem)',
+        }}>
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-12 xl:gap-16">
 
             {/* ── Contact form ── */}
@@ -266,6 +291,11 @@ const ContactPage: FC = () => {
                         </span>
                       ) : 'Send Message'}
                     </button>
+                    {submitError && (
+                      <p role="alert" className="font-body text-[0.72rem] leading-relaxed text-rose">
+                        {submitError}
+                      </p>
+                    )}
                   </form>
                 </>
               )}

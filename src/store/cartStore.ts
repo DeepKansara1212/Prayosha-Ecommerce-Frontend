@@ -111,7 +111,7 @@ export const useCartStore = create<CartState>((set, get) => ({
       const cart = await cartApi.addItem(productId, quantity)
       set(fromApiCart(cart))
       const product = cart.items.find(item => item.product.slug === productId)?.product
-      if (product) {
+      if (product?.price !== undefined) {
         trackMetaEvent('AddToCart', {
           content_ids: [product.sku],
           content_type: 'product',

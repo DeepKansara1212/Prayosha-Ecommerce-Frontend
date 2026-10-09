@@ -131,9 +131,9 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
           <button
             onClick={e => { e.stopPropagation(); onSelect(product) }}
             className="font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-2 bg-deep text-cream hover:bg-gold hover:text-deep transition-colors duration-200"
-            aria-label={`Add ${product.name} to cart`}
+            aria-label={product.price === undefined ? `Enquire about ${product.name}` : `View ${product.name} details`}
           >
-            Add
+            {product.price === undefined ? 'Enquire' : 'View'}
           </button>
         </div>
       </div>

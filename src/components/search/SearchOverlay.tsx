@@ -345,7 +345,9 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                         fontFamily: 'Jost, sans-serif', fontSize: 14, fontWeight: 500,
                         color: '#C49A3C', flexShrink: 0,
                       }}>
-                        ₹{result.price.toLocaleString('en-IN')}
+                        {result.price !== undefined
+                          ? `₹${result.price.toLocaleString('en-IN')}`
+                          : 'Price on request'}
                       </span>
                     </Link>
                   )

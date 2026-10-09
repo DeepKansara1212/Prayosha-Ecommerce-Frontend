@@ -65,6 +65,7 @@ export interface BlogPost {
   subtitle?: string
   excerpt: string
   category: BlogCategory
+  images: string[]
   readTime: string
   date: string
   emoji: string
@@ -115,7 +116,7 @@ export interface ProductDetail {
   name: string
   subtitle: string
   category: ProductCategory
-  price: number
+  price?: number
   priceDisplay: string
   images: string[]
   video?: string
@@ -127,9 +128,19 @@ export interface ProductDetail {
   intention: string
   description: string
   properties: string[]
-  howToUse: string
-  dimensions: string
-  weight: string
+  howToUse: string[]
+  careInstructions: string[]
+  productDetails?: {
+    weight?: string
+    length?: string
+    breadth?: string
+    height?: string
+    dimensions?: string
+    size?: string
+  }
+  weight?: string
+  dimensions?: string
+  size?: string
   inStock: boolean
   stockCount: number
   rating: number

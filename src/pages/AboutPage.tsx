@@ -49,28 +49,23 @@ const AboutPage: FC = () => (
 
       {/* ── Ethical Sourcing & Journey ── */}
       <RevealSection>
-        <div style={{ padding: 'clamp(4rem,8vw,7rem) clamp(1.25rem,5vw,4rem)' }} className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div>
-            <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-4">🌍 Our promise</p>
-            <h2 className="font-display font-light text-[clamp(2rem,4vw,3rem)] text-deep leading-tight mb-6">
-              Responsibly sourced,<br />
-              <em className="italic text-amethyst">hands-on every step</em>
+        <div style={{ padding: 'clamp(5rem,10vw,8rem) clamp(1.25rem,5vw,4rem)' }}>
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-5">Our promise</p>
+            <h2 className="font-display font-light text-[clamp(2.2rem,5vw,4rem)] text-deep leading-[1.08] mb-7">
+              Responsibly sourced,<br className="hidden sm:block" />
+              {' '}<em className="italic text-amethyst">thoughtfully selected</em>
             </h2>
-            <div className="space-y-4 font-body font-extralight text-[0.85rem] leading-[2] text-bark">
-              <p>At Prayosha Crystals, we believe that the journey of a crystal matters as much as its beauty. We work closely with trusted mining partners globally to ensure all our 100% natural crystals are sourced responsibly and ethically.</p>
-              <p>Our team oversees the entire process — from selecting raw minerals at the mines to the final quality check in our manufacturing unit. This hands-on approach guarantees that you receive crystals with the purest vibrational energy and zero artificial alterations.</p>
-            </div>
-          </div>
-
-          {/* Visual */}
-          <div className="relative">
-            <div className="bg-gem-amethyst aspect-square flex items-center justify-center text-[8rem] relative overflow-hidden">
-              <span className="select-none">🔮</span>
-              <div className="absolute bottom-0 left-0 right-0 h-1/3" style={{ background: 'linear-gradient(to top, rgba(28,20,16,0.5), transparent)' }} aria-hidden="true" />
-            </div>
-            <div className="absolute -bottom-4 -right-4 bg-warm p-5 shadow-lg max-w-[220px]">
-              <p className="font-display font-light text-[1.8rem] text-amethyst">100%</p>
-              <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted mt-1">Natural, untreated, undyed crystals</p>
+            <div className="mx-auto mb-8 h-px w-16 bg-gold/60" aria-hidden="true" />
+            <div className="mx-auto max-w-3xl space-y-5 font-body font-extralight text-[0.9rem] leading-[2] text-bark sm:text-base">
+              <p>
+                At Prayosha Crystals, we believe the journey of a crystal matters as much as its beauty.
+                We work with trusted partners to source natural crystals with care and respect.
+              </p>
+              <p>
+                From selecting each stone to its final quality check, our team takes care at every step.
+                We focus on honest details, thoughtful handling, and crystals chosen for their natural character.
+              </p>
             </div>
           </div>
         </div>

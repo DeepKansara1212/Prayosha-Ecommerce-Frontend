@@ -143,9 +143,27 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             background: post.gradient,
           }}
         >
+          {post.images[0] && (
+            <img
+              src={post.images[0]}
+              alt={post.title}
+              className="absolute inset-0 h-full w-full object-cover"
+              fetchPriority="high"
+              onError={event => { event.currentTarget.style.display = 'none' }}
+            />
+          )}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: post.images[0]
+                ? 'linear-gradient(0deg, rgba(20,14,24,0.82) 0%, rgba(20,14,24,0.35) 60%, rgba(20,14,24,0.2) 100%)'
+                : 'transparent',
+            }}
+            aria-hidden="true"
+          />
           <div
             className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full pointer-events-none"
-            style={{ background: '#7C5C8A', opacity: 0.15, filter: 'blur(90px)' }}
+            style={{ background: '#7C5C8A', opacity: post.images[0] ? 0 : 0.15, filter: 'blur(90px)' }}
             aria-hidden="true"
           />
 
@@ -293,19 +311,27 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
                   <div
                     className="w-full relative overflow-hidden flex items-center justify-center"
                     style={{ aspectRatio: '16/9', background: related.gradient }}
-                    aria-hidden="true"
                   >
+                    {related.images[0] && (
+                      <img
+                        src={related.images[0]}
+                        alt={related.title}
+                        className="absolute inset-0 h-full w-full object-cover"
+                        loading="lazy"
+                        onError={event => { event.currentTarget.style.display = 'none' }}
+                      />
+                    )}
                     <div
                       className="absolute inset-0"
                       style={{
                         backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)',
                         backgroundSize: '22px 22px',
-                        opacity: 0.3,
+                        opacity: related.images[0] ? 0 : 0.3,
                       }}
                     />
-                    <span className="select-none relative z-10" style={{ fontSize: 'clamp(2.2rem,4vw,3rem)' }}>
+                    {!related.images[0] && <span className="select-none relative z-10" style={{ fontSize: 'clamp(2.2rem,4vw,3rem)' }}>
                       {related.emoji}
-                    </span>
+                    </span>}
                     <div className="absolute bottom-0 left-0 right-0 h-8" style={{ background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,0.3))' }} />
                   </div>
 

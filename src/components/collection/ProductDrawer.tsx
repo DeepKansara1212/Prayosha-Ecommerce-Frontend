@@ -1,8 +1,11 @@
 import { useState, useEffect, type FC } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import type { ProductDetail } from '@/types'
 import { COLLECTION_PRODUCTS } from '@/data/collection'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { cn } from '@/lib/utils'
+import { getPublicSettings } from '@/api/settings.api'
+import { getProductInquiryUrl, hasWhatsAppNumber } from '@/lib/productInquiry'
 
 interface ProductDrawerProps {
   product: ProductDetail | null
@@ -48,6 +51,11 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
   const [tab, setTab] = useState<Tab>('description')
   const [qty, setQty] = useState(1)
   const [added, setAdded] = useState(false)
+  const { data: publicSettings } = useQuery({
+    queryKey: ['public-settings'],
+    queryFn: getPublicSettings,
+    staleTime: 5 * 60 * 1000,
+  })
 
   useLockBodyScroll(!!product)
 
@@ -224,51 +232,62 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                   )}
                 </div>
 
-                {/* Qty selector */}
-                <div className="flex items-center border border-warm">
-                  <button
-                    onClick={() => setQty(q => Math.max(1, q - 1))}
-                    className="w-9 h-9 flex items-center justify-center text-bark hover:bg-warm transition-colors"
-                    aria-label="Decrease quantity"
-                  >
-                    −
-                  </button>
-                  <span className="w-10 text-center font-body text-[0.8rem] text-bark" aria-live="polite" aria-label={`Quantity: ${qty}`}>
-                    {qty}
-                  </span>
-                  <button
-                    onClick={() => setQty(q => Math.min(product.stockCount, q + 1))}
-                    className="w-9 h-9 flex items-center justify-center text-bark hover:bg-warm transition-colors"
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </button>
-                </div>
+                {product.price !== undefined && (
+                  <div className="flex items-center border border-warm">
+                    <button
+                      onClick={() => setQty(q => Math.max(1, q - 1))}
+                      className="w-9 h-9 flex items-center justify-center text-bark hover:bg-warm transition-colors"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="w-10 text-center font-body text-[0.8rem] text-bark" aria-live="polite" aria-label={`Quantity: ${qty}`}>
+                      {qty}
+                    </span>
+                    <button
+                      onClick={() => setQty(q => Math.min(product.stockCount, q + 1))}
+                      className="w-9 h-9 flex items-center justify-center text-bark hover:bg-warm transition-colors"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {/* Add to cart */}
-              <button
-                onClick={handleAddToCart}
-                disabled={!product.inStock}
-                className={cn(
-                  'w-full font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-3',
-                  'transition-all duration-300',
-                  product.inStock
-                    ? added
-                      ? 'bg-sage text-cream'
-                      : 'bg-deep text-cream hover:bg-bark'
-                    : 'bg-warm text-muted cursor-not-allowed',
-                )}
-                aria-live="polite"
-              >
-                {!product.inStock ? 'Out of Stock' : added ? '✦ Added to Cart' : 'Add to Cart'}
-              </button>
-
-              {/* Buy now */}
-              {product.inStock && (
-                <button className="w-full font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-6 border border-deep text-deep hover:bg-warm transition-colors duration-200">
-                  Buy Now
-                </button>
+              {product.price === undefined ? (
+                <a
+                  href={getProductInquiryUrl(product, publicSettings?.whatsappNumber)}
+                  target={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? '_blank' : undefined}
+                  rel={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? 'noopener noreferrer' : undefined}
+                  className="block w-full text-center font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-6 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
+                >
+                  Add to Inquiry
+                </a>
+              ) : (
+                <>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={!product.inStock}
+                    className={cn(
+                      'w-full font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-3',
+                      'transition-all duration-300',
+                      product.inStock
+                        ? added
+                          ? 'bg-sage text-cream'
+                          : 'bg-deep text-cream hover:bg-bark'
+                        : 'bg-warm text-muted cursor-not-allowed',
+                    )}
+                    aria-live="polite"
+                  >
+                    {!product.inStock ? 'Out of Stock' : added ? '✦ Added to Cart' : 'Add to Cart'}
+                  </button>
+                  {product.inStock && (
+                    <button className="w-full font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-6 border border-deep text-deep hover:bg-warm transition-colors duration-200">
+                      Buy Now
+                    </button>
+                  )}
+                </>
               )}
 
               {/* Tabs */}
@@ -289,24 +308,35 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                     <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark mb-5">
                       {product.description}
                     </p>
-                    <p className="font-body text-[0.65rem] uppercase tracking-[0.2em] text-gold mb-3">Properties</p>
-                    <ul className="space-y-2">
-                      {product.properties.map((p, i) => (
-                        <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-[0.8rem] text-bark">
-                          <span className="text-gold mt-0.5 flex-none text-[0.6rem]">✦</span>
-                          {p}
-                        </li>
-                      ))}
-                    </ul>
+                      {product.properties.length > 0 && (
+                        <>
+                          <p className="font-body text-[0.65rem] uppercase tracking-[0.2em] text-gold mb-3">Properties &amp; Benefits</p>
+                          <ul className="space-y-2">
+                            {product.properties.map((p, i) => (
+                              <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-[0.8rem] text-bark">
+                                <span className="text-gold mt-0.5 flex-none text-[0.6rem]">✦</span>
+                                {p}
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
                   </div>
                 )}
 
                 {tab === 'how-to-use' && (
                   <div>
                     <p className="font-body text-[0.65rem] uppercase tracking-[0.2em] text-gold mb-3">Ritual guide</p>
-                    <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark">
-                      {product.howToUse}
-                    </p>
+                    {product.howToUse.length > 0 && (
+                      <ul className="space-y-2">
+                        {product.howToUse.map((step, i) => (
+                          <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-[0.82rem] leading-[1.9] text-bark">
+                            <span className="text-gold mt-1 flex-none text-[0.6rem]">✦</span>
+                            {step}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     <div
                       className="mt-5 p-4 border-l-2 bg-warm/60"
                       style={{ borderColor: chakraColour }}
@@ -324,23 +354,34 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                 {tab === 'details' && (
                   <div className="space-y-3">
                     {[
-                      { label: 'Dimensions', value: product.dimensions },
-                      { label: 'Weight',     value: product.weight },
-                      { label: 'Origin',     value: product.origin },
+                      { label: 'Weight', value: product.productDetails?.weight ?? product.weight },
+                      { label: 'Length', value: product.productDetails?.length },
+                      { label: 'Breadth', value: product.productDetails?.breadth },
+                      { label: 'Height', value: product.productDetails?.height },
+                      { label: 'Dimensions', value: product.productDetails?.dimensions ?? product.dimensions },
+                      { label: 'Size', value: product.productDetails?.size ?? product.size },
+                      { label: 'Origin', value: product.origin },
                       { label: 'Chakra',     value: product.chakra },
                       { label: 'Category',   value: product.category },
-                    ].map(({ label, value }) => (
+                    ].filter(({ value }) => value?.trim()).map(({ label, value }) => (
                       <div key={label} className="flex justify-between items-baseline border-b border-warm pb-3 last:border-0">
                         <span className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted">{label}</span>
                         <span className="font-body font-light text-[0.8rem] text-bark text-right max-w-[55%]">{value}</span>
                       </div>
                     ))}
-                    <div className="pt-2">
-                      <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted mb-2">Care</p>
-                      <p className="font-body font-extralight text-[0.78rem] text-bark/80 leading-relaxed">
-                        Cleanse monthly under moonlight or with selenite. Avoid prolonged sunlight exposure. Handle with intention.
-                      </p>
-                    </div>
+                    {product.careInstructions.length > 0 && (
+                      <div className="pt-2">
+                        <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted mb-2">Crystal Care</p>
+                        <ul className="space-y-2">
+                          {product.careInstructions.map((instruction, i) => (
+                            <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-[0.78rem] text-bark/80 leading-relaxed">
+                              <span className="text-gold mt-1 flex-none text-[0.6rem]">✦</span>
+                              {instruction}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

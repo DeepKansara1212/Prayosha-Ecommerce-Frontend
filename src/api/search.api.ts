@@ -4,7 +4,7 @@ export interface SearchResult {
   _id: string
   slug: string
   name: string
-  price: number
+  price?: number
   images: string[]
   category: string
   badge?: string

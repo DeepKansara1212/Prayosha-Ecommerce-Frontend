@@ -4,6 +4,7 @@ import { apiClient } from './client'
 
 export interface ApiProductShipping {
   weight?: string
+  totalWeight?: string
   length?: string
   breadth?: string
   height?: string
@@ -16,7 +17,7 @@ export interface ApiProduct {
   name: string
   description: string
   shortDescription?: string
-  price: number
+  price?: number
   comparePrice?: number
   images: string[]
   video?: string
@@ -28,6 +29,16 @@ export interface ApiProduct {
   lowStockThreshold: number
   useCategoryShipping?: boolean
   shipping?: ApiProductShipping
+  productDetails?: {
+    weight?: string
+    length?: string
+    breadth?: string
+    height?: string
+    dimensions?: string
+    size?: string
+  }
+  dimensions?: string
+  size?: string
   careInstructions?: string
   howToUse?: string
   metaphysicalProperties?: string

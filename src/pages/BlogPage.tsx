@@ -26,15 +26,23 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
       aspectRatio: tall ? "16/9" : "4/3",
       background: post.gradient,
     }}
-    aria-hidden="true"
   >
+    {post.images[0] && (
+      <img
+        src={post.images[0]}
+        alt={post.title}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        loading="lazy"
+        onError={event => { event.currentTarget.style.display = "none" }}
+      />
+    )}
     <div
       className="absolute inset-0"
       style={{
         backgroundImage:
           "radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px)",
         backgroundSize: "22px 22px",
-        opacity: 0.35,
+        opacity: post.images[0] ? 0 : 0.35,
       }}
     />
     <div
@@ -44,16 +52,17 @@ const CardImage: FC<{ post: BlogPost; tall?: boolean }> = ({ post, tall }) => (
         height: "45%",
         background: "rgba(255,255,255,0.08)",
         filter: "blur(28px)",
+        opacity: post.images[0] ? 0 : 1,
       }}
     />
-    <span
+    {!post.images[0] && <span
       className="select-none relative z-10"
       style={{
         fontSize: tall ? "clamp(3.5rem,6vw,5.5rem)" : "clamp(3rem,5vw,4rem)",
       }}
     >
       {post.emoji}
-    </span>
+    </span>}
     <div
       className="absolute bottom-0 left-0 right-0 h-12"
       style={{
@@ -148,13 +157,22 @@ const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
     onClick={() => onNavigate(post.slug)}
     aria-label={`Featured: ${post.title}`}
   >
+    {post.images[0] && (
+      <img
+        src={post.images[0]}
+        alt={post.title}
+        className="absolute inset-0 h-full w-full object-cover"
+        fetchPriority="high"
+        onError={event => { event.currentTarget.style.display = "none" }}
+      />
+    )}
     <div
       className="absolute inset-0 pointer-events-none"
       style={{
         backgroundImage:
           "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",
         backgroundSize: "24px 24px",
-        opacity: 0.3,
+        opacity: post.images[0] ? 0 : 0.3,
       }}
     />
 
@@ -162,7 +180,7 @@ const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
       className="absolute inset-0 flex items-center justify-end pointer-events-none select-none"
       style={{
         paddingRight: "clamp(2rem,6vw,6rem)",
-        opacity: 0.08,
+        opacity: post.images[0] ? 0 : 0.08,
         fontSize: "clamp(9rem,18vw,18rem)",
       }}
       aria-hidden="true"
@@ -174,7 +192,9 @@ const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
       className="absolute inset-0 pointer-events-none"
       style={{
         background:
-          "linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)",
+          post.images[0]
+            ? "linear-gradient(0deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0.08) 100%)"
+            : "linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)",
       }}
     />
 

@@ -10,13 +10,26 @@ export const CATEGORIES: ProductCategory[] = [
   'Gift Sets',
 ]
 
-type CollectionProductSeed = Omit<ProductDetail, 'images' | 'hasFreeGift'>
+type CollectionProductSeed = Omit<ProductDetail, 'images' | 'hasFreeGift' | 'howToUse' | 'careInstructions'> & {
+  howToUse?: string | string[]
+  careInstructions?: string | string[]
+}
 
-const withProductDefaults = (product: CollectionProductSeed): ProductDetail => ({
-  ...product,
-  images: [],
-  hasFreeGift: false,
-})
+const withProductDefaults = (product: CollectionProductSeed): ProductDetail => {
+  const howToUse = Array.isArray(product.howToUse)
+    ? product.howToUse
+    : (product.howToUse ?? '').split(/\r?\n/).map(step => step.trim()).filter(Boolean)
+  const careInstructions = Array.isArray(product.careInstructions)
+    ? product.careInstructions
+    : (product.careInstructions ?? '').split(/\r?\n/).map(line => line.trim()).filter(Boolean)
+  return {
+    ...product,
+    howToUse,
+    careInstructions,
+    images: [],
+    hasFreeGift: false,
+  }
+}
 
 const RAW_COLLECTION_PRODUCTS = [
   {

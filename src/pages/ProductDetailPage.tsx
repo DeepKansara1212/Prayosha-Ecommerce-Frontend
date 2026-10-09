@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import type { ProductDetail } from '@/types'
 import { useProduct, useRelatedProducts } from '@/hooks/useProducts'
 import Navbar from '@/components/layout/Navbar'
@@ -10,6 +11,8 @@ import ReviewForm from '@/components/product/ReviewForm'
 import { ProductDetailSkeleton } from '@/components/ui/Skeleton'
 import EmptyState from '@/components/ui/EmptyState'
 import { toast } from '@/store/toastStore'
+import { getPublicSettings } from '@/api/settings.api'
+import { getProductInquiryUrl, hasWhatsAppNumber } from '@/lib/productInquiry'
 import {
   getMarketingConsent,
   subscribeToMarketingConsent,
@@ -57,9 +60,25 @@ const StarRating: FC<{ rating: number; reviewCount: number }> = ({ rating, revie
 
 const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
   const [active, setActive] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
   const hasMedia = product.images.length > 0 || !!product.video
 
   useEffect(() => setActive(0), [product.id])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setLightboxOpen(false)
+    }
+
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [lightboxOpen])
 
   if (!hasMedia) {
     return (
@@ -97,7 +116,7 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
             )}
             aria-label={`View image ${i + 1}`}
           >
-            <img src={url} alt="" className="w-full h-full object-cover" />
+            <img src={url} alt="" className="w-full h-full object-contain p-1" />
           </button>
         ))}
         {product.video && (
@@ -111,26 +130,35 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
             )}
             aria-label="View product video"
           >
-            <video src={product.video} muted preload="metadata" className="w-full h-full object-cover" />
+            <video src={product.video} muted preload="metadata" className="w-full h-full object-contain" />
             <span className="absolute inset-0 flex items-center justify-center text-cream text-lg" aria-hidden="true">▶</span>
           </button>
         )}
       </div>
 
       {/* Main image */}
-      <div className="flex-1 aspect-square sm:aspect-[4/3] relative overflow-hidden rounded-sm bg-warm">
+      <div className="flex-1 min-w-0 aspect-square sm:aspect-[4/3] max-h-[min(72vh,680px)] relative overflow-hidden rounded-sm border border-warm bg-[#f8f6f2] shadow-[0_12px_36px_rgba(61,43,31,0.08)]">
         {active < product.images.length
-          ? <img
-              src={product.images[active]}
-              alt={product.name}
-              className="w-full h-full object-cover transition-opacity duration-300"
-            />
+          ? (
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(true)}
+              className="absolute inset-0 flex h-full w-full cursor-zoom-in items-center justify-center border-0 bg-transparent p-3 sm:p-6"
+              aria-label={`Expand image of ${product.name}`}
+            >
+              <img
+                src={product.images[active]}
+                alt={product.name}
+                className="h-full w-full object-contain transition-opacity duration-300"
+              />
+            </button>
+          )
           : <video
               src={product.video}
               controls
               playsInline
               preload="metadata"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               aria-label={`${product.name} product video`}
             />}
         {product.badge && (
@@ -151,6 +179,36 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
           </span>
         )}
       </div>
+
+      {lightboxOpen && active < product.images.length && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Image of ${product.name}`}
+          className="fixed inset-0 z-[300] flex items-center justify-center bg-[#1c1410]/95 p-4 sm:p-8"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(false)}
+            className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center border border-white/30 bg-black/20 text-2xl text-white transition-colors hover:bg-white/15"
+            aria-label="Close enlarged image"
+          >
+            ×
+          </button>
+          <img
+            src={product.images[active]}
+            alt={`${product.name} — enlarged view`}
+            className="max-h-full max-w-full object-contain"
+            onClick={event => event.stopPropagation()}
+          />
+          {product.images.length > 1 && (
+            <p className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/30 px-3 py-1 font-body text-xs tracking-[0.15em] text-white/85">
+              {active + 1} / {product.images.length}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -211,6 +269,11 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
   const navigate = useNavigate()
   const { data: product, isLoading, isError } = useProduct(productId)
   const { data: relatedProducts = [] }        = useRelatedProducts(productId)
+  const { data: publicSettings } = useQuery({
+    queryKey: ['public-settings'],
+    queryFn: getPublicSettings,
+    staleTime: 5 * 60 * 1000,
+  })
 
   const [qty, setQty]               = useState(1)
   const [addedToCart, setAddedToCart]   = useState(false)
@@ -237,14 +300,14 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
       content_type: 'product',
       content_name: product.name,
       content_category: product.category,
-      value: product.price,
+      ...(product.price !== undefined && { value: product.price }),
       currency: 'INR',
     })
     if (tracked) viewedProductSku.current = contentId
   }, [product, marketingConsent])
 
   const handleAddToCart = useCallback(() => {
-    if (!product) return
+    if (!product || product.price === undefined) return
     onAddToCart(product.id, qty)
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2500)
@@ -315,15 +378,15 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
         {/* Main product layout */}
         <div style={{ padding: 'clamp(2rem,5vw,3.5rem) clamp(1.25rem,5vw,4rem)' }}>
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] xl:grid-cols-[1fr_520px] gap-10 xl:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_480px] xl:grid-cols-[minmax(0,1fr)_520px] gap-10 xl:gap-16">
 
             {/* ── Left: Image gallery ── */}
-            <div>
+            <div className="min-w-0">
               <ImageGallery product={product} />
             </div>
 
             {/* ── Right: Product info ── */}
-            <div>
+            <div className="min-w-0">
               {/* Category + chakra */}
               <div className="flex items-center gap-2 flex-wrap mb-3">
                 <span className="font-body text-[0.6rem] uppercase tracking-[0.2em] text-muted">{product.category}</span>
@@ -362,10 +425,16 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
               {/* Price */}
               <div className="flex items-baseline gap-3 mb-1">
                 <span className="font-display font-light text-[2.2rem] text-deep">{product.priceDisplay}</span>
-                <span className="font-body text-[0.7rem] text-muted line-through">₹{Math.round(product.price * 1.2).toLocaleString('en-IN')}</span>
-                <span className="font-body text-[0.68rem] text-sage font-normal">Save 17%</span>
+                {product.price !== undefined && (
+                  <>
+                    <span className="font-body text-[0.7rem] text-muted line-through">₹{Math.round(product.price * 1.2).toLocaleString('en-IN')}</span>
+                    <span className="font-body text-[0.68rem] text-sage font-normal">Save 17%</span>
+                  </>
+                )}
               </div>
-              <p className="font-body text-[0.7rem] text-muted mb-5">Inclusive of all taxes · Free returns within 7 days</p>
+              {product.price !== undefined && (
+                <p className="font-body text-[0.7rem] text-muted mb-5">Inclusive of all taxes · Free returns within 7 days</p>
+              )}
 
               {/* Intention tags */}
               <div className="flex flex-wrap gap-2 mb-5">
@@ -397,33 +466,46 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
               {/* Quantity + CTA */}
               <div className="space-y-3">
-                <div className="flex items-center gap-4 flex-wrap">
-                  <QuantitySelector qty={qty} max={product.stockCount} onChange={setQty} />
-                </div>
-
-                <button
-                  onClick={handleAddToCart}
-                  disabled={!product.inStock}
-                  className={cn(
-                    'w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 transition-all duration-300',
-                    !product.inStock
-                      ? 'bg-warm text-muted cursor-not-allowed'
-                      : addedToCart
-                        ? 'bg-sage text-cream'
-                        : 'bg-deep text-cream hover:bg-bark',
-                  )}
-                  aria-live="polite"
-                >
-                  {!product.inStock ? 'Out of Stock' : addedToCart ? '✦ Added to Cart' : 'Add to Cart'}
-                </button>
-
-                {product.inStock && (
-                  <button
-                    onClick={() => { onAddToCart(product.id); onNavigateToCart() }}
-                    className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
+                {product.price === undefined ? (
+                  <a
+                    href={getProductInquiryUrl(product, publicSettings?.whatsappNumber)}
+                    target={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? '_blank' : undefined}
+                    rel={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? 'noopener noreferrer' : undefined}
+                    className="block w-full text-center font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
                   >
-                    Buy Now
-                  </button>
+                    Add to Inquiry
+                  </a>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <QuantitySelector qty={qty} max={product.stockCount} onChange={setQty} />
+                    </div>
+
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={!product.inStock}
+                      className={cn(
+                        'w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 transition-all duration-300',
+                        !product.inStock
+                          ? 'bg-warm text-muted cursor-not-allowed'
+                          : addedToCart
+                            ? 'bg-sage text-cream'
+                            : 'bg-deep text-cream hover:bg-bark',
+                      )}
+                      aria-live="polite"
+                    >
+                      {!product.inStock ? 'Out of Stock' : addedToCart ? '✦ Added to Cart' : 'Add to Cart'}
+                    </button>
+
+                    {product.inStock && (
+                      <button
+                        onClick={() => { onAddToCart(product.id); onNavigateToCart() }}
+                        className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
+                      >
+                        Buy Now
+                      </button>
+                    )}
+                  </>
                 )}
 
                 <button
@@ -507,22 +589,35 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                   ) : (
                     <p className="font-body font-extralight text-[0.85rem] leading-[2] text-bark mb-8">{descriptionLines[0] ?? product.description}</p>
                   )}
-                  <p className="font-body text-[0.62rem] uppercase tracking-[0.25em] text-gold mb-4">Properties & Benefits</p>
-                  <ul className="space-y-3">
-                    {product.properties.map((p, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
-                        <p className="font-body font-extralight text-[0.83rem] leading-relaxed text-bark">{p}</p>
-                      </li>
-                    ))}
-                  </ul>
+                  {product.properties.length > 0 && (
+                    <>
+                      <p className="font-body text-[0.62rem] uppercase tracking-[0.25em] text-gold mb-4">Properties & Benefits</p>
+                      <ul className="space-y-3">
+                        {product.properties.map((p, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                            <p className="font-body font-extralight text-[0.83rem] leading-relaxed text-bark">{p}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
 
-                  <div className="mt-8 p-5 bg-warm border-l-2" style={{ borderColor: chakraColour }}>
-                    <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] mb-2" style={{ color: chakraColour }}>
-                      How to Use — Ritual Guide
-                    </p>
-                    <p className="font-body font-extralight text-[0.83rem] leading-[1.9] text-bark">{product.howToUse}</p>
-                  </div>
+                  {product.howToUse.length > 0 && (
+                    <div className="mt-8 p-5 bg-warm border-l-2" style={{ borderColor: chakraColour }}>
+                      <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] mb-2" style={{ color: chakraColour }}>
+                        How to Use — Ritual Guide
+                      </p>
+                      <ul className="space-y-2">
+                        {product.howToUse.map((step, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                            <p className="font-body font-extralight text-[0.83rem] leading-[1.9] text-bark">{step}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -530,26 +625,37 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                 <div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border border-warm">
                     {[
-                      { label: 'Dimensions', value: product.dimensions },
-                      { label: 'Weight',     value: product.weight },
-                      { label: 'Origin',     value: product.origin },
-                      { label: 'Chakra',     value: product.chakra },
-                      { label: 'Category',   value: product.category },
-                      { label: 'Intention',  value: product.intention },
-                    ].map(({ label, value }, i) => (
+                      { label: 'Weight', value: product.productDetails?.weight ?? product.weight },
+                      { label: 'Length', value: product.productDetails?.length },
+                      { label: 'Breadth', value: product.productDetails?.breadth },
+                      { label: 'Height', value: product.productDetails?.height },
+                      { label: 'Dimensions', value: product.productDetails?.dimensions ?? product.dimensions },
+                      { label: 'Size', value: product.productDetails?.size ?? product.size },
+                      { label: 'Origin', value: product.origin },
+                      { label: 'Chakra', value: product.chakra },
+                      { label: 'Category', value: product.category },
+                      { label: 'Intention', value: product.intention },
+                    ].filter(({ value }) => value?.trim()).map(({ label, value }, i) => (
                       <div key={label} className={cn('flex p-4 gap-4 border-b border-warm', i % 2 === 0 && 'sm:border-r')}>
                         <span className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted w-24 flex-none pt-0.5">{label}</span>
-                        <span className="font-body text-[0.82rem] text-bark">{value}</span>
+                        <span className="font-body text-[0.82rem] text-bark break-words">{value}</span>
                       </div>
                     ))}
                   </div>
 
-                  <div className="mt-6 p-5 bg-warm">
-                    <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">Crystal Care</p>
-                    <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark">
-                      Cleanse monthly under the full moon or with a selenite wand. Avoid prolonged direct sunlight which can fade colour. Handle with clean, intentional hands. Store away from other crystals when not in use to preserve its individual energy signature.
-                    </p>
-                  </div>
+                  {product.careInstructions.length > 0 && (
+                    <div className="mt-6 p-5 bg-warm">
+                      <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">Crystal Care</p>
+                      <ul className="space-y-2">
+                        {product.careInstructions.map((instruction, i) => (
+                          <li key={i} className="flex items-start gap-3">
+                            <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                            <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark">{instruction}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
 

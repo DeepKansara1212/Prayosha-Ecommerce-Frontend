@@ -149,8 +149,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { label: 'Collections',         path: '/collection', hasDropdown: true },
   { label: 'Blog',                path: '/blog' },
-  { label: 'Bracelet Calculator', path: '/bracelet-calculator' },
-  { label: 'Rudraksha Calculator',path: '/rudraksha-calculator' },
+  { label: 'Calculator',          path: '/bracelet-calculator', hasDropdown: true },
   { label: 'About Us',            path: '/about' },
   { label: 'Contact',             path: '/contact' },
   { label: 'B2B',                 path: '/b2b' },
@@ -427,7 +426,9 @@ const Navbar: FC = () => {
 
   const [open, setOpen] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [calculatorOpen, setCalculatorOpen] = useState(false)
   const [mobileCollectionOpen, setMobileCollectionOpen] = useState(false)
+  const [mobileCalculatorOpen, setMobileCalculatorOpen] = useState(false)
   const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const { isOpen: searchOpen, open: openSearch, close: closeSearch } = useSearchOverlay()
@@ -435,11 +436,14 @@ const Navbar: FC = () => {
 
   const pathname = location.pathname
 
-  const isActive = (path: string) => pathname === path || (path !== '/' && pathname.startsWith(path))
+  const isActive = (path: string) => path === '/bracelet-calculator'
+    ? pathname === '/bracelet-calculator' || pathname === '/rudraksha-calculator'
+    : pathname === path || (path !== '/' && pathname.startsWith(path))
 
   const closeMenu = () => {
     setOpen(false)
     setMobileCollectionOpen(false)
+    setMobileCalculatorOpen(false)
     document.body.style.overflow = ''
   }
 
@@ -453,7 +457,10 @@ const Navbar: FC = () => {
     const next = !open
     setOpen(next)
     document.body.style.overflow = next ? 'hidden' : ''
-    if (!next) setMobileCollectionOpen(false)
+    if (!next) {
+      setMobileCollectionOpen(false)
+      setMobileCalculatorOpen(false)
+    }
   }
 
   const handleCollectionMouseEnter = () => {
@@ -518,17 +525,37 @@ const Navbar: FC = () => {
         </div>
 
         {/* Other nav links */}
-        {NAV_ITEMS.filter(i => !i.hasDropdown).map(item => (
-          <button
-            key={item.path}
-            onClick={() => go(item.path)}
-            className={cn(
-              'font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]',
-              isActive(item.path) ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
+        {NAV_ITEMS.filter(i => !i.hasDropdown || i.path === '/bracelet-calculator').map(item => (
+          <div key={item.path} className="flex flex-col items-center">
+            <button
+              onClick={() => item.path === '/bracelet-calculator'
+                ? setMobileCalculatorOpen(v => !v)
+                : go(item.path)}
+              className={cn(
+                'font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]',
+                isActive(item.path) ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
+              )}
+              aria-expanded={item.path === '/bracelet-calculator' ? mobileCalculatorOpen : undefined}
+            >
+              {item.label}
+            </button>
+            {item.path === '/bracelet-calculator' && mobileCalculatorOpen && (
+              <div className="flex flex-wrap justify-center gap-x-6">
+                {[
+                  ['Bracelet Calculator', '/bracelet-calculator'],
+                  ['Rudraksha Calculator', '/rudraksha-calculator'],
+                ].map(([label, path]) => (
+                  <button
+                    key={path}
+                    onClick={() => go(path)}
+                    className="min-h-[44px] bg-transparent border-none cursor-pointer font-body text-xs tracking-[0.12em] uppercase text-bark"
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             )}
-          >
-            {item.label}
-          </button>
+          </div>
         ))}
 
         <div className="h-px w-16 bg-cream/20 my-4" aria-hidden="true" />
@@ -581,23 +608,55 @@ const Navbar: FC = () => {
               <li
                 key={item.path}
                 className="relative"
-                onMouseEnter={item.hasDropdown ? handleCollectionMouseEnter : undefined}
-                onMouseLeave={item.hasDropdown ? handleCollectionMouseLeave : undefined}
+                onMouseEnter={item.path === '/collection'
+                  ? handleCollectionMouseEnter
+                  : item.path === '/bracelet-calculator'
+                    ? () => setCalculatorOpen(true)
+                    : undefined}
+                onMouseLeave={item.path === '/collection'
+                  ? handleCollectionMouseLeave
+                  : item.path === '/bracelet-calculator'
+                    ? () => setCalculatorOpen(false)
+                    : undefined}
               >
                 <button
-                  onClick={() => go(item.path)}
+                  onClick={() => item.path === '/bracelet-calculator'
+                    ? setCalculatorOpen(v => !v)
+                    : go(item.path)}
                   className={cn(
                     'font-body text-[0.72rem] tracking-[0.2em] uppercase transition-all duration-200 bg-transparent border-none cursor-pointer relative pb-0.5 flex items-center gap-1.5 min-h-[44px]',
                     'after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gold-light after:transition-all after:duration-300',
-                    isActive(item.path) || (item.hasDropdown && dropdownOpen)
+                    isActive(item.path) || (item.path === '/collection' && dropdownOpen) || (item.path === '/bracelet-calculator' && calculatorOpen)
                       ? 'text-deep after:w-full'
                       : 'text-bark hover:text-deep after:w-0 hover:after:w-full',
                   )}
-                  aria-expanded={item.hasDropdown ? dropdownOpen : undefined}
+                  aria-expanded={item.path === '/collection'
+                    ? dropdownOpen
+                    : item.path === '/bracelet-calculator'
+                      ? calculatorOpen
+                      : undefined}
                 >
                   {item.label}
-                  {item.hasDropdown && <ChevronDownIcon open={dropdownOpen} />}
+                  {item.hasDropdown && (
+                    <ChevronDownIcon open={item.path === '/collection' ? dropdownOpen : calculatorOpen} />
+                  )}
                 </button>
+                {item.path === '/bracelet-calculator' && calculatorOpen && (
+                  <div className="absolute left-0 top-full z-20 min-w-56 bg-warm py-2 shadow-lg">
+                    {[
+                      ['Bracelet Calculator', '/bracelet-calculator'],
+                      ['Rudraksha Calculator', '/rudraksha-calculator'],
+                    ].map(([label, path]) => (
+                      <button
+                        key={path}
+                        onClick={() => go(path)}
+                        className="block w-full bg-transparent border-none px-5 py-3 text-left font-body text-xs uppercase tracking-[0.12em] text-bark hover:text-deep"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </li>
             ))}
           </ul>

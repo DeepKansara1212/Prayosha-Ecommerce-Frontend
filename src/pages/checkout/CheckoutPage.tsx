@@ -310,6 +310,7 @@ const CheckoutPage: FC = () => {
   const coupon     = useCartStore(s => s.coupon)
   const clearCart  = useCartStore(s => s.clearCart)
   const { openRazorpay } = useRazorpay()
+  const hasUnpricedItems = items.some(item => item.product?.price === undefined)
 
   const [step, setStep]                           = useState<Step>(1)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
@@ -325,6 +326,36 @@ const CheckoutPage: FC = () => {
   }, [items.length, navigate])
 
   if (!user || items.length === 0) return null
+  if (hasUnpricedItems) {
+    return (
+      <>
+        <Navbar />
+        <main
+          id="main-content"
+          className="min-h-screen bg-cream px-6 pb-16 pt-32 text-center"
+        >
+          <section className="mx-auto max-w-xl bg-warm p-8 sm:p-12" role="alert">
+            <p className="font-body text-[0.62rem] uppercase tracking-[0.25em] text-gold mb-4">
+              Price on request
+            </p>
+            <h1 className="font-display text-3xl font-light text-deep mb-4">
+              This item needs an inquiry
+            </h1>
+            <p className="font-body text-sm leading-relaxed text-bark mb-8">
+              Products without a listed price cannot be checked out online.
+              Return to your cart to remove them, or enquire from the product page.
+            </p>
+            <button
+              onClick={() => navigate('/cart')}
+              className="font-body text-xs uppercase tracking-[0.18em] bg-deep px-8 py-4 text-cream hover:bg-bark transition-colors"
+            >
+              Return to Cart
+            </button>
+          </section>
+        </main>
+      </>
+    )
+  }
 
   const handlePlaceOrder = async (method: 'cod' | 'razorpay') => {
     if (!selectedAddressId) throw new Error('No address selected.')

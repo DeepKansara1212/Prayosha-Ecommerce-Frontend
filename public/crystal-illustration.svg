@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-labelledby="title desc">
+  <title id="title">Natural crystals</title>
+  <desc id="desc">Faceted amethyst, rose quartz, and clear quartz arranged in a warm botanical still life.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0e5d6"/>
+      <stop offset="1" stop-color="#d5c2aa"/>
+    </linearGradient>
+    <linearGradient id="amethyst" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b49acb"/>
+      <stop offset="1" stop-color="#604a7d"/>
+    </linearGradient>
+    <linearGradient id="rose" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#efd0c5"/>
+      <stop offset="1" stop-color="#b87f79"/>
+    </linearGradient>
+    <linearGradient id="quartz" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8eb"/>
+      <stop offset="1" stop-color="#b9c5bd"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="720" fill="url(#background)"/>
+  <circle cx="556" cy="152" r="94" fill="#f7efe3" opacity=".5"/>
+  <path d="M0 542c133-42 231-5 352 14s230-28 368-3v167H0z" fill="#a98d70" opacity=".52"/>
+  <path d="M76 501c44-61 55-133 38-207m-10 96c-33-3-59-22-73-55m83 1c28-15 44-37 50-67" fill="none" stroke="#69745d" stroke-linecap="round" stroke-width="8"/>
+  <path d="M64 338c-29-8-44-29-43-58 28 6 46 25 43 58zm63-42c-4-28 9-49 35-62 3 28-10 49-35 62zM99 404c-30 0-50-15-60-43 29-2 50 13 60 43z" fill="#87917a"/>
+  <path d="m191 505 54-188 65-68 64 69 43 187z" fill="url(#amethyst)" stroke="#725d8c" stroke-width="3"/>
+  <path d="m245 317 65 53-65 135-54 0zm65 53 64-52 43 187h-107z" fill="#d3c1df" opacity=".55"/>
+  <path d="m286 246 24 124 64-52-64-69z" fill="#e4d9eb" opacity=".8"/>
+  <path d="m389 505 42-132 48-53 52 55 35 130z" fill="url(#quartz)" stroke="#a9b2a9" stroke-width="3"/>
+  <path d="m431 373 48 48-48 84-42 0zm48 48 52-51 35 135h-87z" fill="#fffdf5" opacity=".48"/>
+  <path d="m452 320 27 101 52-51-52-55z" fill="#fffdf6" opacity=".85"/>
+  <path d="m93 548 35-111 45-42 44 43 31 110z" fill="url(#rose)" stroke="#b9827d" stroke-width="3"/>
+  <path d="m128 437 45 45-45 66H93zm45 45 44-44 31 110h-75z" fill="#f6ddd0" opacity=".55"/>
+  <path d="m128 437 45 45 44-44-44-43z" fill="#f9e9dd" opacity=".75"/>
+  <ellipse cx="360" cy="567" rx="247" ry="24" fill="#705743" opacity=".2"/>
+  <path d="M253 594h249" stroke="#f5ede1" stroke-width="2" opacity=".75"/>
+</svg>
