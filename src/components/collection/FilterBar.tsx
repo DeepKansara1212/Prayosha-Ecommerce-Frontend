@@ -50,7 +50,7 @@ const FilterBar: FC<FilterBarProps> = ({ active, purpose, subCategory, sort, tot
   })
 
   return (
-    <div className="sticky top-[68px] z-50 bg-cream/95 backdrop-blur-sm border-b border-warm">
+    <div className="bg-cream/95 backdrop-blur-sm border-b border-warm">
       <div
         className="flex flex-col gap-3"
         style={{ padding: '1rem clamp(1.25rem,5vw,4rem)' }}

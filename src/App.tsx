@@ -27,8 +27,6 @@ const BraceletCalculatorPage = lazy(() => import('@/pages/BraceletCalculatorPage
 const RudrakshaCalculatorPage = lazy(() => import('@/pages/RudrakshaCalculatorPage'))
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'))
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'))
-const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
-const ResetPasswordPage = lazy(() => import('@/pages/auth/ResetPasswordPage'))
 const OrdersPage = lazy(() => import('@/pages/account/OrdersPage'))
 const OrderDetailPage = lazy(() => import('@/pages/account/OrderDetailPage'))
 const AddressesPage = lazy(() => import('@/pages/account/AddressesPage'))
@@ -255,8 +253,8 @@ const App: FC = () => {
           {/* Auth */}
           <Route path="/auth/login"    element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
-          <Route path="/auth/forgot"   element={<ForgotPasswordPage />} />
-          <Route path="/auth/reset"    element={<ResetPasswordPage />} />
+          <Route path="/auth/forgot"   element={<Navigate to="/auth/login" replace />} />
+          <Route path="/auth/reset"    element={<Navigate to="/auth/login" replace />} />
 
           {/* Cart & Wishlist */}
           <Route path="/account/wishlist" element={

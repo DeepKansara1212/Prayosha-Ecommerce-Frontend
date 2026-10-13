@@ -62,7 +62,7 @@ const CollectionPage: FC<CollectionPageProps> = ({
   return (
     <>
       <Navbar />
-      <main id="main-content">
+      <main id="main-content" className="pt-[80px] md:pt-[88px]">
         <FilterBar
           active={category}
           purpose={purpose}

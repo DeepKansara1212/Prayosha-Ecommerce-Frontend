@@ -10,7 +10,7 @@ import * as authApi from "@/api/auth.api";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().regex(/^\d{10}$/, "Enter a valid 10-digit number"),
+  phone: z.string().regex(/^\d{10}$/, "Enter a valid 10-digit number").or(z.literal("")),
 });
 
 type ProfileValues = z.infer<typeof profileSchema>;
@@ -26,33 +26,6 @@ const Field: FC<{
     <label className="acct-label">{label}</label>
     {children}
     {error && <p className="acct-error">{error}</p>}
-  </div>
-);
-
-// ─── Section divider ──────────────────────────────────────────────────────────
-
-const SectionDivider: FC<{ title: string }> = ({ title }) => (
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 16,
-      margin: "36px 0 28px",
-    }}
-  >
-    <div style={{ flex: 1, height: 1, background: "#E2DAC8" }} />
-    <span
-      style={{
-        fontFamily: "Jost",
-        fontSize: 11,
-        textTransform: "uppercase",
-        letterSpacing: "0.14em",
-        color: "#C4B89A",
-      }}
-    >
-      {title}
-    </span>
-    <div style={{ flex: 1, height: 1, background: "#E2DAC8" }} />
   </div>
 );
 
@@ -118,7 +91,7 @@ const ProfilePage: FC = () => {
   const saveProfile = async (data: ProfileValues) => {
     setProfileMsg(null);
     try {
-      await authApi.updateMe(data);
+      await authApi.updateMe({ ...data, phone: data.phone || undefined });
       await fetchMe();
       setProfileMsg({ text: "Profile updated successfully.", type: "success" });
     } catch (err: unknown) {
@@ -152,23 +125,18 @@ const ProfilePage: FC = () => {
               width: 72,
               height: 72,
               borderRadius: "50%",
-              background: user.avatar ? "transparent" : "#7B5EA7",
+              background: "#7B5EA7",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
               border: "3px solid #E2DAC8",
               flexShrink: 0,
+              position: "relative",
             }}
           >
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            ) : (
               <span
+                aria-hidden="true"
                 style={{
                   color: "#fff",
                   fontFamily: "Jost",
@@ -178,8 +146,23 @@ const ProfilePage: FC = () => {
               >
                 {initials}
               </span>
-            )}
-          </div>
+              {user.avatar && (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none";
+                  }}
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              )}
+            </div>
           <div>
             <p
               style={{
@@ -239,53 +222,6 @@ const ProfilePage: FC = () => {
           </button>
         </form>
 
-        {/* ── Password ── */}
-        <SectionDivider title="Password" />
-
-        <div
-          style={{
-            background: "#EDE8DC",
-            border: "1px solid #E2DAC8",
-            borderRadius: 6,
-            padding: "16px 20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 16,
-          }}
-        >
-          <div>
-            <p
-              style={{
-                fontFamily: "Jost",
-                fontSize: 13,
-                color: "#1C1A17",
-                margin: 0,
-              }}
-            >
-              Reset your password via OTP
-            </p>
-            <p
-              style={{
-                fontFamily: "Jost",
-                fontSize: 12,
-                color: "#9A8F85",
-                margin: "4px 0 0",
-              }}
-            >
-              We'll send a one-time code to your registered number
-            </p>
-          </div>
-          <button
-            onClick={() => {
-              window.location.hash = "#/auth/forgot";
-            }}
-            className="acct-btn-ghost"
-            style={{ flexShrink: 0 }}
-          >
-            Reset
-          </button>
-        </div>
       </div>
     </AccountLayout>
   );

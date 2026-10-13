@@ -1,200 +1,99 @@
-import { useState, useEffect, type FC } from 'react'
+import { useEffect, useState, type FC, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useAuthStore } from '@/store/authStore'
-import * as authApi from '@/api/auth.api'
-import {
-  AuthShell, FormField, PasswordField, FormError, AuthLink,
-} from './_AuthShell'
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
-
-// ─── Schemas ──────────────────────────────────────────────────────────────────
-
-const step1Schema = z.object({
-  phone: z.string().regex(/^\d{10}$/, 'Enter a valid 10-digit mobile number'),
-})
-
-const step2Schema = z.object({
-  otp: z.string().regex(/^\d{6}$/, 'OTP must be exactly 6 digits'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-})
-
-type Step1Values = z.infer<typeof step1Schema>
-type Step2Values = z.infer<typeof step2Schema>
-
-// ─── Step 1 — Phone ───────────────────────────────────────────────────────────
-
-const Step1: FC<{ onSuccess: (phone: string) => void }> = ({ onSuccess }) => {
-  const [serverError, setServerError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const { register, handleSubmit, formState: { errors } } = useForm<Step1Values>({
-    resolver: zodResolver(step1Schema),
-  })
-
-  const submit = async (data: Step1Values) => {
-    setServerError('')
-    setLoading(true)
-    try {
-      await authApi.sendOtp({ phone: data.phone, purpose: 'login' })
-      onSuccess(data.phone)
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to send OTP. Please try again.'
-      setServerError(msg)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit(submit)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {serverError && <FormError message={serverError} />}
-
-      <FormField
-        label="Mobile Number"
-        error={errors.phone?.message}
-        type="tel"
-        placeholder="10-digit mobile number"
-        maxLength={10}
-        autoComplete="tel"
-        {...register('phone')}
-      />
-
-      <button type="submit" disabled={loading} className="auth-btn-primary">
-        {loading ? 'Sending OTP…' : 'Send OTP'}
-      </button>
-    </form>
-  )
-}
-
-// ─── Step 2 — OTP + Password ──────────────────────────────────────────────────
-
-const Step2: FC<{ phone: string; onBack: () => void }> = ({ phone, onBack }) => {
-  const navigate = useNavigate()
-  const [serverError, setServerError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [resending, setResending] = useState(false)
-  const login = useAuthStore(s => s.login)
-
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<Step2Values>({
-    resolver: zodResolver(step2Schema),
-  })
-
-  const resendOtp = async () => {
-    setServerError('')
-    setResending(true)
-    try {
-      await authApi.sendOtp({ phone, purpose: 'login' })
-      setValue('otp', '')
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Could not resend OTP.'
-      setServerError(msg)
-    } finally {
-      setResending(false)
-    }
-  }
-
-  const submit = async (data: Step2Values) => {
-    setServerError('')
-    setLoading(true)
-    try {
-      await login({ phone, otp: data.otp, password: data.password })
-      navigate('/')
-      window.scrollTo({ top: 0 })
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Invalid OTP or password.'
-      setServerError(msg)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit(submit)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {serverError && <FormError message={serverError} />}
-
-      <p style={{ fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057', margin: 0 }}>
-        OTP sent to <strong style={{ color: '#1C1A17' }}>{phone}</strong>
-      </p>
-
-      <FormField
-        label="OTP"
-        error={errors.otp?.message}
-        type="text"
-        inputMode="numeric"
-        placeholder="6-digit OTP"
-        maxLength={6}
-        autoComplete="one-time-code"
-        {...register('otp')}
-      />
-
-      <PasswordField
-        label="Password"
-        error={errors.password?.message}
-        placeholder="Your password"
-        autoComplete="current-password"
-        {...register('password')}
-      />
-
-      <button type="submit" disabled={loading} className="auth-btn-primary">
-        {loading ? 'Signing in…' : 'Login'}
-      </button>
-
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-        <AuthLink onClick={onBack}>Back</AuthLink>
-        <span style={{ color: '#E2DAC8' }}>·</span>
-        <AuthLink onClick={resending ? undefined : resendOtp}>
-          {resending ? 'Resending…' : 'Resend OTP'}
-        </AuthLink>
-      </div>
-    </form>
-  )
-}
-
-// ─── LoginPage ────────────────────────────────────────────────────────────────
+import { AuthShell, AuthLink, FormError } from './_AuthShell'
 
 const LoginPage: FC = () => {
-  const navigate    = useNavigate()
+  const navigate = useNavigate()
   const accessToken = useAuthStore(s => s.accessToken)
   const googleLogin = useAuthStore(s => s.googleLogin)
+  const emailLogin = useAuthStore(s => s.emailLogin)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [serverError, setServerError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (accessToken) navigate('/', { replace: true })
   }, [accessToken, navigate])
 
-  const [step, setStep] = useState<1 | 2>(1)
-  const [phone, setPhone] = useState('')
+  const submitEmailLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setServerError('')
+    setLoading(true)
+    try {
+      await emailLogin({ email, password })
+      navigate('/')
+      window.scrollTo({ top: 0 })
+    } catch (err: unknown) {
+      setServerError(err instanceof Error ? err.message : 'Could not sign in. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <AuthShell
       headline="Welcome back to"
       headlineItalic="Prayosha Crystal"
-      subtext="Sign in to access your orders, wishlist, and the sacred stone collection curated for your journey."
+      subtext="Sign in with Google to access your orders, wishlist, and the sacred stone collection curated for your journey."
     >
-      <div style={{ marginBottom: '32px' }}>
-        <p style={{ fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#6B6057', marginBottom: '8px' }}>
-          {step === 1 ? 'Step 1 of 2' : 'Step 2 of 2'}
-        </p>
+      <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
-          {step === 1 ? 'Enter your number' : 'Verify & sign in'}
+          Sign in
         </h2>
       </div>
 
-      {step === 1
-        ? <Step1 onSuccess={p => { setPhone(p); setStep(2) }} />
-        : <Step2 phone={phone} onBack={() => setStep(1)} />
-      }
+      {serverError && <div style={{ marginBottom: '16px' }}><FormError message={serverError} /></div>}
 
-      <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #E2DAC8' }}>
-        <GoogleSignInButton onCredential={async credential => { await googleLogin(credential); navigate('/'); window.scrollTo({ top: 0 }) }} />
+      <form onSubmit={submitEmailLogin} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+          Email address
+          <input
+            className="auth-input"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={event => setEmail(event.target.value)}
+            style={{ border: '1px solid #E2DAC8' }}
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+          Password
+          <input
+            className="auth-input"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={event => setPassword(event.target.value)}
+            style={{ border: '1px solid #E2DAC8' }}
+          />
+        </label>
+        <button type="submit" disabled={loading} className="auth-btn-primary">
+          {loading ? 'Signing in…' : 'Sign in with email'}
+        </button>
+      </form>
+      <p style={{ margin: '10px 0 0', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '12px', color: '#9A8F85' }}>
+        Password recovery is temporarily unavailable while phone verification is paused.
+      </p>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0', color: '#9A8F85', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+        <span style={{ flex: 1, height: 1, background: '#E2DAC8' }} />
+        or
+        <span style={{ flex: 1, height: 1, background: '#E2DAC8' }} />
       </div>
 
-      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', display: 'flex', flexWrap: 'wrap', gap: '6px 16px', justifyContent: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
-        <span>New here? <AuthLink onClick={() => navigate('/auth/register')}>Create account</AuthLink></span>
-        <span style={{ color: '#E2DAC8' }}>·</span>
-        <AuthLink onClick={() => navigate('/auth/forgot')}>Forgot password?</AuthLink>
+      <GoogleSignInButton onCredential={async credential => {
+        await googleLogin(credential)
+        navigate('/')
+        window.scrollTo({ top: 0 })
+      }} />
+
+      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
+        New here? <AuthLink onClick={() => navigate('/auth/register')}>Create an account</AuthLink>
       </div>
     </AuthShell>
   )

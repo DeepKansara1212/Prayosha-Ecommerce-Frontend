@@ -1,63 +1,34 @@
-import { useState, useEffect, type FC } from 'react'
+import { useEffect, useState, type FC, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useAuthStore } from '@/store/authStore'
-import {
-  AuthShell, FormField, PasswordField, FormError, AuthLink,
-} from './_AuthShell'
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
-
-// ─── Schema ───────────────────────────────────────────────────────────────────
-
-const schema = z.object({
-  name:            z.string().min(2, 'Name must be at least 2 characters'),
-  phone:           z.string().regex(/^\d{10}$/, 'Enter a valid 10-digit mobile number'),
-  password:        z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string(),
-  email:           z.string().email('Enter a valid email address').or(z.literal('')).optional(),
-}).refine(d => d.password === d.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-})
-
-type FormValues = z.infer<typeof schema>
-
-// ─── RegisterPage ─────────────────────────────────────────────────────────────
+import { AuthShell, AuthLink, FormError } from './_AuthShell'
 
 const RegisterPage: FC = () => {
-  const navigate       = useNavigate()
-  const accessToken    = useAuthStore(s => s.accessToken)
-  const registerAction = useAuthStore(s => s.register)
-  const googleLogin    = useAuthStore(s => s.googleLogin)
+  const navigate = useNavigate()
+  const accessToken = useAuthStore(s => s.accessToken)
+  const googleLogin = useAuthStore(s => s.googleLogin)
+  const registerWithEmail = useAuthStore(s => s.registerWithEmail)
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [serverError, setServerError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (accessToken) navigate('/', { replace: true })
   }, [accessToken, navigate])
 
-  const [serverError, setServerError] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: { name: '', phone: '', password: '', confirmPassword: '', email: '' },
-  })
-
-  const submit = async (data: FormValues) => {
+  const submitEmailRegistration = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     setServerError('')
     setLoading(true)
     try {
-      await registerAction({
-        name:     data.name,
-        phone:    data.phone,
-        password: data.password,
-        email:    data.email || undefined,
-      })
-      navigate('/auth/login')
+      await registerWithEmail({ name, email, password })
+      navigate('/')
+      window.scrollTo({ top: 0 })
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.'
-      setServerError(msg)
+      setServerError(err instanceof Error ? err.message : 'Could not create your account. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -67,31 +38,72 @@ const RegisterPage: FC = () => {
     <AuthShell
       headline="Begin your"
       headlineItalic="crystal journey"
-      subtext="Create an account to track your orders, save favourites, and unlock a world of sacred stones."
+      subtext="Create an account with Google to track your orders, save favourites, and unlock a world of sacred stones."
     >
-      <div style={{ marginBottom: '32px' }}>
+      <div style={{ marginBottom: '24px' }}>
         <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
           Create your account
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit(submit)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {serverError && <FormError message={serverError} />}
+      {serverError && <div style={{ marginBottom: '16px' }}><FormError message={serverError} /></div>}
 
-        <FormField label="Full Name" error={errors.name?.message} placeholder="Your full name" autoComplete="name" {...register('name')} />
-        <FormField label="Mobile Number" error={errors.phone?.message} type="tel" placeholder="10-digit mobile number" maxLength={10} autoComplete="tel" {...register('phone')} />
-        <PasswordField label="Password" error={errors.password?.message} placeholder="Min 6 characters" autoComplete="new-password" {...register('password')} />
-        <PasswordField label="Confirm Password" error={errors.confirmPassword?.message} placeholder="Repeat password" autoComplete="new-password" {...register('confirmPassword')} />
-        <FormField label="Email Address (optional)" error={errors.email?.message} type="email" placeholder="you@example.com" autoComplete="email" {...register('email')} />
-
+      <form onSubmit={submitEmailRegistration} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+          Full name
+          <input
+            className="auth-input"
+            type="text"
+            autoComplete="name"
+            minLength={2}
+            maxLength={50}
+            required
+            value={name}
+            onChange={event => setName(event.target.value)}
+            style={{ border: '1px solid #E2DAC8' }}
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+          Email address
+          <input
+            className="auth-input"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={event => setEmail(event.target.value)}
+            style={{ border: '1px solid #E2DAC8' }}
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+          Password
+          <input
+            className="auth-input"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+            value={password}
+            onChange={event => setPassword(event.target.value)}
+            style={{ border: '1px solid #E2DAC8' }}
+          />
+        </label>
         <button type="submit" disabled={loading} className="auth-btn-primary">
-          {loading ? 'Creating account…' : 'Create Account'}
+          {loading ? 'Creating account…' : 'Create account with email'}
         </button>
       </form>
 
-      <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #E2DAC8' }}>
-        <GoogleSignInButton onCredential={async credential => { await googleLogin(credential); navigate('/'); window.scrollTo({ top: 0 }) }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0', color: '#9A8F85', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+        <span style={{ flex: 1, height: 1, background: '#E2DAC8' }} />
+        or
+        <span style={{ flex: 1, height: 1, background: '#E2DAC8' }} />
       </div>
+
+      <GoogleSignInButton onCredential={async credential => {
+        await googleLogin(credential)
+        navigate('/')
+        window.scrollTo({ top: 0 })
+      }} />
 
       <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
         Already have an account? <AuthLink onClick={() => navigate('/auth/login')}>Sign in</AuthLink>

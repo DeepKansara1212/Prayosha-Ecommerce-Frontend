@@ -59,6 +59,23 @@ export async function register(data: {
   return res.data.data;
 }
 
+export async function registerWithEmail(data: {
+  name: string;
+  email: string;
+  password: string;
+}): Promise<AuthTokens> {
+  const res = await apiClient.post<{ data: AuthTokens }>("/auth/register", data);
+  return res.data.data;
+}
+
+export async function loginWithEmailPassword(data: {
+  email: string;
+  password: string;
+}): Promise<AuthTokens> {
+  const res = await apiClient.post<{ data: AuthTokens }>("/auth/login", data);
+  return res.data.data;
+}
+
 export async function sendOtp(data: {
   phone: string;
   purpose: "login" | "register";

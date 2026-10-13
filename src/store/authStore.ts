@@ -24,7 +24,9 @@ interface AuthState {
   isLoading: boolean;
 
   login(data: LoginData): Promise<void>;
+  emailLogin(data: { email: string; password: string }): Promise<void>;
   googleLogin(credential: string): Promise<void>;
+  registerWithEmail(data: { name: string; email: string; password: string }): Promise<void>;
   register(data: RegisterData): Promise<void>;
   logout(): Promise<void>;
   fetchMe(): Promise<void>;
@@ -58,11 +60,39 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      emailLogin: async (data) => {
+        set({ isLoading: true });
+        try {
+          const { accessToken, refreshToken, user } =
+            await authApi.loginWithEmailPassword(data);
+          localStorage.setItem("accessToken", accessToken);
+          if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+          set({ user, accessToken, isLoading: false });
+        } catch (err) {
+          set({ isLoading: false });
+          throw err;
+        }
+      },
+
       googleLogin: async (credential) => {
         set({ isLoading: true });
         try {
           const { accessToken, refreshToken, user } =
             await authApi.googleLogin(credential);
+          localStorage.setItem("accessToken", accessToken);
+          if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+          set({ user, accessToken, isLoading: false });
+        } catch (err) {
+          set({ isLoading: false });
+          throw err;
+        }
+      },
+
+      registerWithEmail: async (data) => {
+        set({ isLoading: true });
+        try {
+          const { accessToken, refreshToken, user } =
+            await authApi.registerWithEmail(data);
           localStorage.setItem("accessToken", accessToken);
           if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
           set({ user, accessToken, isLoading: false });

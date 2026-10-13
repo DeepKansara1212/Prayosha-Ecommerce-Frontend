@@ -326,7 +326,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
     return (
       <>
         <Navbar />
-        <main id="main-content" className="min-h-screen bg-cream pt-[88px]">
+        <main id="main-content" className="min-h-screen bg-cream pt-[84px] md:pt-[88px]">
           <ProductDetailSkeleton />
         </main>
         <Footer />
@@ -339,7 +339,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-cream pt-[88px]">
+        <main className="min-h-screen bg-cream pt-[84px] md:pt-[88px]">
           <EmptyState
             icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>}
             title="Stone not found"
@@ -356,12 +356,11 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
   return (
     <>
       <Navbar />
-      <main id="main-content" className="min-h-screen bg-cream">
+      <main id="main-content" className="min-h-screen bg-cream pt-[84px] md:pt-[88px]">
 
         {/* Breadcrumb */}
         <div
-          className="border-b border-warm"
-          style={{ paddingTop: '88px', paddingBottom: '0.75rem', paddingLeft: 'clamp(1.25rem,5vw,4rem)', paddingRight: 'clamp(1.25rem,5vw,4rem)' }}
+          className="border-b border-warm pt-3 pb-3 px-[clamp(1.25rem,5vw,4rem)]"
         >
           <nav aria-label="Breadcrumb">
             <ol className="flex items-center gap-2 font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted flex-wrap">

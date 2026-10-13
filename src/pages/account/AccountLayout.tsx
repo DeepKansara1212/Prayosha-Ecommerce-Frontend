@@ -186,32 +186,42 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
                 width: 52,
                 height: 52,
                 borderRadius: "50%",
-                background: user.avatar ? "transparent" : "#7B5EA7",
+                background: "#7B5EA7",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 12,
                 overflow: "hidden",
+                position: "relative",
               }}
             >
-              {user.avatar ? (
+              <span
+                aria-hidden="true"
+                style={{
+                  color: "#fff",
+                  fontFamily: "Jost",
+                  fontSize: 18,
+                  fontWeight: 500,
+                  lineHeight: 1,
+                }}
+              >
+                {initials}
+              </span>
+              {user.avatar && (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              ) : (
-                <span
-                  style={{
-                    color: "#fff",
-                    fontFamily: "Jost",
-                    fontSize: 18,
-                    fontWeight: 500,
-                    lineHeight: 1,
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none";
                   }}
-                >
-                  {initials}
-                </span>
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
               )}
             </div>
             <p
