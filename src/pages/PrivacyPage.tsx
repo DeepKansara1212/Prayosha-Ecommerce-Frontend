@@ -132,7 +132,7 @@ const PrivacyPage: FC = () => (
         <div className="absolute top-1/4 right-1/4 w-72 h-72 rounded-full pointer-events-none" style={{ background: '#5C7C8A', opacity: 0.15, filter: 'blur(80px)' }} aria-hidden="true" />
 
         <div className="relative z-10 animate-fadeUp" style={{ padding: 'clamp(2.5rem,6vw,4rem) clamp(1.25rem,5vw,4rem)' }}>
-          <p className="flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-4">
+          <p className="flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-4">
             <span className="w-8 h-px bg-gold-light" aria-hidden="true" />
             Legal
           </p>
@@ -158,15 +158,15 @@ const PrivacyPage: FC = () => (
         {/* Jump links */}
         <RevealSection>
           <nav aria-label="Page sections" className="mb-16 p-6 bg-warm border border-gold/15">
-            <p className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-gold mb-4">Contents</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-4">Contents</p>
             <ol className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 list-none">
               {SECTIONS.map((s, i) => (
                 <li key={s.id}>
                   <a
                     href={`#${s.id}`}
-                    className="font-body text-[0.78rem] text-bark hover:text-amethyst transition-colors duration-200 flex items-baseline gap-2"
+                    className="font-body text-xs text-bark hover:text-amethyst transition-colors duration-200 flex items-baseline gap-2"
                   >
-                    <span className="font-display font-light text-[0.65rem] text-gold/60 tabular-nums">{String(i + 1).padStart(2, '0')}</span>
+                    <span className="font-display font-light text-xs text-gold/60 tabular-nums">{String(i + 1).padStart(2, '0')}</span>
                     {s.title}
                   </a>
                 </li>

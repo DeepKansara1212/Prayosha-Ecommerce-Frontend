@@ -43,7 +43,7 @@ const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void
     </div>
 
     <div className="px-4 pt-4 pb-5 flex flex-1 flex-col">
-      <p className="font-body text-tag uppercase tracking-[0.22em] text-muted mb-1 min-h-[1.25rem]">
+      <p className="font-body text-tag uppercase tracking-[0.05em] text-muted mb-1 min-h-[1.25rem]">
         {product.category}
       </p>
       <h3
@@ -89,7 +89,7 @@ const FeaturedProducts: FC = () => {
       <div ref={headRef} className="reveal">
         <SectionLabel>Hand-Picked</SectionLabel>
         <SectionTitle id="featured-title" className="text-deep">
-          New <em className="italic text-amethyst">Arrivals</em>
+          New <em className="not-italic text-amethyst">Arrivals</em>
         </SectionTitle>
       </div>
 

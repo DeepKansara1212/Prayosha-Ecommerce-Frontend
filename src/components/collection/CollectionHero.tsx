@@ -31,7 +31,7 @@ const CollectionHero: FC = () => (
     <div className="absolute bottom-0 right-1/4 w-48 h-48 rounded-full pointer-events-none" style={{ background: '#C9837A', opacity: 0.12, filter: 'blur(60px)' }} aria-hidden="true" />
 
     <div className="relative z-10 max-w-2xl mx-auto">
-      <p className="inline-flex items-center gap-3 font-body text-[0.65rem] uppercase tracking-[0.35em] text-gold-light mb-5">
+      <p className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-5">
         <span className="w-8 h-px bg-gold-light" aria-hidden="true" />
         Prayosha Crystal · Sacred Collection
         <span className="w-8 h-px bg-gold-light" aria-hidden="true" />

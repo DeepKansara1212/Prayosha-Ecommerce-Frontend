@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type FC } from 'react'
+import { useState, useEffect, type FC } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { getActiveBanners, type HeroBanner } from '@/api/heroBanner.api'
@@ -19,9 +19,6 @@ const Hero: FC = () => {
   }, [])
 
   useEffect(() => { setActive(0) }, [slides])
-
-  const prev = useCallback(() => setActive(a => (a - 1 + total) % total), [total])
-  const next = useCallback(() => setActive(a => (a + 1) % total), [total])
 
   useEffect(() => {
     if (total < 2) return
@@ -66,7 +63,7 @@ const Hero: FC = () => {
           <img
             src={slide.imageUrl}
             alt={`Hero slide ${i + 1}`}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             draggable={false}
           />
 
@@ -75,7 +72,7 @@ const Hero: FC = () => {
             <div className="absolute inset-0 flex flex-col items-start justify-end pb-16 px-8 sm:px-16 lg:px-24 z-20 bg-gradient-to-t from-deep/70 via-deep/20 to-transparent">
               <div className="max-w-2xl">
                 {slide.subtitle && (
-                  <p className="font-body text-xs sm:text-sm tracking-[0.2em] uppercase text-gold mb-3">
+                  <p className="font-body text-xs sm:text-sm tracking-[0.05em] uppercase text-gold mb-3">
                     {slide.subtitle}
                   </p>
                 )}
@@ -88,7 +85,7 @@ const Hero: FC = () => {
                   slide.ctaLink ? (
                     <Link
                       to={slide.ctaLink}
-                      className="inline-flex items-center gap-2.5 px-7 py-3 bg-gold text-deep font-body text-sm tracking-widest uppercase font-medium hover:bg-gold/90 transition-colors duration-200"
+                      className="inline-flex items-center gap-2.5 px-7 py-3 bg-gold text-deep font-body text-sm tracking-[0.05em] uppercase font-medium hover:bg-gold/90 transition-colors duration-200"
                     >
                       {slide.ctaText}
                       <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2">
@@ -96,7 +93,7 @@ const Hero: FC = () => {
                       </svg>
                     </Link>
                   ) : (
-                    <span className="inline-flex items-center gap-2.5 px-7 py-3 bg-gold text-deep font-body text-sm tracking-widest uppercase font-medium">
+                    <span className="inline-flex items-center gap-2.5 px-7 py-3 bg-gold text-deep font-body text-sm tracking-[0.05em] uppercase font-medium">
                       {slide.ctaText}
                     </span>
                   )
@@ -106,30 +103,6 @@ const Hero: FC = () => {
           )}
         </div>
       ))}
-
-      {/* ── Arrow navigation (only when more than one slide) ─────────────────── */}
-      {total > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute left-4 sm:left-7 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-cream/20 text-cream/55 hover:text-cream hover:border-gold/50 hover:bg-deep/30 backdrop-blur-sm transition-all duration-300"
-            aria-label="Previous slide"
-          >
-            <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M10 12 6 8l4-4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-4 sm:right-7 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-cream/20 text-cream/55 hover:text-cream hover:border-gold/50 hover:bg-deep/30 backdrop-blur-sm transition-all duration-300"
-            aria-label="Next slide"
-          >
-            <svg viewBox="0 0 16 16" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M6 12l4-4-4-4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        </>
-      )}
 
       {/* ── Dot indicators (only when more than one slide) ───────────────────── */}
       {total > 1 && (

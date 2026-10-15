@@ -29,7 +29,7 @@ const TabButton: FC<{ active: boolean; onClick: () => void; children: React.Reac
   <button
     onClick={onClick}
     className={cn(
-      'font-body text-[0.65rem] uppercase tracking-[0.18em] px-4 py-3 border-b-2 transition-all duration-200 whitespace-nowrap',
+      'font-body text-xs uppercase tracking-[0.05em] px-4 py-3 border-b-2 transition-all duration-200 whitespace-nowrap',
       active
         ? 'border-gold text-bark'
         : 'border-transparent text-muted hover:text-bark',
@@ -139,7 +139,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
               <div className="absolute top-4 left-4 flex gap-2">
                 {product.badge && (
                   <span className={cn(
-                    'font-body text-[0.58rem] uppercase tracking-[0.18em] px-3 py-1.5',
+                    'font-body text-xs uppercase tracking-[0.05em] px-3 py-1.5',
                     product.badge === 'Bestseller' && 'bg-gold text-deep',
                     product.badge === 'New'        && 'bg-amethyst text-cream',
                     product.badge === 'Limited'    && 'bg-rose text-cream',
@@ -172,12 +172,12 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
               {/* Header */}
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="font-body text-[0.58rem] uppercase tracking-[0.22em] text-muted">
+                  <span className="font-body text-xs uppercase tracking-[0.05em] text-muted">
                     {product.category}
                   </span>
                   <span className="text-muted/40">·</span>
                   <span
-                    className="font-body text-[0.58rem] uppercase tracking-[0.18em] px-2 py-0.5"
+                    className="font-body text-xs uppercase tracking-[0.05em] px-2 py-0.5"
                     style={{ background: `${chakraColour}22`, color: chakraColour, border: `1px solid ${chakraColour}44` }}
                   >
                     {product.chakra} Chakra
@@ -187,7 +187,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                 <h2 className="font-display font-light text-[clamp(1.6rem,4vw,2.2rem)] leading-tight text-deep mb-1">
                   {product.name}
                 </h2>
-                <p className="font-body font-extralight text-[0.8rem] text-muted mb-3">
+                <p className="font-body font-extralight text-xs text-muted mb-3">
                   {product.subtitle}
                 </p>
 
@@ -198,20 +198,11 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                       <span key={n} className={cn('text-xs', n <= Math.floor(product.rating) ? 'text-gold' : 'text-bark')} aria-hidden="true">★</span>
                     ))}
                   </span>
-                  <span className="font-body text-[0.7rem] text-muted">{product.rating} · {product.reviewCount} reviews</span>
-                </div>
-
-                {/* Intention tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {product.intention.split(' · ').map(i => (
-                    <span key={i} className="font-body text-[0.6rem] uppercase tracking-[0.15em] px-3 py-1.5 bg-warm text-muted border border-warm">
-                      {i}
-                    </span>
-                  ))}
+                  <span className="font-body text-xs text-muted">{product.rating} · {product.reviewCount} reviews</span>
                 </div>
 
                 {/* Origin */}
-                <p className="font-body text-[0.72rem] text-muted">
+                <p className="font-body text-xs text-muted">
                   <span className="text-bark">Origin:</span> {product.origin}
                 </p>
               </div>
@@ -222,13 +213,13 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                   <p className="font-display text-[1.8rem] font-light text-deep">{product.priceDisplay}</p>
                   {product.inStock ? (
                     <p className={cn(
-                      'font-body text-[0.65rem] uppercase tracking-[0.12em] mt-0.5',
+                      'font-body text-xs uppercase tracking-[0.05em] mt-0.5',
                       product.stockCount <= 5 ? 'text-rose' : 'text-sage',
                     )}>
                       {product.stockCount <= 5 ? `Only ${product.stockCount} left` : 'In Stock'}
                     </p>
                   ) : (
-                    <p className="font-body text-[0.65rem] uppercase tracking-[0.12em] mt-0.5 text-muted">Out of Stock</p>
+                    <p className="font-body text-xs uppercase tracking-[0.05em] mt-0.5 text-muted">Out of Stock</p>
                   )}
                 </div>
 
@@ -241,7 +232,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                     >
                       −
                     </button>
-                    <span className="w-10 text-center font-body text-[0.8rem] text-bark" aria-live="polite" aria-label={`Quantity: ${qty}`}>
+                    <span className="w-10 text-center font-body text-xs text-bark" aria-live="polite" aria-label={`Quantity: ${qty}`}>
                       {qty}
                     </span>
                     <button
@@ -260,7 +251,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                   href={getProductInquiryUrl(product, publicSettings?.whatsappNumber)}
                   target={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? '_blank' : undefined}
                   rel={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? 'noopener noreferrer' : undefined}
-                  className="block w-full text-center font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-6 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
+                  className="block w-full text-center font-body text-xs uppercase tracking-[0.05em] py-4 mb-6 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
                 >
                   Add to Inquiry
                 </a>
@@ -270,7 +261,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                     onClick={handleAddToCart}
                     disabled={!product.inStock}
                     className={cn(
-                      'w-full font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-3',
+                      'w-full font-body text-xs uppercase tracking-[0.05em] py-4 mb-3',
                       'transition-all duration-300',
                       product.inStock
                         ? added
@@ -283,7 +274,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                     {!product.inStock ? 'Out of Stock' : added ? '✦ Added to Cart' : 'Add to Cart'}
                   </button>
                   {product.inStock && (
-                    <button className="w-full font-body text-[0.72rem] uppercase tracking-[0.2em] py-4 mb-6 border border-deep text-deep hover:bg-warm transition-colors duration-200">
+                    <button className="w-full font-body text-xs uppercase tracking-[0.05em] py-4 mb-6 border border-deep text-deep hover:bg-warm transition-colors duration-200">
                       Buy Now
                     </button>
                   )}
@@ -310,11 +301,11 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                     </p>
                       {product.properties.length > 0 && (
                         <>
-                          <p className="font-body text-[0.65rem] uppercase tracking-[0.2em] text-gold mb-3">Properties &amp; Benefits</p>
+                          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">Properties &amp; Benefits</p>
                           <ul className="space-y-2">
                             {product.properties.map((p, i) => (
-                              <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-[0.8rem] text-bark">
-                                <span className="text-gold mt-0.5 flex-none text-[0.6rem]">✦</span>
+                              <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-xs text-bark">
+                                <span className="text-gold mt-0.5 flex-none text-xs">✦</span>
                                 {p}
                               </li>
                             ))}
@@ -326,12 +317,12 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
 
                 {tab === 'how-to-use' && (
                   <div>
-                    <p className="font-body text-[0.65rem] uppercase tracking-[0.2em] text-gold mb-3">Ritual guide</p>
+                    <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">Ritual guide</p>
                     {product.howToUse.length > 0 && (
                       <ul className="space-y-2">
                         {product.howToUse.map((step, i) => (
                           <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-[0.82rem] leading-[1.9] text-bark">
-                            <span className="text-gold mt-1 flex-none text-[0.6rem]">✦</span>
+                            <span className="text-gold mt-1 flex-none text-xs">✦</span>
                             {step}
                           </li>
                         ))}
@@ -341,11 +332,11 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                       className="mt-5 p-4 border-l-2 bg-warm/60"
                       style={{ borderColor: chakraColour }}
                     >
-                      <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] mb-1" style={{ color: chakraColour }}>
+                      <p className="font-body text-xs uppercase tracking-[0.05em] mb-1" style={{ color: chakraColour }}>
                         {product.chakra} Chakra
                       </p>
-                      <p className="font-body font-extralight text-[0.78rem] text-bark/80">
-                        This stone primarily activates and balances the {product.chakra.toLowerCase()} chakra, enhancing {product.intention.toLowerCase()}.
+                      <p className="font-body font-extralight text-xs text-bark/80">
+                        This stone primarily activates and balances the {product.chakra.toLowerCase()} chakra.
                       </p>
                     </div>
                   </div>
@@ -365,17 +356,17 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                       { label: 'Category',   value: product.category },
                     ].filter(({ value }) => value?.trim()).map(({ label, value }) => (
                       <div key={label} className="flex justify-between items-baseline border-b border-warm pb-3 last:border-0">
-                        <span className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted">{label}</span>
-                        <span className="font-body font-light text-[0.8rem] text-bark text-right max-w-[55%]">{value}</span>
+                        <span className="font-body text-xs uppercase tracking-[0.05em] text-muted">{label}</span>
+                        <span className="font-body font-light text-xs text-bark text-right max-w-[55%]">{value}</span>
                       </div>
                     ))}
                     {product.careInstructions.length > 0 && (
                       <div className="pt-2">
-                        <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted mb-2">Crystal Care</p>
+                        <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">Crystal Care</p>
                         <ul className="space-y-2">
                           {product.careInstructions.map((instruction, i) => (
-                            <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-[0.78rem] text-bark/80 leading-relaxed">
-                              <span className="text-gold mt-1 flex-none text-[0.6rem]">✦</span>
+                            <li key={i} className="flex items-start gap-2.5 font-body font-extralight text-xs text-bark/80 leading-relaxed">
+                              <span className="text-gold mt-1 flex-none text-xs">✦</span>
                               {instruction}
                             </li>
                           ))}
@@ -389,7 +380,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
               {/* Related products */}
               {relatedProducts.length > 0 && (
                 <div>
-                  <p className="font-body text-[0.62rem] uppercase tracking-[0.28em] text-gold mb-4">
+                  <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-4">
                     You may also like
                   </p>
                   <div className="grid grid-cols-3 gap-3">
@@ -407,7 +398,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                           }
                         </div>
                         <p className="font-display text-[0.82rem] font-light text-deep leading-tight mb-0.5 truncate">{rp.name}</p>
-                        <p className="font-body text-[0.7rem] text-muted">{rp.priceDisplay}</p>
+                        <p className="font-body text-xs text-muted">{rp.priceDisplay}</p>
                       </button>
                     ))}
                   </div>
@@ -423,7 +414,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                 ].map(b => (
                   <div key={b.label} className="text-center">
                     <p className="text-lg mb-1" aria-hidden="true">{b.icon}</p>
-                    <p className="font-body text-[0.58rem] uppercase tracking-[0.12em] text-muted leading-tight">{b.label}</p>
+                    <p className="font-body text-xs uppercase tracking-[0.05em] text-muted leading-tight">{b.label}</p>
                   </div>
                 ))}
               </div>

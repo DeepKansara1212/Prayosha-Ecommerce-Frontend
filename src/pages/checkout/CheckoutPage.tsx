@@ -28,7 +28,7 @@ const CHECKOUT_CSS = `
     display: block; width: 100%; box-sizing: border-box;
     background: #EDE8DC; border: 1px solid #E2DAC8; border-radius: 4px;
     padding: 12px 16px;
-    font-family: Jost, system-ui, sans-serif; font-size: 14px; color: #1C1A17;
+    font-family: var(--font-body); font-size: 14px; color: #1C1A17;
     outline: none; transition: border-color 150ms, box-shadow 150ms;
   }
   .acct-input:focus { border-color: #7B5EA7; box-shadow: 0 0 0 3px #F0EAF7; }
@@ -37,8 +37,8 @@ const CHECKOUT_CSS = `
   .acct-btn-gold {
     display: inline-flex; align-items: center; justify-content: center;
     background: #C49A3C; color: #fff; border: none; border-radius: 4px;
-    font-family: Jost, system-ui, sans-serif; font-size: 11px; font-weight: 400;
-    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: var(--font-body); font-size: 13px; font-weight: 400;
+    text-transform: uppercase; letter-spacing: 0.05em;
     padding: 14px 28px; cursor: pointer;
     transition: background 150ms, transform 100ms;
   }
@@ -49,8 +49,8 @@ const CHECKOUT_CSS = `
     display: inline-flex; align-items: center; justify-content: center;
     background: none; color: #6B6057;
     border: 1px solid #E2DAC8; border-radius: 4px;
-    font-family: Jost, system-ui, sans-serif; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: var(--font-body); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.05em;
     padding: 14px 24px; cursor: pointer;
     transition: border-color 150ms, color 150ms;
   }
@@ -59,11 +59,11 @@ const CHECKOUT_CSS = `
 
   .acct-label {
     display: block;
-    font-family: Jost, system-ui, sans-serif; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 0.08em; color: #6B6057;
+    font-family: var(--font-body); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.05em; color: #6B6057;
     margin-bottom: 6px;
   }
-  .acct-error { font-family: Jost, sans-serif; font-size: 12px; color: #A85050; margin-top: 4px; }
+  .acct-error { font-family: var(--font-body); font-size: 13px; color: #A85050; margin-top: 4px; }
 
   /* Two-column checkout layout */
   .ck-layout {
@@ -85,7 +85,7 @@ const CHECKOUT_CSS = `
       display: flex; align-items: center; justify-content: space-between;
       width: 100%; padding: 14px 16px; cursor: pointer;
       background: #EDE8DC; border: 1px solid #E2DAC8; border-radius: 6px 6px 0 0;
-      font-family: Jost, sans-serif; font-size: 12px; color: #1C1A17;
+      font-family: var(--font-body); font-size: 13px; color: #1C1A17;
       border-bottom: none;
     }
     .ck-sidebar-body-collapsed { display: none; }
@@ -114,7 +114,7 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: done ? '#5A8A6A' : active ? '#7B5EA7' : '#E2DAC8',
               color: done || active ? '#fff' : '#5A4638',
-              fontFamily: 'Jost', fontSize: 11, fontWeight: 500,
+              fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
               transition: 'background 250ms',
             }}>
               {done ? '✓' : '✦'}
@@ -122,8 +122,8 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
             {/* Label */}
             <span style={{
               fontFamily: active
-                ? '"Cormorant Garamond", Georgia, serif'
-                : 'Jost, system-ui, sans-serif',
+                ? 'var(--font-heading)'
+                : 'var(--font-body)',
               fontSize: active ? 18 : 13,
               fontWeight: active ? 400 : done ? 400 : 300,
               color: done ? '#5A8A6A' : active ? '#7B5EA7' : '#5A4638',
@@ -169,9 +169,9 @@ const OrderSidebar: FC = () => {
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
       >
-        <span style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057' }}>Order Summary</span>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>Order Summary</span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'Jost', fontSize: 14, fontWeight: 500, color: '#C49A3C' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#C49A3C' }}>
             ₹{total.toLocaleString('en-IN')}
           </span>
           <svg viewBox="0 0 16 16" width={14} height={14} fill="none" stroke="#6B6057" strokeWidth="1.5"
@@ -190,7 +190,7 @@ const OrderSidebar: FC = () => {
         }}
       >
         <p style={{
-          fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300,
+          fontFamily: 'var(--font-heading)', fontWeight: 400,
           fontSize: 20, color: '#1C1A17', margin: '0 0 20px',
         }}>
           Order Summary
@@ -220,16 +220,16 @@ const OrderSidebar: FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
-                    fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', margin: '0 0 2px',
+                    fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: '0 0 2px',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>
                     {product.name}
                   </p>
-                  <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#5A4638', margin: 0 }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638', margin: 0 }}>
                     Qty {item.quantity}
                   </p>
                 </div>
-                <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', flexShrink: 0, margin: 0 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', flexShrink: 0, margin: 0 }}>
                   ₹{(item.priceAtAdd * item.quantity).toLocaleString('en-IN')}
                 </p>
               </div>
@@ -243,15 +243,15 @@ const OrderSidebar: FC = () => {
           {discountAmount > 0 && coupon && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontFamily: 'Jost', fontSize: 13, color: '#5A8A6A' }}>Discount</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>Discount</span>
                 <span style={{
                   background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 10,
-                  padding: '1px 8px', fontFamily: 'Jost', fontSize: 10, color: '#5A8A6A',
+                  padding: '1px 8px', fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A',
                 }}>
                   {coupon.code} ✕
                 </span>
               </div>
-              <span style={{ fontFamily: 'Jost', fontSize: 13, color: '#5A8A6A' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
                 −₹{discountAmount.toLocaleString('en-IN')}
               </span>
             </div>
@@ -268,12 +268,12 @@ const OrderSidebar: FC = () => {
         {/* Total */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{
-            fontFamily: 'Jost', fontSize: 12, textTransform: 'uppercase',
-            letterSpacing: '0.12em', color: '#6B6057',
+            fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+            letterSpacing: '0.05em', color: '#6B6057',
           }}>
             Total
           </span>
-          <span style={{ fontFamily: 'Jost', fontSize: 18, fontWeight: 500, color: '#C49A3C' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 18, fontWeight: 500, color: '#C49A3C' }}>
             ₹{total.toLocaleString('en-IN')}
           </span>
         </div>
@@ -283,7 +283,7 @@ const OrderSidebar: FC = () => {
           {[['🔒', 'Secure'], ['📦', 'Insured'], ['✦', 'Authentic']].map(([icon, label]) => (
             <div key={label} style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 16, margin: '0 0 4px' }}>{icon}</p>
-              <p style={{ fontFamily: 'Jost', fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#5A4638', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#5A4638', margin: 0 }}>
                 {label}
               </p>
             </div>
@@ -296,8 +296,8 @@ const OrderSidebar: FC = () => {
 
 const SidebarRow: FC<{ label: string; value: string; valueColor?: string }> = ({ label, value, valueColor = '#1C1A17' }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-    <span style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057' }}>{label}</span>
-    <span style={{ fontFamily: 'Jost', fontSize: 13, color: valueColor }}>{value}</span>
+    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>{label}</span>
+    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: valueColor }}>{value}</span>
   </div>
 )
 
@@ -335,9 +335,6 @@ const CheckoutPage: FC = () => {
           className="min-h-screen bg-cream px-6 pb-16 pt-32 text-center"
         >
           <section className="mx-auto max-w-xl bg-warm p-8 sm:p-12" role="alert">
-            <p className="font-body text-[0.62rem] uppercase tracking-[0.25em] text-gold mb-4">
-              Price on request
-            </p>
             <h1 className="font-display text-3xl font-light text-deep mb-4">
               This item needs an inquiry
             </h1>
@@ -347,7 +344,7 @@ const CheckoutPage: FC = () => {
             </p>
             <button
               onClick={() => navigate('/cart')}
-              className="font-body text-xs uppercase tracking-[0.18em] bg-deep px-8 py-4 text-cream hover:bg-bark transition-colors"
+              className="font-body text-xs uppercase tracking-[0.05em] bg-deep px-8 py-4 text-cream hover:bg-bark transition-colors"
             >
               Return to Cart
             </button>
@@ -410,10 +407,10 @@ const CheckoutPage: FC = () => {
 
         {/* Page header */}
         <div style={{ background: '#EDE8DC', borderBottom: '1px solid #E2DAC8', padding: 'clamp(20px, 3vw, 32px) clamp(24px, 5vw, 80px)' }}>
-          <p style={{ fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.2em', color: '#C49A3C', margin: '0 0 4px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#C49A3C', margin: '0 0 4px' }}>
             ✦ Checkout
           </p>
-          <h1 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: 'clamp(22px, 4vw, 34px)', color: '#1C1A17', margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 'clamp(22px, 4vw, 34px)', color: '#1C1A17', margin: 0 }}>
             Complete Your Order
           </h1>
         </div>
@@ -426,7 +423,7 @@ const CheckoutPage: FC = () => {
             <div>
               <StepIndicator currentStep={step} />
 
-              <p style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 400, fontSize: 22, color: '#1C1A17', margin: '0 0 24px' }}>
+              <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 22, color: '#1C1A17', margin: '0 0 24px' }}>
                 {stepTitles[step]}
               </p>
 

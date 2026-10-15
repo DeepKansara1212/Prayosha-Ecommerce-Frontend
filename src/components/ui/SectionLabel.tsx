@@ -11,7 +11,7 @@ interface SectionLabelProps {
 const SectionLabel: FC<SectionLabelProps> = ({ children, className, light }) => (
   <p
     className={cn(
-      'flex items-center gap-3 text-label font-body uppercase tracking-[0.3em] mb-3',
+      'flex items-center gap-3 text-label font-body uppercase tracking-[0.05em] mb-3',
       light ? 'text-gold-light' : 'text-gold',
       className,
     )}

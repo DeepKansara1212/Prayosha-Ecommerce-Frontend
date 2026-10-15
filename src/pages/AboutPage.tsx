@@ -51,10 +51,10 @@ const AboutPage: FC = () => (
       <RevealSection>
         <div style={{ padding: 'clamp(5rem,10vw,8rem) clamp(1.25rem,5vw,4rem)' }}>
           <div className="mx-auto max-w-4xl text-center">
-            <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-5">Our promise</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-5">Our promise</p>
             <h2 className="font-display font-light text-[clamp(2.2rem,5vw,4rem)] text-deep leading-[1.08] mb-7">
               Responsibly sourced,<br className="hidden sm:block" />
-              {' '}<em className="italic text-amethyst">thoughtfully selected</em>
+              {' '}<em className="not-italic text-amethyst">thoughtfully selected</em>
             </h2>
             <div className="mx-auto mb-8 h-px w-16 bg-gold/60" aria-hidden="true" />
             <div className="mx-auto max-w-3xl space-y-5 font-body font-extralight text-[0.9rem] leading-[2] text-bark sm:text-base">
@@ -76,11 +76,11 @@ const AboutPage: FC = () => (
         <RevealSection>
           <div style={{ padding: 'clamp(4rem,8vw,7rem) clamp(1.25rem,5vw,4rem)' }}>
             <div className="text-center mb-12">
-              <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold-light mb-3">💼 Who we serve</p>
+              <p className="font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-3">💼 Who we serve</p>
               <h2 className="font-display font-light text-[clamp(2rem,4vw,3rem)] text-cream">
                 Our <em className="italic text-gold-light">wholesale clients</em>
               </h2>
-              <p className="font-body font-extralight text-[0.8rem] leading-[1.9] text-cream/70 max-w-xl mx-auto mt-4">
+              <p className="font-body font-extralight text-xs leading-[1.9] text-cream/70 max-w-xl mx-auto mt-4">
                 As a leading crystal manufacturer, we cater to a diverse global clientele by offering flexible bulk ordering options.
               </p>
             </div>
@@ -97,7 +97,7 @@ const AboutPage: FC = () => (
                 >
                   <p className="text-2xl mb-4" aria-hidden="true">{c.icon}</p>
                   <h3 className="font-display text-[1.2rem] font-normal text-cream mb-3">{c.title}</h3>
-                  <p className="font-body font-normal text-[0.8rem] leading-[1.9] text-cream/85">{c.text}</p>
+                  <p className="font-body font-normal text-xs leading-[1.9] text-cream/85">{c.text}</p>
                 </div>
               ))}
             </div>
@@ -109,9 +109,9 @@ const AboutPage: FC = () => (
       <RevealSection>
         <div style={{ padding: 'clamp(4rem,8vw,7rem) clamp(1.25rem,5vw,4rem)' }}>
           <div className="text-center mb-12">
-            <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">✨ The Prayosha standard</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">✨ The Prayosha standard</p>
             <h2 className="font-display font-light text-[clamp(2rem,4vw,3rem)] text-deep">
-              Complete <em className="italic text-amethyst">transparency</em>
+              Complete <em className="not-italic text-amethyst">transparency</em>
             </h2>
             <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark max-w-xl mx-auto mt-4">
               Buying crystals online in bulk can be challenging, which is why we offer complete transparency at every stage.
@@ -123,7 +123,7 @@ const AboutPage: FC = () => (
               <div key={q.title} className="bg-warm p-8 text-center">
                 <p className="text-2xl mb-4" aria-hidden="true">{q.icon}</p>
                 <h3 className="font-display text-[1.05rem] font-normal text-deep mb-3">{q.title}</h3>
-                <p className="font-body font-extralight text-[0.8rem] leading-[1.9] text-muted">{q.text}</p>
+                <p className="font-body font-extralight text-xs leading-[1.9] text-muted">{q.text}</p>
               </div>
             ))}
           </div>
@@ -135,9 +135,9 @@ const AboutPage: FC = () => (
         <RevealSection>
           <div style={{ padding: 'clamp(4rem,8vw,7rem) clamp(1.25rem,5vw,4rem)' }}>
             <div className="text-center mb-12">
-              <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">❓ FAQ</p>
+              <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">❓ FAQ</p>
               <h2 className="font-display font-light text-[clamp(2rem,4vw,3rem)] text-deep">
-                Frequently asked <em className="italic text-amethyst">questions</em>
+                Frequently asked <em className="not-italic text-amethyst">questions</em>
               </h2>
             </div>
 
@@ -165,7 +165,7 @@ const AboutPage: FC = () => (
             background: 'radial-gradient(ellipse at 50% 50%, #3D1E4A 0%, #1C1410 100%)',
           }}
         >
-          <p className="font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-4">🤝 &nbsp;Partner with us</p>
+          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-4">🤝 &nbsp;Partner with us</p>
           <h2 className="font-display font-light text-[clamp(2rem,5vw,3.5rem)] text-cream leading-tight mb-5">
             Elevate your inventory<br />
             <em className="italic text-gold-light">with the purest energy</em>
@@ -176,13 +176,13 @@ const AboutPage: FC = () => (
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => { window.location.hash = '#/collection'; window.scrollTo({ top: 0 }) }}
-              className="font-body text-[0.7rem] uppercase tracking-[0.22em] bg-gold text-deep px-8 py-4 hover:bg-gold-light transition-all duration-300"
+              className="font-body text-xs uppercase tracking-[0.05em] bg-gold text-deep px-8 py-4 hover:bg-gold-light transition-all duration-300"
             >
               Explore Collection
             </button>
             <button
               onClick={() => { window.location.hash = '#/contact'; window.scrollTo({ top: 0 }) }}
-              className="font-body text-[0.7rem] uppercase tracking-[0.18em] border border-cream/30 text-cream px-8 py-4 hover:border-gold-light hover:text-gold-light transition-all duration-300"
+              className="font-body text-xs uppercase tracking-[0.05em] border border-cream/30 text-cream px-8 py-4 hover:border-gold-light hover:text-gold-light transition-all duration-300"
             >
               Get in Touch
             </button>

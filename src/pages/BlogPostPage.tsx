@@ -58,7 +58,7 @@ const renderSection = (section: BlogSection, index: number) => {
       <h3
         key={index}
         id={`article-section-${index}`}
-        className="font-body text-[0.72rem] uppercase tracking-[0.2em] mt-7 mb-1"
+        className="font-body text-xs uppercase tracking-[0.05em] mt-7 mb-1"
         style={{ color: '#C49A3C' }}
       >
         {section.text}
@@ -79,7 +79,7 @@ const renderSection = (section: BlogSection, index: number) => {
       <ul key={index} id={`article-section-${index}`} className="space-y-2 pl-1">
         {section.items.map((item, j) => (
           <li key={j} className="flex items-start gap-3">
-            <span className="flex-none mt-[0.35rem] text-[0.65rem]" style={{ color: '#C49A3C' }}>✦</span>
+            <span className="flex-none mt-[0.35rem] text-xs" style={{ color: '#C49A3C' }}>✦</span>
             <span className="font-body font-extralight text-[0.85rem] leading-[1.9] text-bark">{item}</span>
           </li>
         ))}
@@ -153,7 +153,7 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             <p className="font-display font-light text-[2rem] text-deep mb-4">Article not found</p>
             <button
               onClick={onNavigateToJournal}
-              className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-gold hover:text-deep bg-transparent border-none cursor-pointer transition-colors"
+              className="font-body text-xs uppercase tracking-[0.05em] text-gold hover:text-deep bg-transparent border-none cursor-pointer transition-colors"
             >
               ← Back to Journal
             </button>
@@ -181,17 +181,17 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
           <div className="max-w-6xl mx-auto">
             <button
               onClick={onNavigateToJournal}
-              className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted hover:text-gold transition-colors bg-transparent border-none cursor-pointer flex items-center gap-2 mb-8"
+              className="font-body text-xs uppercase tracking-[0.05em] text-muted hover:text-gold transition-colors bg-transparent border-none cursor-pointer flex items-center gap-2 mb-8"
             >
               <span>←</span> Back to Journal
             </button>
             <div className="flex flex-wrap items-center gap-3 mb-5">
-              <span className="font-body text-[0.6rem] uppercase tracking-[0.2em] px-3 py-1 border" style={{ borderColor: 'rgba(123,94,167,0.45)', color: '#7B5EA7' }}>
+              <span className="font-body text-xs uppercase tracking-[0.05em] px-3 py-1 border" style={{ borderColor: 'rgba(123,94,167,0.45)', color: '#7B5EA7' }}>
                 {post.category}
               </span>
-              <span className="font-body text-[0.62rem] text-muted">{post.date}</span>
+              <span className="font-body text-xs text-muted">{post.date}</span>
               <span className="w-1 h-1 rounded-full bg-gold" aria-hidden="true" />
-              <span className="font-body text-[0.62rem] text-muted">{post.readTime}</span>
+              <span className="font-body text-xs text-muted">{post.readTime}</span>
             </div>
             <h1 className="font-display font-light text-deep leading-[1.1] max-w-4xl mb-4" style={{ fontSize: 'clamp(2.2rem,5vw,4rem)' }}>
               {post.title}
@@ -212,9 +212,9 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
           >
             <aside className="hidden lg:block">
               <div className="sticky top-28">
-                <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] text-deep mb-4">In this article</p>
+                <p className="font-body text-xs uppercase tracking-[0.05em] text-deep mb-4">In this article</p>
                 <nav className="flex flex-col gap-2 border-l border-warm pl-4" aria-label="Article contents">
-                  <span className="font-body text-[0.72rem] text-gold">Overview</span>
+                  <span className="font-body text-xs text-gold">Overview</span>
                   {post.content.map((section, index) => {
                     const label = section.type === 'heading' || section.type === 'subheading'
                       ? section.text
@@ -223,7 +223,7 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
                       <a
                         key={index}
                         href={`#article-section-${index}`}
-                        className="font-body text-[0.7rem] leading-relaxed text-muted hover:text-amethyst transition-colors"
+                        className="font-body text-xs leading-relaxed text-muted hover:text-amethyst transition-colors"
                       >
                         {label}
                       </a>
@@ -254,15 +254,15 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
               >
                 <div className="w-12 h-12 rounded-full bg-warm flex items-center justify-center text-xl flex-none">🌙</div>
                 <div>
-                  <p className="font-body text-[0.72rem] font-medium text-deep">Prayosha Crystal Journal</p>
-                  <p className="font-body font-extralight text-[0.68rem] text-muted">Crystal wisdom &amp; sacred rituals</p>
+                  <p className="font-body text-xs font-medium text-deep">Prayosha Crystal Journal</p>
+                  <p className="font-body font-extralight text-xs text-muted">Crystal wisdom &amp; sacred rituals</p>
                 </div>
               </div>
 
               <div className="mt-8">
                 <button
                   onClick={onNavigateToJournal}
-                  className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-gold hover:text-deep transition-colors bg-transparent border-none cursor-pointer flex items-center gap-2"
+                  className="font-body text-xs uppercase tracking-[0.05em] text-gold hover:text-deep transition-colors bg-transparent border-none cursor-pointer flex items-center gap-2"
                 >
                   ← Back to Journal
                 </button>
@@ -278,9 +278,9 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             className="reveal bg-warm"
             style={{ padding: 'clamp(3rem,6vw,5rem) clamp(1.25rem,5vw,4rem)' }}
           >
-            <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-2">Continue Reading</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-2">Continue Reading</p>
             <h2 className="font-display font-light text-deep mb-8" style={{ fontSize: 'clamp(1.8rem,4vw,2.5rem)' }}>
-              More from the <em className="italic text-amethyst">Journal</em>
+              More from the <em className="not-italic text-amethyst">Journal</em>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -332,13 +332,13 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
                   </div>
 
                   <div className="p-5">
-                    <span className="font-body text-[0.58rem] uppercase tracking-[0.2em] block mb-2" style={{ color: '#7B5EA7' }}>
+                    <span className="font-body text-xs uppercase tracking-[0.05em] block mb-2" style={{ color: '#7B5EA7' }}>
                       {related.category}
                     </span>
                     <h3 className="font-display font-light text-[1rem] text-deep leading-snug group-hover:text-amethyst transition-colors duration-200">
                       {related.title}
                     </h3>
-                    <p className="font-body text-[0.62rem] uppercase tracking-[0.1em] text-gold mt-3 group-hover:text-deep transition-colors duration-200">
+                    <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mt-3 group-hover:text-deep transition-colors duration-200">
                       Read more →
                     </p>
                   </div>
@@ -349,7 +349,7 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
             <div className="text-center mt-10">
               <button
                 onClick={onNavigateToJournal}
-                className="font-body text-[0.65rem] uppercase tracking-[0.2em] text-muted hover:text-gold px-8 py-3 transition-all duration-200 bg-transparent cursor-pointer"
+                className="font-body text-xs uppercase tracking-[0.05em] text-muted hover:text-gold px-8 py-3 transition-all duration-200 bg-transparent cursor-pointer"
                 style={{ border: '1px solid rgba(196,184,154,0.5)' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = '#C49A3C' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(196,184,154,0.5)' }}

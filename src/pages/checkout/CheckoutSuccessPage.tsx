@@ -86,8 +86,8 @@ const CheckoutSuccessPage: FC = () => {
 
             {/* Eyebrow */}
             <p style={{
-              fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase',
-              letterSpacing: '0.35em', color: '#C49A3C', margin: '0 0 20px',
+              fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+              letterSpacing: '0.05em', color: '#C49A3C', margin: '0 0 20px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14,
             }}>
               <span style={{ width: 32, height: 1, background: '#C49A3C', display: 'inline-block' }} />
@@ -97,14 +97,14 @@ const CheckoutSuccessPage: FC = () => {
 
             {/* Headline */}
             <h1 className="success-hero-title" style={{
-              fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300,
+              fontFamily: 'var(--font-heading)', fontWeight: 400,
               fontSize: 'clamp(34px, 5.5vw, 58px)', color: '#F5F0E8',
               lineHeight: 1.1, margin: '0 0 6px',
             }}>
               Thank you for your
             </h1>
             <h1 className="success-hero-title" style={{
-              fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontStyle: 'italic',
+              fontFamily: 'var(--font-heading)', fontWeight: 400,
               fontSize: 'clamp(34px, 5.5vw, 58px)', color: '#9B7EC8',
               lineHeight: 1.1, margin: '0 0 36px',
             }}>
@@ -120,10 +120,10 @@ const CheckoutSuccessPage: FC = () => {
                 border: '1px solid rgba(196,154,60,0.28)',
                 borderRadius: 6,
               }}>
-                <p style={{ fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.22em', color: '#C49A3C', margin: '0 0 7px' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#C49A3C', margin: '0 0 7px' }}>
                   Order Number
                 </p>
-                <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 19, color: '#F5F0E8', margin: 0, letterSpacing: '0.04em' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 19, color: '#F5F0E8', margin: 0, letterSpacing: '0.04em' }}>
                   {order.orderNumber}
                 </p>
               </div>
@@ -145,7 +145,7 @@ const CheckoutSuccessPage: FC = () => {
               {orderItems.length > 0 && (
                 <div style={{ background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2DAC8' }}>
-                    <p style={{ fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.22em', color: '#5A4638', margin: 0 }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#5A4638', margin: 0 }}>
                       Items Ordered
                     </p>
                   </div>
@@ -175,19 +175,19 @@ const CheckoutSuccessPage: FC = () => {
                         {/* Info */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{
-                            fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 400,
+                            fontFamily: 'var(--font-heading)', fontWeight: 400,
                             fontSize: 17, color: '#1C1A17', margin: '0 0 3px',
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>
                             {item.name}
                           </p>
-                          <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#5A4638', margin: 0 }}>
+                          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638', margin: 0 }}>
                             Qty {item.quantity}
                           </p>
                         </div>
 
                         {/* Line total */}
-                        <p style={{ fontFamily: 'Jost', fontSize: 14, color: '#1C1A17', flexShrink: 0, margin: 0, fontWeight: 400 }}>
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#1C1A17', flexShrink: 0, margin: 0, fontWeight: 400 }}>
                           ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                         </p>
                       </div>
@@ -200,7 +200,7 @@ const CheckoutSuccessPage: FC = () => {
               {order?.shippingAddress && (
                 <div style={{ background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2DAC8' }}>
-                    <p style={{ fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.22em', color: '#5A4638', margin: 0 }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#5A4638', margin: 0 }}>
                       Shipping To
                     </p>
                   </div>
@@ -210,10 +210,10 @@ const CheckoutSuccessPage: FC = () => {
                       <circle cx="10" cy="8" r="2.5" />
                     </svg>
                     <div>
-                      <p style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 17, fontWeight: 400, color: '#1C1A17', margin: '0 0 5px' }}>
+                      <p style={{ fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 400, color: '#1C1A17', margin: '0 0 5px' }}>
                         {order.shippingAddress.fullName}
                       </p>
-                      <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0, lineHeight: 1.7 }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0, lineHeight: 1.7 }}>
                         {order.shippingAddress.line1}
                         {order.shippingAddress.line2 && `, ${order.shippingAddress.line2}`}
                         <br />
@@ -234,10 +234,10 @@ const CheckoutSuccessPage: FC = () => {
                 }}>
                   <span style={{ fontSize: 20, flexShrink: 0 }}>✨</span>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', margin: '0 0 2px' }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: '0 0 2px' }}>
                       You earned <strong style={{ color: '#C49A3C' }}>{pointsEarned} reward points</strong> on this order!
                     </p>
-                    <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                       Your total balance: <strong>{newPointsBalance} pts</strong>
                     </p>
                   </div>
@@ -245,8 +245,8 @@ const CheckoutSuccessPage: FC = () => {
                     onClick={() => { navigate('/account/rewards'); window.scrollTo({ top: 0 }) }}
                     style={{
                       flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer',
-                      fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase',
-                      letterSpacing: '0.12em', color: '#7B5EA7', padding: 0,
+                      fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+                      letterSpacing: '0.05em', color: '#7B5EA7', padding: 0,
                       minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center',
                     }}
                   >
@@ -267,28 +267,28 @@ const CheckoutSuccessPage: FC = () => {
               {order && (
                 <div style={{ background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 8, overflow: 'hidden' }}>
                   <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2DAC8' }}>
-                    <p style={{ fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.22em', color: '#5A4638', margin: 0 }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#5A4638', margin: 0 }}>
                       Payment Summary
                     </p>
                   </div>
                   <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {order.discount > 0 && (
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ fontFamily: 'Jost', fontSize: 12, color: '#5A4638' }}>Discount</span>
-                        <span style={{ fontFamily: 'Jost', fontSize: 12, color: '#5A8A6A' }}>−₹{order.discount.toLocaleString('en-IN')}</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>Discount</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>−₹{order.discount.toLocaleString('en-IN')}</span>
                       </div>
                     )}
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ fontFamily: 'Jost', fontSize: 12, color: '#5A4638' }}>Payment</span>
-                      <span style={{ fontFamily: 'Jost', fontSize: 12, color: '#5A8A6A', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>Payment</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', display: 'flex', alignItems: 'center', gap: 5 }}>
                         <svg viewBox="0 0 14 14" width={11} height={11} fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M11.5 3.5 5.5 10 2.5 7" /></svg>
                         Confirmed
                       </span>
                     </div>
                     <div style={{ height: 1, background: '#E2DAC8' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#6B6057' }}>Total Paid</span>
-                      <span style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 28, fontWeight: 300, color: '#C49A3C' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B6057' }}>Total Paid</span>
+                      <span style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 400, color: '#C49A3C' }}>
                         ₹{order.total.toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -299,7 +299,7 @@ const CheckoutSuccessPage: FC = () => {
               {/* What happens next */}
               <div style={{ background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 8, overflow: 'hidden' }}>
                 <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2DAC8' }}>
-                  <p style={{ fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.22em', color: '#5A4638', margin: 0 }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#5A4638', margin: 0 }}>
                     What Happens Next
                   </p>
                 </div>
@@ -317,8 +317,8 @@ const CheckoutSuccessPage: FC = () => {
                     }}>
                       <span style={{ fontSize: 14, flexShrink: 0, marginTop: 1 }}>{step.icon}</span>
                       <div>
-                        <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#1C1A17', margin: '0 0 2px' }}>{step.label}</p>
-                        <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#5A4638', margin: 0 }}>{step.sub}</p>
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: '0 0 2px' }}>{step.label}</p>
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638', margin: 0 }}>{step.sub}</p>
                       </div>
                     </div>
                   ))}
@@ -331,7 +331,7 @@ const CheckoutSuccessPage: FC = () => {
                 style={{
                   width: '100%', background: '#1C1A17', color: '#F5F0E8',
                   border: 'none', borderRadius: 4,
-                  fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.16em',
+                  fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
                   padding: '15px 0', cursor: 'pointer', transition: 'background 150ms',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#3A342E')}
@@ -344,7 +344,7 @@ const CheckoutSuccessPage: FC = () => {
                 style={{
                   width: '100%', background: 'none', color: '#6B6057',
                   border: '1px solid #E2DAC8', borderRadius: 4,
-                  fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.16em',
+                  fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
                   padding: '15px 0', cursor: 'pointer', transition: 'border-color 150ms, color 150ms',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#C4B89A'; e.currentTarget.style.color = '#1C1A17' }}
@@ -354,7 +354,7 @@ const CheckoutSuccessPage: FC = () => {
               </button>
 
               {/* Confirmation note */}
-              <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#B0A99F', textAlign: 'center', margin: 0, lineHeight: 1.6 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#B0A99F', textAlign: 'center', margin: 0, lineHeight: 1.6 }}>
                 A confirmation email has been sent to your registered address.
               </p>
             </div>

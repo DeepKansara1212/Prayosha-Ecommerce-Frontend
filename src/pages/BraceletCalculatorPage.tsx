@@ -87,7 +87,7 @@ const BraceletCalculatorPage: FC = () => {
         <div style={{ padding: 'clamp(3rem,6vw,5rem) clamp(1.25rem,5vw,4rem) clamp(2rem,4vw,3rem)' }} className="max-w-3xl mx-auto text-center">
           <SectionLabel className="justify-center">Bracelet Calculator</SectionLabel>
           <SectionTitle as="h1" className="text-bark">
-            Find your <em className="italic text-amethyst">perfect bracelet</em>
+            Find your <em className="not-italic text-amethyst">perfect bracelet</em>
           </SectionTitle>
           <p className="font-body font-extralight text-[0.9rem] text-muted max-w-lg mx-auto mt-4 leading-relaxed">
             Share your birth details and we'll recommend crystal bracelets aligned to you — no astrology
@@ -104,7 +104,7 @@ const BraceletCalculatorPage: FC = () => {
 
             {needsBirthTime && (
               <div>
-                <p className="font-body text-[0.78rem] text-amethyst mb-3">
+                <p className="font-body text-xs text-amethyst mb-3">
                   Birth time is required for an accurate recommendation.
                 </p>
                 <FormField label="Time of Birth" type="time" error={errors.tob?.message} {...register('tob')} />
@@ -114,7 +114,7 @@ const BraceletCalculatorPage: FC = () => {
             <button
               type="submit"
               disabled={mutation.isPending}
-              className="mt-2 font-body text-[0.72rem] uppercase tracking-[0.2em] bg-deep text-cream px-8 py-4 hover:bg-gold hover:text-deep transition-colors duration-200 disabled:opacity-60"
+              className="mt-2 font-body text-xs uppercase tracking-[0.05em] bg-deep text-cream px-8 py-4 hover:bg-gold hover:text-deep transition-colors duration-200 disabled:opacity-60"
             >
               {mutation.isPending ? 'Calculating…' : needsBirthTime ? 'Get My Recommendation' : 'Find My Bracelet'}
             </button>

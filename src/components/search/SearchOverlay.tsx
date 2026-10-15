@@ -30,10 +30,10 @@ const OVERLAY_CSS = `
 
 const SectionLabel: FC<{ text: string }> = ({ text }) => (
   <p style={{
-    fontFamily: 'Jost, sans-serif',
-    fontSize: 10,
+    fontFamily: 'var(--font-body)',
+    fontSize: 13,
     textTransform: 'uppercase',
-    letterSpacing: '0.15em',
+    letterSpacing: '0.05em',
     color: '#6B6057',
     margin: '0 0 12px',
   }}>
@@ -205,9 +205,9 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
               aria-autocomplete="list"
               style={{
                 flex: 1,
-                fontFamily: '"Cormorant Garamond", serif',
+                fontFamily: 'var(--font-heading)',
                 fontSize: 32,
-                fontWeight: 300,
+                fontWeight: 400,
                 color: '#1C1A17',
                 background: 'transparent',
                 border: 'none',
@@ -237,7 +237,7 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                       style={{
                         background: '#EDE8DC', border: 'none', borderRadius: 100,
                         padding: '6px 16px',
-                        fontFamily: 'Jost, sans-serif', fontSize: 11,
+                        fontFamily: 'var(--font-body)', fontSize: 13,
                         color: '#6B6057', cursor: 'pointer', letterSpacing: '0.04em',
                         transition: 'background 0.15s, color 0.15s',
                       }}
@@ -325,14 +325,14 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                       {/* Name + category */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{
-                          fontFamily: 'Jost, sans-serif', fontSize: 14, fontWeight: 500,
+                          fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500,
                           color: '#1C1A17', margin: 0,
                           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                         }}>
                           {result.name}
                         </p>
                         <p style={{
-                          fontFamily: 'Jost, sans-serif', fontSize: 11,
+                          fontFamily: 'var(--font-body)', fontSize: 13,
                           color: '#5A4638', margin: '2px 0 0',
                           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                         }}>
@@ -342,12 +342,12 @@ const SearchOverlay: FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
 
                       {/* Price */}
                       <span style={{
-                        fontFamily: 'Jost, sans-serif', fontSize: 14, fontWeight: 500,
+                        fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500,
                         color: '#C49A3C', flexShrink: 0,
                       }}>
                         {result.price !== undefined
                           ? `₹${result.price.toLocaleString('en-IN')}`
-                          : 'Price on request'}
+                          : ''}
                       </span>
                     </Link>
                   )

@@ -76,9 +76,9 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-start gap-2 mb-1">
           <div className="min-w-0">
-            <p className="font-body text-[0.58rem] uppercase tracking-[0.2em] text-muted mb-0.5">{product.category}</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-0.5">{product.category}</p>
             <h3 className="font-display text-[1.1rem] font-normal text-deep leading-tight truncate">{product.name}</h3>
-            <p className="font-body font-extralight text-[0.7rem] text-muted mt-0.5 line-clamp-1">{product.subtitle}</p>
+            <p className="font-body font-extralight text-xs text-muted mt-0.5 line-clamp-1">{product.subtitle}</p>
           </div>
           <button
             onClick={handleRemove}
@@ -93,8 +93,8 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
 
         {/* Chakra + origin pills */}
         <div className="flex flex-wrap gap-1.5 mt-2 mb-3">
-          <span className="font-body text-[0.55rem] uppercase tracking-[0.15em] px-2 py-1 bg-warm text-muted">{product.chakra} Chakra</span>
-          <span className="font-body text-[0.55rem] uppercase tracking-[0.15em] px-2 py-1 bg-warm text-muted">{product.origin}</span>
+          <span className="font-body text-xs uppercase tracking-[0.05em] px-2 py-1 bg-warm text-muted">{product.chakra} Chakra</span>
+          <span className="font-body text-xs uppercase tracking-[0.05em] px-2 py-1 bg-warm text-muted">{product.origin}</span>
         </div>
 
         {/* Price + qty + wishlist row */}
@@ -109,7 +109,7 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
               −
             </button>
             <span
-              className="w-8 text-center font-body text-[0.8rem] text-bark"
+              className="w-8 text-center font-body text-xs text-bark"
               aria-live="polite"
               aria-label={`Quantity: ${qty}`}
             >
@@ -127,7 +127,7 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
           {/* Line total */}
           <span className="font-display text-[1.1rem] font-light text-deep">
             {product.price === undefined
-              ? 'Price on request'
+              ? ''
               : `₹${(product.price * qty).toLocaleString('en-IN')}`}
           </span>
 
@@ -136,7 +136,7 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
             onClick={onMoveToWishlist}
             disabled={movingToWishlist}
             className={cn(
-              'flex items-center gap-1.5 font-body text-[0.62rem] uppercase tracking-[0.15em] transition-colors duration-200',
+              'flex items-center gap-1.5 font-body text-xs uppercase tracking-[0.05em] transition-colors duration-200',
               inWishlist ? 'text-rose' : 'text-muted hover:text-rose',
               movingToWishlist && 'opacity-60 cursor-not-allowed',
             )}
@@ -194,14 +194,14 @@ const PromoCode: FC<PromoProps> = ({ appliedCode, discountAmount, onApply, onRem
       <div className="flex items-center justify-between bg-sage/10 border border-sage/30 px-4 py-3">
         <div className="flex items-center gap-2.5">
           <svg viewBox="0 0 20 20" className="w-4 h-4 text-sage flex-none" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16.5 7.5 8 16l-4-4 1.5-1.5L8 13l7-7 1.5 1.5Z"/></svg>
-          <span className="font-body text-[0.72rem] text-sage">
+          <span className="font-body text-xs text-sage">
             Code <strong>{appliedCode}</strong> applied
             {discountAmount > 0 && (
               <span className="text-sage/80"> · −₹{Math.round(discountAmount).toLocaleString('en-IN')}</span>
             )}
           </span>
         </div>
-        <button onClick={onRemove} className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted hover:text-rose transition-colors">
+        <button onClick={onRemove} className="font-body text-xs uppercase tracking-[0.05em] text-muted hover:text-rose transition-colors">
           Remove
         </button>
       </div>
@@ -210,7 +210,7 @@ const PromoCode: FC<PromoProps> = ({ appliedCode, discountAmount, onApply, onRem
 
   return (
     <form onSubmit={handleApply} aria-label="Apply promo code">
-      <label htmlFor="promo" className="block font-body text-[0.65rem] uppercase tracking-[0.2em] text-muted mb-2">
+      <label htmlFor="promo" className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
         Promo Code
       </label>
       <div className="flex gap-0">
@@ -220,13 +220,13 @@ const PromoCode: FC<PromoProps> = ({ appliedCode, discountAmount, onApply, onRem
           value={code}
           onChange={e => { setCode(e.target.value.toUpperCase()); setError('') }}
           placeholder="Enter promo code"
-          className="flex-1 min-w-0 font-body text-[0.8rem] text-deep bg-cream border border-warm border-r-0 px-4 py-3 outline-none focus:border-gold transition-colors placeholder:text-muted/40 uppercase"
+          className="flex-1 min-w-0 font-body text-xs text-deep bg-cream border border-warm border-r-0 px-4 py-3 outline-none focus:border-gold transition-colors placeholder:text-muted/40 uppercase"
           aria-describedby={error ? 'promo-error' : undefined}
         />
         <button
           type="submit"
           disabled={validating}
-          className="font-body text-[0.65rem] uppercase tracking-[0.15em] px-5 py-3 bg-bark text-cream hover:bg-deep transition-colors duration-200 whitespace-nowrap flex-none disabled:opacity-60"
+          className="font-body text-xs uppercase tracking-[0.05em] px-5 py-3 bg-bark text-cream hover:bg-deep transition-colors duration-200 whitespace-nowrap flex-none disabled:opacity-60"
         >
           {validating ? (
             <span className="flex items-center gap-1.5">
@@ -239,7 +239,7 @@ const PromoCode: FC<PromoProps> = ({ appliedCode, discountAmount, onApply, onRem
         </button>
       </div>
       {error && (
-        <p id="promo-error" role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">{error}</p>
+        <p id="promo-error" role="alert" className="mt-1.5 font-body text-xs text-rose">{error}</p>
       )}
     </form>
   )
@@ -277,10 +277,10 @@ const OrderSummary: FC<SummaryProps> = ({
       {shipping > 0 && (
         <div className="mb-5 pb-5 border-b border-warm/60">
           <div className="flex justify-between items-center mb-2">
-            <p className="font-body text-[0.68rem] text-muted">
+            <p className="font-body text-xs text-muted">
               Add <span className="text-bark font-normal">₹{Math.ceil(freeShippingRemaining).toLocaleString('en-IN')}</span> for free shipping
             </p>
-            <span className="font-body text-[0.62rem] text-muted">{Math.round(freeShippingPct)}%</span>
+            <span className="font-body text-xs text-muted">{Math.round(freeShippingPct)}%</span>
           </div>
           <div className="h-1 bg-warm rounded-full overflow-hidden">
             <div
@@ -298,27 +298,27 @@ const OrderSummary: FC<SummaryProps> = ({
       {shipping === 0 && (
         <div className="mb-5 pb-5 border-b border-warm/60 flex items-center gap-2 text-sage">
           <svg viewBox="0 0 20 20" className="w-4 h-4 flex-none" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16.5 7.5 8 16l-4-4 1.5-1.5L8 13l7-7 1.5 1.5Z"/></svg>
-          <p className="font-body text-[0.68rem] uppercase tracking-[0.12em]">Free shipping unlocked!</p>
+          <p className="font-body text-xs uppercase tracking-[0.05em]">Free shipping unlocked!</p>
         </div>
       )}
 
       {/* Line items */}
       <div className="space-y-3 mb-5">
         <div className="flex justify-between">
-          <span className="font-body text-[0.75rem] text-muted">Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
-          <span className="font-body text-[0.8rem] text-bark">₹{subtotal.toLocaleString('en-IN')}</span>
+          <span className="font-body text-xs text-muted">Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
+          <span className="font-body text-xs text-bark">₹{subtotal.toLocaleString('en-IN')}</span>
         </div>
 
         {discountAmount > 0 && (
           <div className="flex justify-between text-sage">
-            <span className="font-body text-[0.75rem]">Discount ({appliedCode})</span>
-            <span className="font-body text-[0.8rem]">−₹{Math.round(discountAmount).toLocaleString('en-IN')}</span>
+            <span className="font-body text-xs">Discount ({appliedCode})</span>
+            <span className="font-body text-xs">−₹{Math.round(discountAmount).toLocaleString('en-IN')}</span>
           </div>
         )}
 
         <div className="flex justify-between">
-          <span className="font-body text-[0.75rem] text-muted">Shipping</span>
-          <span className="font-body text-[0.8rem] text-bark">
+          <span className="font-body text-xs text-muted">Shipping</span>
+          <span className="font-body text-xs text-bark">
             {shipping === 0 ? <span className="text-sage">Free</span> : `₹${shipping}`}
           </span>
         </div>
@@ -337,7 +337,7 @@ const OrderSummary: FC<SummaryProps> = ({
 
       {/* Total */}
       <div className="flex justify-between items-baseline mb-6">
-        <span className="font-body text-[0.75rem] uppercase tracking-[0.15em] text-muted">Total</span>
+        <span className="font-body text-xs uppercase tracking-[0.05em] text-muted">Total</span>
         <span className="font-display text-[1.6rem] font-light text-deep">₹{Math.round(total).toLocaleString('en-IN')}</span>
       </div>
 
@@ -345,14 +345,14 @@ const OrderSummary: FC<SummaryProps> = ({
       <button
         onClick={onCheckout}
         disabled={!canCheckout}
-        className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-deep text-cream hover:bg-bark transition-colors duration-200"
+        className="w-full font-body text-xs uppercase tracking-[0.05em] py-4 bg-deep text-cream hover:bg-bark transition-colors duration-200"
         aria-label="Proceed to checkout"
       >
         Proceed to Checkout
       </button>
       {!canCheckout && (
-        <p role="alert" className="mt-3 font-body text-[0.72rem] leading-relaxed text-rose">
-          Remove products marked “Price on request” before checkout.
+        <p role="alert" className="mt-3 font-body text-xs leading-relaxed text-rose">
+          Remove products without a listed price before checkout.
         </p>
       )}
 
@@ -361,7 +361,7 @@ const OrderSummary: FC<SummaryProps> = ({
         {[['🔒','Secure payment'],['📦','Free returns'],['✦','Authentic']].map(([icon, label]) => (
           <div key={label} className="text-center">
             <p className="text-base mb-1" aria-hidden="true">{icon}</p>
-            <p className="font-body text-[0.55rem] uppercase tracking-[0.1em] text-muted leading-tight">{label}</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-muted leading-tight">{label}</p>
           </div>
         ))}
       </div>
@@ -378,11 +378,11 @@ const CheckoutSuccess: FC<{ onContinue: () => void }> = ({ onContinue }) => (
         <path d="M20 6 9 17l-5-5" />
       </svg>
     </div>
-    <p className="font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold mb-3">
+    <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">
       ✦ &nbsp;Order Placed
     </p>
     <h2 className="font-display font-light text-[2rem] text-deep mb-2 leading-tight">
-      Thank you for your<br /><em className="italic text-amethyst">sacred order</em>
+      Thank you for your<br /><em className="not-italic text-amethyst">sacred order</em>
     </h2>
     <p className="font-body font-extralight text-[0.82rem] text-muted max-w-xs leading-relaxed mt-3 mb-8">
       Your crystals have been moon-cleansed and are being wrapped in sacred packaging. You'll receive a confirmation email shortly.
@@ -391,13 +391,13 @@ const CheckoutSuccess: FC<{ onContinue: () => void }> = ({ onContinue }) => (
       {[['📦','Packed with intention'],['🌙','Moon-cleansed'],['✦','Certified authentic']].map(([icon, label]) => (
         <div key={label} className="text-center">
           <p className="text-xl mb-1.5" aria-hidden="true">{icon}</p>
-          <p className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted">{label}</p>
+          <p className="font-body text-xs uppercase tracking-[0.05em] text-muted">{label}</p>
         </div>
       ))}
     </div>
     <button
       onClick={onContinue}
-      className="font-body text-[0.7rem] uppercase tracking-[0.22em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200"
+      className="font-body text-xs uppercase tracking-[0.05em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200"
     >
       Continue Shopping
     </button>
@@ -505,7 +505,7 @@ const CartPage: FC<CartPageProps> = ({
           <div className="absolute top-0 right-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: '#6A8570', opacity: 0.15, filter: 'blur(70px)' }} aria-hidden="true" />
 
           <div className="relative z-10">
-            <p className="inline-flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-4">
+            <p className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-4">
               <span className="w-7 h-px bg-gold-light" aria-hidden="true" />
               Your Cart
               <span className="w-7 h-px bg-gold-light" aria-hidden="true" />
@@ -535,14 +535,14 @@ const CartPage: FC<CartPageProps> = ({
               <div>
                 {/* Breadcrumb nav */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-5 border-b border-warm">
-                  <p className="font-body text-[0.72rem] text-muted">
+                  <p className="font-body text-xs text-muted">
                     <span className="text-bark font-normal">{cartProducts.length}</span> {cartProducts.length === 1 ? 'item' : 'items'} in your cart
                   </p>
                   <div className="flex gap-3">
                     {wishlistIds.size > 0 && (
                       <button
                         onClick={onNavigateToWishlist}
-                        className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted hover:text-bark transition-colors flex items-center gap-1.5"
+                        className="font-body text-xs uppercase tracking-[0.05em] text-muted hover:text-bark transition-colors flex items-center gap-1.5"
                         aria-label={`View wishlist (${wishlistIds.size} items)`}
                       >
                         <svg viewBox="0 0 20 18" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -553,7 +553,7 @@ const CartPage: FC<CartPageProps> = ({
                     )}
                     <button
                       onClick={onNavigateToCollection}
-                      className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-gold hover:text-gold-light transition-colors"
+                      className="font-body text-xs uppercase tracking-[0.05em] text-gold hover:text-gold-light transition-colors"
                     >
                       + Add more
                     </button>
@@ -578,7 +578,7 @@ const CartPage: FC<CartPageProps> = ({
 
                 {/* Upsell strip */}
                 <div className="mt-8 pt-8 border-t border-warm">
-                  <p className="font-body text-[0.62rem] uppercase tracking-[0.28em] text-gold mb-4">
+                  <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-4">
                     You might also love
                   </p>
                   <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
@@ -593,7 +593,7 @@ const CartPage: FC<CartPageProps> = ({
                               : p.emoji}
                           </div>
                           <p className="font-display text-[0.85rem] font-light text-deep leading-tight truncate">{p.name}</p>
-                          <p className="font-body text-[0.72rem] text-muted">{p.priceDisplay}</p>
+                          <p className="font-body text-xs text-muted">{p.priceDisplay}</p>
                         </div>
                       ))}
                   </div>

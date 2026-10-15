@@ -33,7 +33,7 @@ const Pagination: FC<PaginationProps> = ({ page, totalPages, onPage }) => {
         disabled={page === 1}
         aria-label="Previous page"
         className={cn(
-          'w-9 h-9 flex items-center justify-center border font-body text-[0.65rem] transition-all duration-200',
+          'w-9 h-9 flex items-center justify-center border font-body text-xs transition-all duration-200',
           page === 1
             ? 'border-warm text-bark cursor-not-allowed'
             : 'border-warm text-bark hover:border-muted hover:text-deep',
@@ -45,7 +45,7 @@ const Pagination: FC<PaginationProps> = ({ page, totalPages, onPage }) => {
       {/* Pages */}
       {pages.map((p, i) =>
         p === '...' ? (
-          <span key={`ellipsis-${i}`} className="w-9 h-9 flex items-center justify-center font-body text-[0.7rem] text-muted">
+          <span key={`ellipsis-${i}`} className="w-9 h-9 flex items-center justify-center font-body text-xs text-muted">
             …
           </span>
         ) : (
@@ -55,7 +55,7 @@ const Pagination: FC<PaginationProps> = ({ page, totalPages, onPage }) => {
             aria-label={`Page ${p}`}
             aria-current={p === page ? 'page' : undefined}
             className={cn(
-              'w-9 h-9 flex items-center justify-center border font-body text-[0.7rem] tracking-[0.05em] transition-all duration-200',
+              'w-9 h-9 flex items-center justify-center border font-body text-xs tracking-[0.05em] transition-all duration-200',
               p === page
                 ? 'bg-deep text-cream border-deep'
                 : 'border-warm text-bark hover:border-muted hover:text-deep',
@@ -72,7 +72,7 @@ const Pagination: FC<PaginationProps> = ({ page, totalPages, onPage }) => {
         disabled={page === totalPages}
         aria-label="Next page"
         className={cn(
-          'w-9 h-9 flex items-center justify-center border font-body text-[0.65rem] transition-all duration-200',
+          'w-9 h-9 flex items-center justify-center border font-body text-xs transition-all duration-200',
           page === totalPages
             ? 'border-warm text-bark cursor-not-allowed'
             : 'border-warm text-bark hover:border-muted hover:text-deep',

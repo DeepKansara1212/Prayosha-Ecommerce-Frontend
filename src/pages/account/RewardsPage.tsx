@@ -65,7 +65,7 @@ const RewardsPage: FC = () => {
       <div className="acct-section-header">
         <p className="acct-eyebrow">✨ Rewards</p>
         <h1 className="acct-page-title">My Rewards</h1>
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '8px 0 0' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '8px 0 0' }}>
           Earn points with every purchase
         </p>
       </div>
@@ -89,8 +89,8 @@ const RewardsPage: FC = () => {
         }} />
 
         <p style={{
-          fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase',
-          letterSpacing: '0.28em', color: '#C49A3C', margin: '0 0 12px',
+          fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+          letterSpacing: '0.05em', color: '#C49A3C', margin: '0 0 12px',
           position: 'relative',
         }}>
           ✦ Total Points Earned
@@ -102,8 +102,8 @@ const RewardsPage: FC = () => {
           </div>
         ) : (
           <p style={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif',
-            fontWeight: 300,
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 400,
             fontSize: 'clamp(52px, 10vw, 72px)',
             color: '#F5F0E8',
             margin: '0 0 8px',
@@ -115,7 +115,7 @@ const RewardsPage: FC = () => {
         )}
 
         <p style={{
-          fontFamily: 'Jost', fontSize: 12, color: 'rgba(196,184,154,0.75)',
+          fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(196,184,154,0.75)',
           margin: 0, position: 'relative',
         }}>
           Earn 20 points for every ₹100 you spend
@@ -128,8 +128,8 @@ const RewardsPage: FC = () => {
         padding: '24px', marginBottom: 32,
       }}>
         <p style={{
-          fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase',
-            letterSpacing: '0.22em', color: '#5A4638', margin: '0 0 20px',
+          fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+            letterSpacing: '0.05em', color: '#5A4638', margin: '0 0 20px',
         }}>
           How It Works
         </p>
@@ -149,12 +149,12 @@ const RewardsPage: FC = () => {
                 {step.icon}
               </div>
               <p style={{
-                fontFamily: '"Cormorant Garamond", Georgia, serif',
+                fontFamily: 'var(--font-heading)',
                 fontSize: 17, color: '#1C1A17', margin: '0 0 4px',
               }}>
                 {step.title}
               </p>
-              <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                 {step.desc}
               </p>
             </div>
@@ -168,8 +168,8 @@ const RewardsPage: FC = () => {
         {/* Table header */}
         <div style={{ padding: '16px 24px', borderBottom: '1px solid #E2DAC8' }}>
           <p style={{
-            fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase',
-            letterSpacing: '0.22em', color: '#5A4638', margin: 0,
+            fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+            letterSpacing: '0.05em', color: '#5A4638', margin: 0,
           }}>
             Transaction History
           </p>
@@ -185,8 +185,8 @@ const RewardsPage: FC = () => {
           }}>
             {['Order', 'Date', 'Amount', 'Points'].map(col => (
               <span key={col} style={{
-                fontFamily: 'Jost', fontSize: 9, textTransform: 'uppercase',
-                letterSpacing: '0.14em', color: '#B0A99F',
+                fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+                letterSpacing: '0.05em', color: '#B0A99F',
               }}>
                 {col}
               </span>
@@ -225,17 +225,17 @@ const RewardsPage: FC = () => {
                 borderBottom: i < transactions.length - 1 ? '1px solid #E2DAC8' : 'none',
               }}
             >
-              <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#1C1A17', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: 0 }}>
                 {tx.order ? `#${tx.order.orderNumber}` : '—'}
               </p>
-              <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                 {fmtDate(tx.createdAt)}
               </p>
-              <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                 {fmtPrice(tx.orderTotal)}
               </p>
               <p style={{
-                fontFamily: 'Jost', fontSize: 13, fontWeight: 500,
+                fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
                 color: '#C49A3C', margin: 0,
               }}>
                 +{tx.pointsEarned}

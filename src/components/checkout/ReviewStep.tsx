@@ -59,8 +59,8 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
       {/* Item list */}
       <div style={{ marginBottom: 28 }}>
         <p style={{
-          fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase',
-          letterSpacing: '0.1em', color: '#6B6057', margin: '0 0 14px',
+          fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+          letterSpacing: '0.05em', color: '#6B6057', margin: '0 0 14px',
         }}>
           Order Items
         </p>
@@ -86,16 +86,16 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{
-                  fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17',
+                  fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17',
                   margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>
                   {product.name}
                 </p>
-                <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#5A4638', margin: 0 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638', margin: 0 }}>
                   Qty: {item.quantity}
                 </p>
               </div>
-              <p style={{ fontFamily: 'Jost', fontSize: 14, fontWeight: 500, color: '#1C1A17', flexShrink: 0, margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#1C1A17', flexShrink: 0, margin: 0 }}>
                 ₹{(item.priceAtAdd * item.quantity).toLocaleString('en-IN')}
               </p>
             </div>
@@ -109,8 +109,8 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
         background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
       }}>
         <p style={{
-          fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase',
-          letterSpacing: '0.1em', color: '#6B6057', margin: '0 0 14px',
+          fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+          letterSpacing: '0.05em', color: '#6B6057', margin: '0 0 14px',
         }}>
           Coupon Code
         </p>
@@ -124,10 +124,10 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
               <svg viewBox="0 0 20 20" width={16} height={16} fill="none" stroke="#5A8A6A" strokeWidth="1.5">
                 <path d="M16.5 7.5 8 16l-4-4 1.5-1.5L8 13l7-7 1.5 1.5Z" />
               </svg>
-              <span style={{ fontFamily: 'Jost', fontSize: 13, fontWeight: 500, color: '#5A8A6A' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500, color: '#5A8A6A' }}>
                 {coupon.code}
               </span>
-              <span style={{ fontFamily: 'Jost', fontSize: 12, color: '#5A8A6A' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
                 — You save ₹{coupon.discountAmount.toLocaleString('en-IN')}
               </span>
             </div>
@@ -135,7 +135,7 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
               onClick={handleRemove}
               style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px',
-                fontFamily: 'Jost', fontSize: 12, color: '#6B6057',
+                fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057',
                 transition: 'color 150ms',
               }}
               aria-label="Remove coupon"
@@ -162,7 +162,7 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
                   flexShrink: 0, padding: '0 20px',
                   background: '#C49A3C', color: '#fff', border: 'none',
                   borderRadius: '0 4px 4px 0', cursor: 'pointer',
-                  fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em',
+                  fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
                   opacity: isLoading || !couponInput.trim() ? 0.6 : 1,
                   transition: 'background 150ms',
                 }}
@@ -171,7 +171,7 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
               </button>
             </div>
             {couponError && (
-              <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#A85050', margin: '6px 0 0' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: '6px 0 0' }}>
                 {couponError}
               </p>
             )}
@@ -195,8 +195,8 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
         />
         <div style={{ height: 1, background: '#E2DAC8', margin: '14px 0' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontFamily: 'Jost', fontSize: 14, fontWeight: 500, color: '#1C1A17' }}>Total</span>
-          <span style={{ fontFamily: 'Jost', fontSize: 17, fontWeight: 500, color: '#C49A3C' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#1C1A17' }}>Total</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 17, fontWeight: 500, color: '#C49A3C' }}>
             ₹{total.toLocaleString('en-IN')}
           </span>
         </div>
@@ -224,8 +224,8 @@ const Row: FC<{
   valueColor?: string
 }> = ({ label, value, labelColor = '#6B6057', valueColor = '#1C1A17' }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-    <span style={{ fontFamily: 'Jost', fontSize: 13, color: labelColor }}>{label}</span>
-    <span style={{ fontFamily: 'Jost', fontSize: 13, color: valueColor }}>{value}</span>
+    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: labelColor }}>{label}</span>
+    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: valueColor }}>{value}</span>
   </div>
 )
 

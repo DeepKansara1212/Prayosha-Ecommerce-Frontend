@@ -26,7 +26,7 @@ const FreeGiftBanner: FC = () => (
 
       <div>
         <p style={{
-          fontFamily: '"Cormorant Garamond", Georgia, serif',
+          fontFamily: 'var(--font-heading)',
           fontWeight: 400,
           fontSize: 'clamp(17px, 2.5vw, 20px)',
           color: '#1C1A17',
@@ -36,7 +36,7 @@ const FreeGiftBanner: FC = () => (
           You will receive a free gift with this purchase!
         </p>
         <p style={{
-          fontFamily: 'Jost, system-ui, sans-serif',
+          fontFamily: 'var(--font-body)',
           fontSize: 13,
           color: '#6B6057',
           margin: 0,

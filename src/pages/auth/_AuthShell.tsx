@@ -14,7 +14,7 @@ const AUTH_CSS = `
     background: #EDE8DC;
     border-radius: 4px;
     padding: 12px 16px;
-    font-family: Jost, system-ui, sans-serif;
+    font-family: var(--font-body);
     font-size: 14px;
     color: #1C1A17;
     outline: none;
@@ -30,11 +30,11 @@ const AUTH_CSS = `
     width: 100%;
     background: #C49A3C;
     color: #fff;
-    font-family: Jost, system-ui, sans-serif;
-    font-size: 11px;
+    font-family: var(--font-body);
+    font-size: 13px;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     padding: 14px;
     border-radius: 4px;
     border: none;
@@ -56,11 +56,11 @@ const AUTH_CSS = `
     background: transparent;
     border: 1px solid #C49A3C;
     color: #C49A3C;
-    font-family: Jost, system-ui, sans-serif;
-    font-size: 11px;
+    font-family: var(--font-body);
+    font-size: 13px;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     padding: 14px;
     border-radius: 4px;
     cursor: pointer;
@@ -146,9 +146,9 @@ export const AuthShell: FC<AuthShellProps> = ({ headline, headlineItalic, subtex
           style={{ maxWidth: '420px', width: '100%', display: 'flex', flexDirection: 'column' }}
         >
           <p style={{
-            fontFamily: 'Jost, system-ui, sans-serif',
-            fontSize: '10px',
-            letterSpacing: '0.15em',
+            fontFamily: 'var(--font-body)',
+            fontSize: '13px',
+            letterSpacing: '0.05em',
             textTransform: 'uppercase',
             color: '#6B6057',
             margin: '0 0 1.75rem',
@@ -159,8 +159,8 @@ export const AuthShell: FC<AuthShellProps> = ({ headline, headlineItalic, subtex
           <h1
             className="auth-headline"
             style={{
-              fontFamily: '"Cormorant Garamond", Georgia, serif',
-              fontWeight: 300,
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 400,
               fontSize: 'clamp(32px, 4vw, 52px)',
               color: '#1C1A17',
               lineHeight: 1.12,
@@ -173,9 +173,8 @@ export const AuthShell: FC<AuthShellProps> = ({ headline, headlineItalic, subtex
           <p
             className="auth-headline-italic"
             style={{
-              fontFamily: '"Cormorant Garamond", Georgia, serif',
-              fontWeight: 300,
-              fontStyle: 'italic',
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 400,
               fontSize: 'clamp(28px, 3.5vw, 46px)',
               color: '#7B5EA7',
               lineHeight: 1.12,
@@ -188,8 +187,8 @@ export const AuthShell: FC<AuthShellProps> = ({ headline, headlineItalic, subtex
           <p
             className="auth-subtext"
             style={{
-              fontFamily: 'Jost, system-ui, sans-serif',
-              fontWeight: 300,
+              fontFamily: 'var(--font-body)',
+              fontWeight: 400,
               fontSize: '15px',
               color: '#6B6057',
               maxWidth: '340px',
@@ -228,17 +227,17 @@ export const AuthShell: FC<AuthShellProps> = ({ headline, headlineItalic, subtex
 
 export const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontFamily: 'Jost, system-ui, sans-serif',
-  fontSize: '11px',
+  fontFamily: 'var(--font-body)',
+  fontSize: '13px',
   textTransform: 'uppercase',
-  letterSpacing: '0.1em',
+  letterSpacing: '0.05em',
   color: '#6B6057',
   marginBottom: '6px',
 }
 
 export const errorTextStyle: React.CSSProperties = {
-  fontFamily: 'Jost, system-ui, sans-serif',
-  fontSize: '11px',
+  fontFamily: 'var(--font-body)',
+  fontSize: '13px',
   color: '#A85050',
   marginTop: '4px',
 }
@@ -337,7 +336,7 @@ export const FormError: FC<{ message: string }> = ({ message }) => (
     }}
   >
     <span style={{ color: '#A85050', fontSize: '14px', lineHeight: 1, flexShrink: 0 }}>✕</span>
-    <p style={{ fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#A85050', margin: 0 }}>
+    <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: '#A85050', margin: 0 }}>
       {message}
     </p>
   </div>
@@ -350,7 +349,7 @@ export const AuthLink: FC<{ children: ReactNode; onClick?: () => void }> = ({ ch
     type="button"
     onClick={onClick}
     style={{
-      fontFamily: 'Jost, system-ui, sans-serif',
+      fontFamily: 'var(--font-body)',
       fontSize: '13px',
       color: '#7B5EA7',
       background: 'none',
@@ -374,7 +373,7 @@ export const FormHint: FC<{ message: string }> = ({ message }) => (
     border: '1px solid rgba(80,140,80,0.3)',
     borderRadius: '4px',
     padding: '12px 14px',
-    fontFamily: 'Jost, system-ui, sans-serif',
+    fontFamily: 'var(--font-body)',
     fontSize: '13px',
     color: '#3D6B40',
   }}>

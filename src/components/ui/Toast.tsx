@@ -54,14 +54,14 @@ const ToastItem: FC<{ toast: Toast; onDismiss: (id: string) => void }> = ({ toas
       }}
     >
       <span
-        className="flex-none w-5 h-5 flex items-center justify-center text-[0.7rem] font-bold rounded-full text-white"
+        className="flex-none w-5 h-5 flex items-center justify-center text-xs font-bold rounded-full text-white"
         style={{ background: borderColor }}
         aria-hidden="true"
       >
         {ICON[toast.type]}
       </span>
 
-      <p className="flex-1 font-body text-[0.8rem] text-deep leading-snug pt-0.5">
+      <p className="flex-1 font-body text-xs text-deep leading-snug pt-0.5">
         {toast.message}
       </p>
 

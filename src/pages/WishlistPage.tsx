@@ -61,7 +61,7 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
         {/* Badge */}
         {product.badge && (
           <span className={cn(
-            'absolute top-3 left-3 font-body text-[0.55rem] uppercase tracking-[0.18em] px-2.5 py-1',
+            'absolute top-3 left-3 font-body text-xs uppercase tracking-[0.05em] px-2.5 py-1',
             product.badge === 'Bestseller' && 'bg-gold text-deep',
             product.badge === 'New'        && 'bg-amethyst text-cream',
             product.badge === 'Limited'    && 'bg-rose text-cream',
@@ -86,7 +86,7 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
         {/* Stock warning */}
         {product.inStock && product.stockCount <= 5 && (
           <div className="absolute bottom-0 inset-x-0 bg-deep/80 backdrop-blur-sm py-2 px-3">
-            <p className="font-body text-[0.58rem] uppercase tracking-[0.15em] text-gold-light text-center">
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-gold-light text-center">
               Only {product.stockCount} left
             </p>
           </div>
@@ -96,7 +96,7 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
       {/* Info */}
       <div className="p-4 border-t border-warm flex flex-1 flex-col">
         <p
-          className="font-body text-[0.58rem] uppercase tracking-[0.2em] text-muted mb-1 leading-[1.4]"
+          className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-1 leading-[1.4]"
           style={{
             minHeight: '2.8em',
             display: '-webkit-box',
@@ -119,23 +119,10 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
         >
           {product.name}
         </h3>
-        <p
-          className="font-body font-extralight text-[0.72rem] text-muted mb-3 leading-snug"
-          style={{
-            minHeight: '2.75em',
-            display: '-webkit-box',
-            WebkitBoxOrient: 'vertical',
-            WebkitLineClamp: 2,
-            overflow: 'hidden',
-          }}
-        >
-          {product.intention}
-        </p>
-
         <div className="flex items-center justify-between mb-3 mt-auto">
           <span className="font-display text-[1.05rem] font-light text-bark">{product.priceDisplay}</span>
           <span className={cn(
-            'font-body text-[0.58rem] uppercase tracking-[0.12em]',
+            'font-body text-xs uppercase tracking-[0.05em]',
             product.inStock ? 'text-sage' : 'text-muted',
           )}>
             {product.inStock ? 'In Stock' : 'Out of Stock'}
@@ -146,7 +133,7 @@ const WishlistCard: FC<WishlistCardProps> = ({ product, inCart, onRemove, onMove
           onClick={onMoveToCart}
           disabled={!product.inStock || inCart}
           className={cn(
-            'w-full font-body text-[0.65rem] uppercase tracking-[0.18em] py-3 transition-all duration-200',
+            'w-full font-body text-xs uppercase tracking-[0.05em] py-3 transition-all duration-200',
             inCart
               ? 'bg-sage/20 text-sage border border-sage/30 cursor-default'
               : product.inStock
@@ -251,7 +238,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
           <div className="absolute top-0 left-1/3 w-56 h-56 rounded-full pointer-events-none" style={{ background: '#C9837A', opacity: 0.15, filter: 'blur(70px)' }} aria-hidden="true" />
 
           <div className="relative z-10">
-            <p className="inline-flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-4">
+            <p className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-4">
               <span className="w-7 h-px bg-gold-light" aria-hidden="true" />
               Your Wishlist
               <span className="w-7 h-px bg-gold-light" aria-hidden="true" />
@@ -260,7 +247,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
               Stones you <em className="italic text-rose">love</em>
             </h1>
             {wishlistProducts.length > 0 && (
-              <p className="font-body font-normal text-[0.8rem] text-cream/85">
+              <p className="font-body font-normal text-xs text-cream/85">
                 {wishlistProducts.length} {wishlistProducts.length === 1 ? 'stone' : 'stones'} saved
               </p>
             )}
@@ -282,7 +269,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
             <>
               {/* Toolbar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-6 border-b border-warm">
-                <p className="font-body text-[0.75rem] text-muted">
+                <p className="font-body text-xs text-muted">
                   <span className="text-bark font-normal">{wishlistProducts.length}</span> saved {wishlistProducts.length === 1 ? 'item' : 'items'}
                   {cartIds.size > 0 && (
                     <span className="ml-2 text-sage">
@@ -294,7 +281,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
                   {movableCount > 0 && (
                     <button
                       onClick={handleMoveAll}
-                      className="font-body text-[0.65rem] uppercase tracking-[0.18em] px-5 py-2.5 bg-deep text-cream hover:bg-bark transition-colors duration-200"
+                      className="font-body text-xs uppercase tracking-[0.05em] px-5 py-2.5 bg-deep text-cream hover:bg-bark transition-colors duration-200"
                     >
                       Move All to Cart
                     </button>
@@ -302,7 +289,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
                   {cartIds.size > 0 && (
                     <button
                       onClick={onNavigateToCart}
-                      className="font-body text-[0.65rem] uppercase tracking-[0.18em] px-5 py-2.5 border border-gold text-gold hover:bg-gold hover:text-deep transition-all duration-200"
+                      className="font-body text-xs uppercase tracking-[0.05em] px-5 py-2.5 border border-gold text-gold hover:bg-gold hover:text-deep transition-all duration-200"
                     >
                       View Cart ({cartIds.size})
                     </button>
@@ -327,11 +314,11 @@ const WishlistPage: FC<WishlistPageProps> = ({
               {/* Continue shopping */}
               <div className="mt-14 pt-10 border-t border-warm text-center">
                 <p className="font-display font-light text-[1.3rem] text-bark mb-4">
-                  Discover more <em className="italic text-amethyst">sacred stones</em>
+                  Discover more <em className="not-italic text-amethyst">sacred stones</em>
                 </p>
                 <button
                   onClick={onNavigateToCollection}
-                  className="font-body text-[0.7rem] uppercase tracking-[0.2em] border border-deep text-deep px-8 py-3.5 hover:bg-deep hover:text-cream transition-all duration-200"
+                  className="font-body text-xs uppercase tracking-[0.05em] border border-deep text-deep px-8 py-3.5 hover:bg-deep hover:text-cream transition-all duration-200"
                 >
                   Browse Full Collection
                 </button>
@@ -373,18 +360,13 @@ const WishlistPage: FC<WishlistPageProps> = ({
             </div>
 
             <div className="p-6 sm:p-8">
-              <p className="font-body text-[0.58rem] uppercase tracking-[0.22em] text-muted mb-1">{drawerProduct.category} · {drawerProduct.chakra} Chakra</p>
+              <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-1">{drawerProduct.category} · {drawerProduct.chakra} Chakra</p>
               <h2 className="font-display font-light text-[1.8rem] text-deep mb-1 leading-tight">{drawerProduct.name}</h2>
-              <p className="font-body font-extralight text-[0.78rem] text-muted mb-4">{drawerProduct.subtitle}</p>
-              <div className="flex flex-wrap gap-2 mb-5">
-                {drawerProduct.intention.split(' · ').map(i => (
-                  <span key={i} className="font-body text-[0.6rem] uppercase tracking-[0.15em] px-3 py-1.5 bg-warm text-muted">{i}</span>
-                ))}
-              </div>
+              <p className="font-body font-extralight text-xs text-muted mb-4">{drawerProduct.subtitle}</p>
               <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark mb-6">{drawerProduct.description}</p>
               <div className="flex items-center justify-between mb-5">
                 <span className="font-display text-[1.5rem] font-light text-deep">{drawerProduct.priceDisplay}</span>
-                <span className={cn('font-body text-[0.62rem] uppercase tracking-[0.12em]', drawerProduct.inStock ? 'text-sage' : 'text-muted')}>
+                <span className={cn('font-body text-xs uppercase tracking-[0.05em]', drawerProduct.inStock ? 'text-sage' : 'text-muted')}>
                   {drawerProduct.inStock ? 'In Stock' : 'Out of Stock'}
                 </span>
               </div>
@@ -393,7 +375,7 @@ const WishlistPage: FC<WishlistPageProps> = ({
                   onClick={() => { handleMoveToCart(drawerProduct.id); setDrawerProduct(null) }}
                   disabled={!drawerProduct.inStock || cartIds.has(drawerProduct.id)}
                   className={cn(
-                    'flex-1 font-body text-[0.65rem] uppercase tracking-[0.18em] py-4 transition-all duration-200',
+                    'flex-1 font-body text-xs uppercase tracking-[0.05em] py-4 transition-all duration-200',
                     cartIds.has(drawerProduct.id)
                       ? 'bg-sage/20 text-sage border border-sage/30'
                       : drawerProduct.inStock

@@ -141,10 +141,10 @@ const ForgotPasswordPage: FC = () => {
       subtext="Reset your password with a one-time code sent to your registered mobile number."
     >
       <div style={{ marginBottom: '32px' }}>
-        <p style={{ fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#6B6057', marginBottom: '8px' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B6057', marginBottom: '8px' }}>
           {step === 1 ? 'Step 1 of 2' : 'Step 2 of 2'}
         </p>
-        <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
           {step === 1 ? 'Enter your number' : 'Set new password'}
         </h2>
       </div>
@@ -154,7 +154,7 @@ const ForgotPasswordPage: FC = () => {
         : <Step2 phone={phone} />
       }
 
-      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
+      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '13px', color: '#6B6057' }}>
         <AuthLink onClick={() => navigate('/auth/login')}>Back to sign in</AuthLink>
       </div>
     </AuthShell>

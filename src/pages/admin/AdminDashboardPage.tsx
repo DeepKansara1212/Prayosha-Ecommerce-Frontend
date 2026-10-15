@@ -27,9 +27,9 @@ const StatCard: FC<StatCardProps> = ({ label, value, sub, accent = 'neutral', ic
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="font-body text-[10px] tracking-[0.15em] uppercase text-cream/35 mb-1">{label}</p>
+        <p className="font-body text-xs tracking-[0.05em] uppercase text-cream/35 mb-1">{label}</p>
         <p className="font-display text-2xl text-cream leading-none">{value}</p>
-        {sub && <p className="font-body text-[10px] text-cream/25 mt-1">{sub}</p>}
+        {sub && <p className="font-body text-xs text-cream/25 mt-1">{sub}</p>}
       </div>
     </div>
   )
@@ -54,7 +54,7 @@ const QuickAction: FC<QuickActionProps> = ({ label, description, href, icon }) =
     </div>
     <div className="flex-1 min-w-0">
       <p className="font-body text-xs text-cream/70 group-hover:text-cream transition-colors">{label}</p>
-      <p className="font-body text-[10px] text-cream/30 mt-0.5 truncate">{description}</p>
+      <p className="font-body text-xs text-cream/30 mt-0.5 truncate">{description}</p>
     </div>
     <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 text-cream/20 group-hover:text-gold/40 shrink-0 transition-colors" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M6 12l4-4-4-4" strokeLinecap="round" strokeLinejoin="round" />
@@ -81,7 +81,7 @@ const AdminDashboardPage: FC = () => {
       {/* ── Page header ──────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <p className="font-body text-xs tracking-[0.2em] uppercase text-gold/60 mb-1">
+          <p className="font-body text-xs tracking-[0.05em] uppercase text-gold/60 mb-1">
             Admin Panel
           </p>
           <h1 className="font-display text-3xl text-cream tracking-wide">
@@ -105,7 +105,7 @@ const AdminDashboardPage: FC = () => {
       {/* ── Stats row ─────────────────────────────────────────────────────────── */}
       <div>
         <div className="flex items-center gap-3 mb-4">
-          <p className="font-body text-[10px] tracking-[0.2em] uppercase text-cream/25">Overview</p>
+          <p className="font-body text-xs tracking-[0.05em] uppercase text-cream/25">Overview</p>
           <div className="flex-1 h-px bg-cream/6" />
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -160,7 +160,7 @@ const AdminDashboardPage: FC = () => {
       {/* ── Quick actions ─────────────────────────────────────────────────────── */}
       <div>
         <div className="flex items-center gap-3 mb-4">
-          <p className="font-body text-[10px] tracking-[0.2em] uppercase text-cream/25">Quick Actions</p>
+          <p className="font-body text-xs tracking-[0.05em] uppercase text-cream/25">Quick Actions</p>
           <div className="flex-1 h-px bg-cream/6" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -206,12 +206,12 @@ const AdminDashboardPage: FC = () => {
       <div>
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <p className="font-body text-[10px] tracking-[0.2em] uppercase text-cream/25">Hero Banners</p>
+            <p className="font-body text-xs tracking-[0.05em] uppercase text-cream/25">Hero Banners</p>
             <div className="flex-1 h-px bg-cream/6 w-16" />
           </div>
           <Link
             to="/admin/hero-banners"
-            className="font-body text-[10px] tracking-[0.15em] uppercase text-cream/30 hover:text-gold/60 transition-colors flex items-center gap-1.5"
+            className="font-body text-xs tracking-[0.05em] uppercase text-cream/30 hover:text-gold/60 transition-colors flex items-center gap-1.5"
           >
             Full page
             <svg viewBox="0 0 16 16" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="1.5">

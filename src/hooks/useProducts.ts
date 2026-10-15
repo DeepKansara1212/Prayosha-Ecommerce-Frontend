@@ -53,7 +53,7 @@ export function adapt(p: ApiProduct): ProductDetail {
     subtitle: p.shortDescription ?? '',
     category: str(p.category) as ProductCategory,
     ...(p.price !== undefined && { price: p.price }),
-    priceDisplay: p.price !== undefined ? '₹' + p.price.toLocaleString('en-IN') : 'Price on request',
+    priceDisplay: p.price !== undefined ? '₹' + p.price.toLocaleString('en-IN') : '',
     images: p.images ?? [],
     video: p.video,
     emoji: p.emoji ?? '💎',

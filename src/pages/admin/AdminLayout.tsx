@@ -69,7 +69,7 @@ const AdminLayout: FC<AdminLayoutProps> = ({ children }) => {
             </div>
             <div>
               <p className="font-display text-sm text-cream tracking-wider">Prayosha</p>
-              <p className="font-body text-[10px] text-cream/35 tracking-[0.15em] uppercase">Admin</p>
+              <p className="font-body text-xs text-cream/35 tracking-[0.05em] uppercase">Admin</p>
             </div>
           </Link>
         </div>
@@ -78,7 +78,7 @@ const AdminLayout: FC<AdminLayoutProps> = ({ children }) => {
         <nav className="flex-1 px-3 py-4 space-y-5">
           {NAV_SECTIONS.map(section => (
             <div key={section.label}>
-              <p className="px-3 mb-1.5 font-body text-[9px] tracking-[0.2em] uppercase text-cream/25">
+              <p className="px-3 mb-1.5 font-body text-xs tracking-[0.05em] uppercase text-cream/25">
                 {section.label}
               </p>
               <div className="space-y-0.5">

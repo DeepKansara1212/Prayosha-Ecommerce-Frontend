@@ -71,7 +71,7 @@ const InlineAddressForm: FC<{
       padding: 24, marginBottom: 24,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
           New Address
         </p>
         {onClose && (
@@ -91,7 +91,7 @@ const InlineAddressForm: FC<{
             {(['home', 'work', 'other'] as const).map(opt => (
               <label key={opt} style={{
                 display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-                fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', textTransform: 'capitalize',
+                fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', textTransform: 'capitalize',
               }}>
                 <input type="radio" value={opt} {...register('label')} style={{ accentColor: '#7B5EA7' }} />
                 {opt}
@@ -144,7 +144,7 @@ const InlineAddressForm: FC<{
 
         <label style={{
           display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
-          fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', marginBottom: 20,
+          fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', marginBottom: 20,
         }}>
           <input type="checkbox" {...register('isDefault')} style={{ accentColor: '#7B5EA7', width: 16, height: 16 }} />
           Set as default address
@@ -192,23 +192,23 @@ const AddressRadioCard: FC<{
         <div style={{ display: 'flex', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
           <span style={{
             padding: '2px 10px', borderRadius: 10, border: '1px solid #C4B89A', color: '#6B6057',
-            fontFamily: 'Jost', fontSize: 10, textTransform: 'capitalize', letterSpacing: '0.06em',
+            fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'capitalize', letterSpacing: '0.06em',
           }}>
             {address.label}
           </span>
           {address.isDefault && (
             <span style={{
               padding: '2px 10px', borderRadius: 10, border: '1px solid #C49A3C', color: '#C49A3C',
-              fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em',
+              fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em',
             }}>
               Default
             </span>
           )}
         </div>
-        <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 4px' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 4px' }}>
           {address.fullName}
         </p>
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0, lineHeight: 1.7 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0, lineHeight: 1.7 }}>
           {address.line1}{address.line2 && `, ${address.line2}`}<br />
           {address.city}, {address.state} – {address.pincode}<br />
           {address.phone}
@@ -293,8 +293,8 @@ const AddressStep: FC<Props> = ({ selectedId, onSelect, onContinue }) => {
             width: '100%', marginBottom: 24,
             background: 'none', border: '1px dashed #C4B89A', borderRadius: 6,
             padding: '12px 20px', cursor: 'pointer',
-            fontFamily: 'Jost', fontSize: 12, color: '#7B5EA7',
-            textTransform: 'uppercase', letterSpacing: '0.1em',
+            fontFamily: 'var(--font-body)', fontSize: 13, color: '#7B5EA7',
+            textTransform: 'uppercase', letterSpacing: '0.05em',
             transition: 'border-color 150ms, background 150ms',
           }}
         >

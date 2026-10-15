@@ -37,13 +37,13 @@ const CrystalCardItem: FC<CrystalCardProps> = ({ showcase, onNavigate }) => {
 
       {/* Overlay */}
       <div className="absolute inset-0 flex flex-col justify-end p-5 card-overlay group-hover:card-overlay-hover transition-all duration-400">
-        {/* <p className="font-body text-tag uppercase tracking-[0.22em] text-gold-light mb-1">
+        {/* <p className="font-body text-tag uppercase tracking-[0.05em] text-gold-light mb-1">
           {showcase.count} {showcase.count === 1 ? 'piece' : 'pieces'}
         </p> */}
         <h3 className="font-display font-light text-cream mb-1 text-[clamp(1.1rem,2.5vw,1.5rem)]">
           {showcase.name}
         </h3>
-        <p className="font-body text-[0.78rem] text-cream/70">Shop the collection</p>
+        <p className="font-body text-xs text-cream/70">Shop the collection</p>
       </div>
 
       {/* Arrow — appears on hover */}
@@ -86,10 +86,10 @@ const Collections: FC = () => {
           <SectionLabel>Our Collections</SectionLabel>
           <SectionTitle id="collections-title" className="text-deep">
             Gems of the<br />
-            <em className="italic text-amethyst">Ancient Earth</em>
+            <em className="not-italic text-amethyst">Ancient Earth</em>
           </SectionTitle>
         </div>
-        <p className="font-body text-[0.78rem] text-muted leading-relaxed max-w-[220px] sm:text-right">
+        <p className="font-body text-xs text-muted leading-relaxed max-w-[220px] sm:text-right">
           Each crystal is hand-selected for clarity, energy, and beauty — arriving cleansed and ready for your ritual.
         </p>
       </div>

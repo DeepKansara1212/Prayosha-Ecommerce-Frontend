@@ -11,13 +11,13 @@ const TestimonialCard: FC<{ item: Testimonial }> = ({ item }) => (
     aria-label={`Review by ${item.author}`}
   >
     <p className="font-display text-[2.8rem] text-gold leading-[0.5] mb-4" aria-hidden="true">&ldquo;</p>
-    <p className="font-body text-[0.72rem] tracking-[0.1em] text-gold mb-3" aria-hidden="true">
+    <p className="font-body text-xs tracking-[0.05em] text-gold mb-3" aria-hidden="true">
       ★ ★ ★ ★ ★
     </p>
     <p className="font-display italic font-light text-[1rem] leading-[1.7] text-bark mb-5">
       {item.quote}
     </p>
-    <footer className="font-body text-[0.7rem] tracking-[0.15em] uppercase text-muted">
+    <footer className="font-body text-xs tracking-[0.05em] uppercase text-muted">
       — {item.author}, {item.location}
     </footer>
   </blockquote>
@@ -36,7 +36,7 @@ const Testimonials: FC = () => {
         <SectionLabel>What They Say</SectionLabel>
         <SectionTitle id="testimonials-title" className="text-deep">
           Love from our<br />
-          <em className="italic text-amethyst">community</em>
+          <em className="not-italic text-amethyst">community</em>
         </SectionTitle>
       </div>
 

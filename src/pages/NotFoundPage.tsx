@@ -59,7 +59,7 @@ const NotFoundPage: FC = () => (
           </p>
 
           {/* Eyebrow rule */}
-          <p className="inline-flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-5 -mt-2">
+          <p className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-5 -mt-2">
             <span className="w-7 h-px bg-gold-light" aria-hidden="true" />
             Not Found
             <span className="w-7 h-px bg-gold-light" aria-hidden="true" />
@@ -76,7 +76,7 @@ const NotFoundPage: FC = () => (
           {/* Subtext */}
           <p
             className="font-body font-normal text-cream/85 max-w-xs leading-relaxed mb-10"
-            style={{ fontSize: 'clamp(0.8rem,2vw,0.9rem)' }}
+            style={{ fontSize: 'clamp(0.8125rem,2vw,0.9rem)' }}
           >
             The crystal you're looking for may have found a new home.
           </p>
@@ -85,13 +85,13 @@ const NotFoundPage: FC = () => (
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
             <Link
               to="/collection"
-              className="font-body text-[0.72rem] uppercase tracking-[0.22em] px-10 py-4 bg-gold text-cream hover:bg-gold-light transition-colors duration-200 text-center"
+              className="font-body text-xs uppercase tracking-[0.05em] px-10 py-4 bg-gold text-cream hover:bg-gold-light transition-colors duration-200 text-center"
             >
               Browse Collection
             </Link>
             <Link
               to="/"
-              className="font-body text-[0.72rem] uppercase tracking-[0.22em] px-10 py-4 border border-cream/30 text-cream hover:bg-cream/10 transition-colors duration-200 text-center"
+              className="font-body text-xs uppercase tracking-[0.05em] px-10 py-4 border border-cream/30 text-cream hover:bg-cream/10 transition-colors duration-200 text-center"
             >
               Go Home
             </Link>

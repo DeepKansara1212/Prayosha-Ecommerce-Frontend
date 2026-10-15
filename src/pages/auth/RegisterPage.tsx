@@ -41,7 +41,7 @@ const RegisterPage: FC = () => {
       subtext="Create an account with Google to track your orders, save favourites, and unlock a world of sacred stones."
     >
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
           Create your account
         </h2>
       </div>
@@ -49,7 +49,7 @@ const RegisterPage: FC = () => {
       {serverError && <div style={{ marginBottom: '16px' }}><FormError message={serverError} /></div>}
 
       <form onSubmit={submitEmailRegistration} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'var(--font-body)', fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6B6057' }}>
           Full name
           <input
             className="auth-input"
@@ -63,7 +63,7 @@ const RegisterPage: FC = () => {
             style={{ border: '1px solid #E2DAC8' }}
           />
         </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'var(--font-body)', fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6B6057' }}>
           Email address
           <input
             className="auth-input"
@@ -75,7 +75,7 @@ const RegisterPage: FC = () => {
             style={{ border: '1px solid #E2DAC8' }}
           />
         </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6B6057' }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'var(--font-body)', fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6B6057' }}>
           Password
           <input
             className="auth-input"
@@ -93,7 +93,7 @@ const RegisterPage: FC = () => {
         </button>
       </form>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0', color: '#9A8F85', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0', color: '#9A8F85', fontFamily: 'var(--font-body)', fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
         <span style={{ flex: 1, height: 1, background: '#E2DAC8' }} />
         or
         <span style={{ flex: 1, height: 1, background: '#E2DAC8' }} />
@@ -105,7 +105,7 @@ const RegisterPage: FC = () => {
         window.scrollTo({ top: 0 })
       }} />
 
-      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
+      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '13px', color: '#6B6057' }}>
         Already have an account? <AuthLink onClick={() => navigate('/auth/login')}>Sign in</AuthLink>
       </div>
     </AuthShell>

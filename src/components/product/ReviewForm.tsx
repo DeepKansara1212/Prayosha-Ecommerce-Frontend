@@ -78,11 +78,11 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
   if (!user) {
     return (
       <div style={{ paddingTop: 28, borderTop: '1px solid #E2DAC8', marginTop: 32 }}>
-        <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, color: '#6B6057', margin: 0 }}>
+        <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 14, color: '#6B6057', margin: 0 }}>
           <button
             onClick={onSignIn}
             style={{
-              fontFamily: "'Jost', system-ui, sans-serif",
+              fontFamily: "var(--font-body), system-ui, sans-serif",
               fontSize: 14,
               color: '#C49A3C',
               background: 'none',
@@ -106,9 +106,9 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
   return (
     <div style={{ paddingTop: 32, borderTop: '1px solid #E2DAC8', marginTop: 16 }}>
       <p style={{
-        fontFamily: "'Jost', system-ui, sans-serif",
-        fontSize: '0.62rem',
-        letterSpacing: '0.25em',
+        fontFamily: "var(--font-body), system-ui, sans-serif",
+        fontSize: '13px',
+        letterSpacing: '0.05em',
         textTransform: 'uppercase' as const,
         color: '#C49A3C',
         margin: '0 0 20px',
@@ -122,7 +122,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
       >
         {/* Star rating */}
         <div>
-          <label style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 12, color: '#6B6057', display: 'block', marginBottom: 8 }}>
+          <label style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#6B6057', display: 'block', marginBottom: 8 }}>
             Your Rating <span style={{ color: '#C49A3C' }}>*</span>
           </label>
           <StarSelector value={rating} onChange={setRating} />
@@ -130,7 +130,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
 
         {/* Title */}
         <div>
-          <label style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 12, color: '#6B6057', display: 'block', marginBottom: 6 }}>
+          <label style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#6B6057', display: 'block', marginBottom: 6 }}>
             Review Title
           </label>
           <input
@@ -142,7 +142,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
             style={{
               width: '100%',
               padding: '10px 14px',
-              fontFamily: "'Jost', system-ui, sans-serif",
+              fontFamily: "var(--font-body), system-ui, sans-serif",
               fontSize: 14,
               color: '#1C1A17',
               background: '#FDFAF6',
@@ -155,7 +155,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
 
         {/* Body */}
         <div>
-          <label style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 12, color: '#6B6057', display: 'block', marginBottom: 6 }}>
+          <label style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#6B6057', display: 'block', marginBottom: 6 }}>
             Your Review <span style={{ color: '#C49A3C' }}>*</span>
           </label>
           <textarea
@@ -166,7 +166,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
             style={{
               width: '100%',
               padding: '10px 14px',
-              fontFamily: "'Jost', system-ui, sans-serif",
+              fontFamily: "var(--font-body), system-ui, sans-serif",
               fontSize: 14,
               color: '#1C1A17',
               background: '#FDFAF6',
@@ -177,7 +177,7 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
               lineHeight: 1.65,
             }}
           />
-          <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 11, color: '#5A4638', margin: '4px 0 0' }}>
+          <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#5A4638', margin: '4px 0 0' }}>
             {body.trim().length} / 20 characters minimum
           </p>
         </div>
@@ -188,9 +188,9 @@ const ReviewForm: FC<ReviewFormProps> = ({ slug, onSignIn }) => {
           disabled={!isValid || mutation.isPending}
           style={{
             padding: '14px 0',
-            fontFamily: "'Jost', system-ui, sans-serif",
-            fontSize: '0.72rem',
-            letterSpacing: '0.22em',
+            fontFamily: "var(--font-body), system-ui, sans-serif",
+            fontSize: '13px',
+            letterSpacing: '0.05em',
             textTransform: 'uppercase' as const,
             background: isValid && !mutation.isPending ? '#C49A3C' : '#E2DAC8',
             color: isValid && !mutation.isPending ? '#1C1A17' : '#5A4638',

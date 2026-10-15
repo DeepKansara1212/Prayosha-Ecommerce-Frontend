@@ -65,7 +65,7 @@ const ResetPasswordPage: FC = () => {
       subtext="Enter the OTP sent to your phone and choose a new password for your account."
     >
       <div style={{ marginBottom: '32px' }}>
-        <h2 style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: '28px', color: '#1C1A17', margin: 0 }}>
           Reset password
         </h2>
       </div>
@@ -83,7 +83,7 @@ const ResetPasswordPage: FC = () => {
         </button>
       </form>
 
-      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'Jost, system-ui, sans-serif', fontSize: '13px', color: '#6B6057' }}>
+      <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid #E2DAC8', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '13px', color: '#6B6057' }}>
         <AuthLink onClick={() => navigate('/auth/login')}>Back to sign in</AuthLink>
       </div>
     </AuthShell>

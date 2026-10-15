@@ -104,12 +104,12 @@ const PostCard: FC<PostCardProps> = ({ post, onNavigate }) => (
     <div className="p-6">
       <div className="flex items-center justify-between mb-3">
         <span
-          className="font-body text-[0.58rem] uppercase tracking-[0.2em]"
+          className="font-body text-xs uppercase tracking-[0.05em]"
           style={{ color: "#7B5EA7" }}
         >
           {post.category}
         </span>
-        <span className="font-body text-[0.6rem] text-muted">
+        <span className="font-body text-xs text-muted">
           {post.readTime}
         </span>
       </div>
@@ -119,7 +119,7 @@ const PostCard: FC<PostCardProps> = ({ post, onNavigate }) => (
       </h3>
 
       <p
-        className="font-body font-extralight text-[0.78rem] leading-[1.8] text-bark mb-4"
+        className="font-body font-extralight text-xs leading-[1.8] text-bark mb-4"
         style={{
           display: "-webkit-box",
           WebkitLineClamp: 3,
@@ -134,8 +134,8 @@ const PostCard: FC<PostCardProps> = ({ post, onNavigate }) => (
         className="flex items-center justify-between pt-4"
         style={{ borderTop: "1px solid rgba(196,184,154,0.3)" }}
       >
-        <span className="font-body text-[0.6rem] text-muted">{post.date}</span>
-        <span className="font-body text-[0.62rem] uppercase tracking-[0.12em] text-gold transition-colors duration-200 group-hover:text-deep">
+        <span className="font-body text-xs text-muted">{post.date}</span>
+        <span className="font-body text-xs uppercase tracking-[0.05em] text-gold transition-colors duration-200 group-hover:text-deep">
           Read more →
         </span>
       </div>
@@ -171,14 +171,14 @@ const FeaturedCard: FC<PostCardProps> = ({ post, onNavigate }) => (
     </div>
 
     <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
-      <p className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-gold mb-4">✦ Featured Article</p>
+      <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-4">✦ Featured Article</p>
       <div className="flex items-center gap-3 mb-4 flex-wrap">
-        <span className="font-body text-[0.6rem] uppercase tracking-[0.2em] px-3 py-1 border" style={{ borderColor: "rgba(123,94,167,0.45)", color: "#7B5EA7" }}>{post.category}</span>
-        <span className="font-body text-[0.62rem] text-muted">{post.date} · {post.readTime}</span>
+        <span className="font-body text-xs uppercase tracking-[0.05em] px-3 py-1 border" style={{ borderColor: "rgba(123,94,167,0.45)", color: "#7B5EA7" }}>{post.category}</span>
+        <span className="font-body text-xs text-muted">{post.date} · {post.readTime}</span>
       </div>
       <h2 className="font-display font-light text-deep leading-tight mb-4" style={{ fontSize: "clamp(1.7rem,3.5vw,2.8rem)" }}>{post.title}</h2>
       <p className="font-body font-extralight text-[0.84rem] leading-[1.9] text-bark mb-6">{post.excerpt}</p>
-      <span className="inline-flex items-center gap-2 font-body text-[0.68rem] uppercase tracking-[0.2em] text-gold">Read Article <span>→</span></span>
+      <span className="inline-flex items-center gap-2 font-body text-xs uppercase tracking-[0.05em] text-gold">Read Article <span>→</span></span>
     </div>
   </article>
 );
@@ -217,9 +217,9 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
       <Navbar />
       <main id="main-content">
         <section className="bg-cream" style={{ padding: "clamp(3.5rem,7vw,6rem) clamp(1.25rem,5vw,4rem) clamp(2rem,4vw,3rem)" }}>
-          <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">Prayosha Crystal Journal</p>
+          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">Prayosha Crystal Journal</p>
           <h1 className="font-display font-light text-deep leading-tight mb-3" style={{ fontSize: "clamp(2.3rem,5vw,4rem)" }}>
-            Stories for a more <em className="italic text-amethyst">intentional life</em>
+            Stories for a more <em className="not-italic text-amethyst">intentional life</em>
           </h1>
           <p className="font-body font-extralight text-[0.86rem] leading-[1.9] text-muted max-w-2xl">
             Explore crystal wisdom, rituals, and thoughtful ways to bring a little more meaning into each day.
@@ -243,7 +243,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={cn(
-                    "font-body text-[0.62rem] uppercase tracking-[0.15em] px-4 py-2 transition-all duration-200 border bg-transparent cursor-pointer",
+                    "font-body text-xs uppercase tracking-[0.05em] px-4 py-2 transition-all duration-200 border bg-transparent cursor-pointer",
                     activeCategory === cat
                       ? "text-cream border-[#7B5EA7]"
                       : "text-muted hover:border-[#7B5EA7] hover:text-[#7B5EA7]",
@@ -311,7 +311,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
                 padding: "clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)",
               }}
             >
-              <p className="font-body text-[0.6rem] uppercase tracking-[0.3em] text-gold mb-6">
+              <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-6">
                 ✦ {activeCategory === "All" ? "All Articles" : activeCategory}
               </p>
 
@@ -325,7 +325,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
                   </p>
                   <button
                     onClick={() => setActiveCategory("All")}
-                    className="mt-6 font-body text-[0.65rem] uppercase tracking-[0.15em] text-gold hover:text-deep transition-colors bg-transparent border-none cursor-pointer"
+                    className="mt-6 font-body text-xs uppercase tracking-[0.05em] text-gold hover:text-deep transition-colors bg-transparent border-none cursor-pointer"
                   >
                     ← View all posts
                   </button>
@@ -354,7 +354,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
               "radial-gradient(ellipse at 50% 50%, #3D1E4A 0%, #1C1410 100%)",
           }}
         >
-          <p className="font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-3">
+          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-3">
             ✦ &nbsp;Stay Connected
           </p>
           <h2
@@ -379,7 +379,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
               type="email"
               placeholder="your@email.com"
               aria-label="Email address"
-              className="flex-1 bg-transparent font-body text-[0.8rem] px-5 py-3 text-cream outline-none transition-colors"
+              className="flex-1 bg-transparent font-body text-xs px-5 py-3 text-cream outline-none transition-colors"
               style={{ border: "1px solid rgba(196,184,154,0.3)" }}
               onFocus={(e) => {
                 (e.target as HTMLInputElement).style.borderColor = "#C49A3C";
@@ -391,7 +391,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
             />
             <button
               type="submit"
-              className="font-body text-[0.65rem] uppercase tracking-[0.2em] bg-gold text-deep px-7 py-3 hover:bg-gold-light transition-colors duration-200 border-none cursor-pointer whitespace-nowrap"
+              className="font-body text-xs uppercase tracking-[0.05em] bg-gold text-deep px-7 py-3 hover:bg-gold-light transition-colors duration-200 border-none cursor-pointer whitespace-nowrap"
             >
               Subscribe
             </button>

@@ -28,7 +28,7 @@ const EmptyState: FC<EmptyStateProps> = ({
 
     <h2
       className="font-display font-light mb-2 leading-tight"
-      style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontSize: 24, color: '#1C1A17' }}
+      style={{ fontFamily: 'var(--font-heading)', fontSize: 24, color: '#1C1A17' }}
     >
       {title}
     </h2>
@@ -45,7 +45,7 @@ const EmptyState: FC<EmptyStateProps> = ({
     {actionLabel && onAction && (
       <button
         onClick={onAction}
-        className="font-body text-[0.7rem] uppercase tracking-[0.22em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200 min-w-[44px] min-h-[44px]"
+        className="font-body text-xs uppercase tracking-[0.05em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200 min-w-[44px] min-h-[44px]"
       >
         {actionLabel}
       </button>

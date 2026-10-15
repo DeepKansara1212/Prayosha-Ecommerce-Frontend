@@ -42,7 +42,7 @@ const Field: FC<{ id: string; label: string; type?: string; value: string; onCha
   id, label, type = 'text', value, onChange, error, placeholder, autoComplete, required,
 }) => (
   <div>
-    <label htmlFor={id} className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">
+    <label htmlFor={id} className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
       {label}{required && <span className="text-rose ml-1" aria-hidden="true">*</span>}
     </label>
     <input
@@ -55,7 +55,7 @@ const Field: FC<{ id: string; label: string; type?: string; value: string; onCha
         error ? 'border-rose' : 'border-warm focus:border-gold',
       )}
     />
-    {error && <p id={`${id}-e`} role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">{error}</p>}
+    {error && <p id={`${id}-e`} role="alert" className="mt-1.5 font-body text-xs text-rose">{error}</p>}
   </div>
 )
 
@@ -65,7 +65,7 @@ const PasswordField: FC<{ id: string; label: string; value: string; onChange: (v
   const [show, setShow] = useState(false)
   return (
     <div>
-      <label htmlFor={id} className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">
+      <label htmlFor={id} className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
         {label}{required && <span className="text-rose ml-1" aria-hidden="true">*</span>}
       </label>
       <div className="relative">
@@ -85,7 +85,7 @@ const PasswordField: FC<{ id: string; label: string; value: string; onChange: (v
             : <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>}
         </button>
       </div>
-      {error && <p id={`${id}-e`} role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">{error}</p>}
+      {error && <p id={`${id}-e`} role="alert" className="mt-1.5 font-body text-xs text-rose">{error}</p>}
     </div>
   )
 }
@@ -100,13 +100,13 @@ const Checkbox: FC<{ id: string; label: React.ReactNode; checked: boolean; onCha
         </svg>
       )}
     </div>
-    <span className="font-body font-light text-[0.75rem] text-muted leading-snug">{label}</span>
+    <span className="font-body font-light text-xs text-muted leading-snug">{label}</span>
   </label>
 )
 
 const SocialBtn: FC<{ symbol: string; label: string }> = ({ symbol, label }) => (
   <button type="button" aria-label={`Continue with ${label}`}
-    className="flex-1 flex items-center justify-center gap-2 border border-warm py-3 font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted hover:border-muted hover:text-bark transition-all duration-200">
+    className="flex-1 flex items-center justify-center gap-2 border border-warm py-3 font-body text-xs uppercase tracking-[0.05em] text-muted hover:border-muted hover:text-bark transition-all duration-200">
     <span className="text-sm" aria-hidden="true">{symbol}</span>{label}
   </button>
 )
@@ -147,23 +147,23 @@ const SignInForm: FC<{ onSwitch: () => void; onSuccess: () => void }> = ({ onSwi
       {serverErr && (
         <div role="alert" className="border border-rose/40 bg-rose/5 px-4 py-3 flex gap-2.5">
           <span className="text-rose text-sm flex-none">✕</span>
-          <p className="font-body text-[0.78rem] text-rose">{serverErr}</p>
+          <p className="font-body text-xs text-rose">{serverErr}</p>
         </div>
       )}
       <Field id="si-email" label="Email" type="email" value={form.email} onChange={v => set('email', v)} error={errs.email} placeholder="you@example.com" autoComplete="email" required />
       <PasswordField id="si-pw" label="Password" value={form.password} onChange={v => set('password', v)} error={errs.password} placeholder="Your password" autoComplete="current-password" required />
       <div className="flex items-center justify-between">
         <Checkbox id="remember" label="Remember me" checked={form.remember} onChange={v => set('remember', v)} />
-        <button type="button" className="font-body text-[0.7rem] text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Forgot password?</button>
+        <button type="button" className="font-body text-xs text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Forgot password?</button>
       </div>
       <button type="submit" disabled={loading}
-        className={cn('w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 transition-all duration-300', loading ? 'bg-muted text-cream/70 cursor-not-allowed' : 'bg-deep text-cream hover:bg-bark')}
+        className={cn('w-full font-body text-xs uppercase tracking-[0.05em] py-4 transition-all duration-300', loading ? 'bg-muted text-cream/70 cursor-not-allowed' : 'bg-deep text-cream hover:bg-bark')}
         aria-busy={loading}>
         {loading ? <span className="flex items-center justify-center gap-2"><span className="w-3.5 h-3.5 border border-cream/40 border-t-cream rounded-full animate-spin" aria-hidden="true" />Signing in…</span> : 'Sign In'}
       </button>
-      <div className="relative flex items-center gap-3"><div className="flex-1 h-px bg-warm" /><span className="font-body text-[0.6rem] uppercase tracking-[0.18em] text-muted/60 flex-none">or</span><div className="flex-1 h-px bg-warm" /></div>
+      <div className="relative flex items-center gap-3"><div className="flex-1 h-px bg-warm" /><span className="font-body text-xs uppercase tracking-[0.05em] text-muted/60 flex-none">or</span><div className="flex-1 h-px bg-warm" /></div>
       <div className="flex gap-3"><SocialBtn symbol="G" label="Google" /><SocialBtn symbol="⌘" label="Apple" /></div>
-      <p className="text-center font-body text-[0.75rem] text-muted">New to Prayosha Crystal? <button type="button" onClick={onSwitch} className="text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Create an account</button></p>
+      <p className="text-center font-body text-xs text-muted">New to Prayosha Crystal? <button type="button" onClick={onSwitch} className="text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Create an account</button></p>
     </form>
   )
 }
@@ -202,7 +202,7 @@ const SignUpForm: FC<{ onSwitch: () => void; onSuccess: () => void }> = ({ onSwi
             <div className="flex gap-1 mb-1" aria-hidden="true">
               {[1,2,3,4,5].map(n => <div key={n} className={cn('h-0.5 flex-1 rounded-full transition-colors duration-300', n <= strength.score ? strength.colour : 'bg-warm')} />)}
             </div>
-            <p className="font-body text-[0.62rem] text-muted">Strength: <span className={strength.score <= 1 ? 'text-rose' : strength.score <= 3 ? 'text-[#D4921A]' : 'text-sage'}>{strength.label}</span></p>
+            <p className="font-body text-xs text-muted">Strength: <span className={strength.score <= 1 ? 'text-rose' : strength.score <= 3 ? 'text-[#D4921A]' : 'text-sage'}>{strength.label}</span></p>
           </div>
         )}
       </div>
@@ -212,13 +212,13 @@ const SignUpForm: FC<{ onSwitch: () => void; onSuccess: () => void }> = ({ onSwi
         <Checkbox id="terms" label={<>I agree to the <button type="button" className="text-gold hover:text-gold-light underline-offset-2 hover:underline">Terms</button> &amp; <button type="button" className="text-gold hover:text-gold-light underline-offset-2 hover:underline">Privacy Policy</button></>} checked={true} onChange={() => {}} />
       </div>
       <button type="submit" disabled={loading}
-        className={cn('w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 transition-all duration-300 mt-2', loading ? 'bg-muted text-cream/70 cursor-not-allowed' : 'bg-deep text-cream hover:bg-bark')}
+        className={cn('w-full font-body text-xs uppercase tracking-[0.05em] py-4 transition-all duration-300 mt-2', loading ? 'bg-muted text-cream/70 cursor-not-allowed' : 'bg-deep text-cream hover:bg-bark')}
         aria-busy={loading}>
         {loading ? <span className="flex items-center justify-center gap-2"><span className="w-3.5 h-3.5 border border-cream/40 border-t-cream rounded-full animate-spin" aria-hidden="true" />Creating account…</span> : 'Create Account'}
       </button>
-      <div className="relative flex items-center gap-3"><div className="flex-1 h-px bg-warm" /><span className="font-body text-[0.6rem] uppercase tracking-[0.18em] text-muted/60 flex-none">or</span><div className="flex-1 h-px bg-warm" /></div>
+      <div className="relative flex items-center gap-3"><div className="flex-1 h-px bg-warm" /><span className="font-body text-xs uppercase tracking-[0.05em] text-muted/60 flex-none">or</span><div className="flex-1 h-px bg-warm" /></div>
       <div className="flex gap-3"><SocialBtn symbol="G" label="Google" /><SocialBtn symbol="⌘" label="Apple" /></div>
-      <p className="text-center font-body text-[0.75rem] text-muted">Already have an account? <button type="button" onClick={onSwitch} className="text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Sign in</button></p>
+      <p className="text-center font-body text-xs text-muted">Already have an account? <button type="button" onClick={onSwitch} className="text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline">Sign in</button></p>
     </form>
   )
 }
@@ -235,7 +235,7 @@ const SuccessScreen: FC<{ mode: AuthMode }> = ({ mode }) => (
       {mode === 'signin' ? 'You\'re signed in. Your crystal collection awaits.' : 'Your account is ready. Begin your sacred stone journey.'}
     </p>
     <button onClick={() => { window.location.hash = '#/collection'; window.scrollTo({ top: 0 }) }}
-      className="font-body text-[0.7rem] uppercase tracking-[0.2em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200">
+      className="font-body text-xs uppercase tracking-[0.05em] bg-deep text-cream px-8 py-4 hover:bg-bark transition-colors duration-200">
       Explore Collection
     </button>
   </div>
@@ -271,7 +271,7 @@ const AuthPage: FC = () => {
           </svg>
           <div className="absolute top-0 left-1/3 w-64 h-64 rounded-full pointer-events-none" style={{ background: '#7C5C8A', opacity: 0.12, filter: 'blur(80px)' }} aria-hidden="true" />
           <div className="relative z-10">
-            <p className="inline-flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-3">
+            <p className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-3">
               <span className="w-6 h-px bg-gold-light" aria-hidden="true" />
               {mode === 'signin' ? 'Welcome Back' : 'Join Prayosha Crystal'}
               <span className="w-6 h-px bg-gold-light" aria-hidden="true" />
@@ -296,7 +296,7 @@ const AuthPage: FC = () => {
                     <button key={m} role="tab" aria-selected={mode === m}
                       onClick={() => { setMode(m); setSuccess(false) }}
                       className={cn(
-                        'flex-1 pb-4 font-body text-[0.68rem] uppercase tracking-[0.2em] transition-all duration-200 border-b-2 -mb-px bg-transparent border-l-0 border-r-0 border-t-0 cursor-pointer',
+                        'flex-1 pb-4 font-body text-xs uppercase tracking-[0.05em] transition-all duration-200 border-b-2 -mb-px bg-transparent border-l-0 border-r-0 border-t-0 cursor-pointer',
                         mode === m ? 'text-deep border-gold' : 'text-muted border-transparent hover:text-bark',
                       )}>
                       {m === 'signin' ? 'Sign In' : 'Create Account'}
@@ -317,7 +317,7 @@ const AuthPage: FC = () => {
             {[['🔒','Secure login'],['✦','Authentic stones'],['📦','Sacred packaging'],['🌙','Moon-cleansed']].map(([icon, label]) => (
               <div key={label as string} className="text-center">
                 <p className="text-base mb-1" aria-hidden="true">{icon}</p>
-                <p className="font-body text-[0.58rem] uppercase tracking-[0.12em] text-muted">{label}</p>
+                <p className="font-body text-xs uppercase tracking-[0.05em] text-muted">{label}</p>
               </div>
             ))}
           </div>

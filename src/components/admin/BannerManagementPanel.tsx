@@ -42,6 +42,8 @@ const EMPTY_FORM: FormState = {
   imagePreview: null,
 }
 
+const MAX_BANNER_IMAGE_SIZE = 20 * 1024 * 1024
+
 export interface BannerStats {
   total: number
   active: number
@@ -55,7 +57,7 @@ interface Props {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 const FieldLabel: FC<{ children: React.ReactNode }> = ({ children }) => (
-  <label className="block font-body text-[10px] tracking-[0.15em] uppercase text-cream/40 mb-1.5">
+  <label className="block font-body text-xs tracking-[0.05em] uppercase text-cream/40 mb-1.5">
     {children}
   </label>
 )
@@ -147,6 +149,11 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
   const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    if (file.size > MAX_BANNER_IMAGE_SIZE) {
+      e.target.value = ''
+      flash('error', 'Banner images must be 20 MB or smaller')
+      return
+    }
     setForm(f => ({ ...f, imageFile: file, imagePreview: URL.createObjectURL(file) }))
   }
 
@@ -232,7 +239,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
         </p>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-gold text-deep font-body text-xs tracking-widest uppercase font-medium hover:bg-gold/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gold text-deep font-body text-xs tracking-[0.05em] uppercase font-medium hover:bg-gold/90 transition-colors"
         >
           <svg viewBox="0 0 16 16" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5">
             <path d="M8 3v10M3 8h10" strokeLinecap="round" />
@@ -308,7 +315,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                 />
                 <div className="absolute top-2.5 left-2.5">
                   <span className={cn(
-                    'font-body text-[9px] tracking-[0.15em] uppercase px-2 py-1',
+                    'font-body text-xs tracking-[0.05em] uppercase px-2 py-1',
                     banner.isActive
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20'
                       : 'bg-cream/5 text-cream/30 border border-cream/10',
@@ -317,7 +324,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                   </span>
                 </div>
                 <div className="absolute top-2.5 right-2.5">
-                  <span className="font-body text-[9px] tracking-widest bg-deep/60 backdrop-blur-sm text-cream/50 border border-cream/10 px-2 py-1">
+                  <span className="font-body text-xs tracking-[0.05em] bg-deep/60 backdrop-blur-sm text-cream/50 border border-cream/10 px-2 py-1">
                     #{banner.order}
                   </span>
                 </div>
@@ -331,10 +338,10 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                     : <p className="font-body text-xs text-cream/20 italic">No title</p>
                   }
                   {banner.subtitle && (
-                    <p className="font-body text-[11px] text-cream/40 truncate mt-0.5">{banner.subtitle}</p>
+                    <p className="font-body text-xs text-cream/40 truncate mt-0.5">{banner.subtitle}</p>
                   )}
                   {banner.ctaText && (
-                    <span className="inline-block mt-2 font-body text-[9px] tracking-[0.15em] uppercase text-gold/60 bg-gold/5 border border-gold/10 px-2 py-0.5">
+                    <span className="inline-block mt-2 font-body text-xs tracking-[0.05em] uppercase text-gold/60 bg-gold/5 border border-gold/10 px-2 py-0.5">
                       CTA: {banner.ctaText}
                     </span>
                   )}
@@ -403,7 +410,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                 <h2 className="font-display text-base text-cream tracking-wide">
                   {editTarget ? 'Edit Banner' : 'New Banner'}
                 </h2>
-                <p className="font-body text-[10px] text-cream/30 mt-0.5">
+                <p className="font-body text-xs text-cream/30 mt-0.5">
                   {editTarget ? 'Update details below' : 'Upload an image and configure the slide'}
                 </p>
               </div>
@@ -432,7 +439,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                 >
                   {form.imagePreview ? (
                     <div className="relative aspect-[16/7] overflow-hidden">
-                      <img src={form.imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      <img src={form.imagePreview} alt="Preview" className="w-full h-full object-contain" />
                       <div className="absolute inset-0 flex items-center justify-center bg-deep/40 opacity-0 hover:opacity-100 transition-opacity">
                         <span className="font-body text-xs text-cream tracking-wider">Change Image</span>
                       </div>
@@ -445,7 +452,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                         <path d="M21 15l-5-5L5 21" />
                       </svg>
                       <p className="font-body text-xs">Click to upload</p>
-                      <p className="font-body text-[10px] text-cream/15">JPG, PNG, WebP — max 5 MB</p>
+                      <p className="font-body text-xs text-cream/15">JPG, PNG, WebP — max 20 MB</p>
                     </div>
                   )}
                 </div>
@@ -514,7 +521,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
               <button
                 onClick={(e) => { void onSubmit(e as unknown as FormEvent) }}
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 bg-gold text-deep font-body text-xs tracking-widest uppercase font-medium hover:bg-gold/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-6 py-2.5 bg-gold text-deep font-body text-xs tracking-[0.05em] uppercase font-medium hover:bg-gold/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {saving && (
                   <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -554,7 +561,7 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                 Cancel
               </button>
               <button onClick={() => void onDelete()} disabled={deleting}
-                className="flex items-center gap-2 px-5 py-2 bg-rose-500/90 text-white font-body text-xs tracking-widest uppercase hover:bg-rose-500 disabled:opacity-50 transition-colors">
+                className="flex items-center gap-2 px-5 py-2 bg-rose-500/90 text-white font-body text-xs tracking-[0.05em] uppercase hover:bg-rose-500 disabled:opacity-50 transition-colors">
                 {deleting && (
                   <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

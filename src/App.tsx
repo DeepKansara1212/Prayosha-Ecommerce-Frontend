@@ -123,9 +123,9 @@ const RouteFallback: FC = () => (
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontFamily: 'Jost, sans-serif',
-    fontSize: 12,
-    letterSpacing: '0.2em',
+    fontFamily: 'var(--font-body)',
+    fontSize: 14,
+    letterSpacing: '0.04em',
     textTransform: 'uppercase',
     color: '#6B6057',
   }}>

@@ -202,10 +202,10 @@ const StatusTimeline: FC<StatusTimelineProps> = ({ statusHistory, currentStatus 
             <div style={{ flex: 1, minWidth: 0, paddingBottom: isLast ? 0 : 20, paddingTop: 4 }}>
               {/* Status label */}
               <p style={{
-                fontFamily: 'Jost',
-                fontSize: 12,
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
                 textTransform: 'uppercase',
-                letterSpacing: '0.1em',
+                letterSpacing: '0.05em',
                 fontWeight: state === 'current' ? 600 : 400,
                 color: state === 'completed' ? '#3D2B1F'
                      : state === 'current'   ? PURPLE
@@ -218,21 +218,21 @@ const StatusTimeline: FC<StatusTimelineProps> = ({ statusHistory, currentStatus 
 
               {/* Timestamp */}
               {entry && (
-                <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#9A8F85', margin: '5px 0 0' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9A8F85', margin: '5px 0 0' }}>
                   {fmtTimestamp(entry.timestamp)}
                 </p>
               )}
 
               {/* Future placeholder */}
               {!entry && state === 'future' && (
-                <p style={{ fontFamily: 'Jost', fontSize: 11, color: BORDER_INACTIVE, margin: '5px 0 0' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: BORDER_INACTIVE, margin: '5px 0 0' }}>
                   Pending
                 </p>
               )}
 
               {/* Optional note */}
               {entry?.note && (
-                <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#6B6057', margin: '4px 0 0', lineHeight: 1.5 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '4px 0 0', lineHeight: 1.5 }}>
                   {entry.note}
                 </p>
               )}

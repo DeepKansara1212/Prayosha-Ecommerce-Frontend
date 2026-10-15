@@ -44,16 +44,16 @@ const ReviewCard: FC<{ review: Review }> = ({ review }) => (
   <div style={{ paddingBottom: 24, borderBottom: '1px solid #E2DAC8' }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, gap: 12 }}>
       <div>
-        <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, fontWeight: 500, color: '#1C1A17', margin: 0 }}>
+        <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 14, fontWeight: 500, color: '#1C1A17', margin: 0 }}>
           {review.user.name}
         </p>
         {review.verified && (
-          <span style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 10, color: '#5A8A6A', fontWeight: 500, display: 'inline-block', marginTop: 3 }}>
+          <span style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#5A8A6A', fontWeight: 500, display: 'inline-block', marginTop: 3 }}>
             Verified Purchase
           </span>
         )}
       </div>
-      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 11, color: '#5A4638', flexShrink: 0, margin: 0 }}>
+      <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#5A4638', flexShrink: 0, margin: 0 }}>
         {formatDate(review.createdAt)}
       </p>
     </div>
@@ -63,12 +63,12 @@ const ReviewCard: FC<{ review: Review }> = ({ review }) => (
     </div>
 
     {review.title && (
-      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, fontWeight: 500, color: '#1C1A17', margin: '0 0 6px' }}>
+      <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 14, fontWeight: 500, color: '#1C1A17', margin: '0 0 6px' }}>
         {review.title}
       </p>
     )}
 
-    <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, fontWeight: 400, color: '#3A3530', lineHeight: 1.65, margin: 0 }}>
+    <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 14, fontWeight: 400, color: '#3A3530', lineHeight: 1.65, margin: 0 }}>
       {review.body}
     </p>
   </div>
@@ -108,7 +108,7 @@ const ReviewsList: FC<ReviewsListProps> = ({ slug }) => {
 
   if (isFetching && allReviews.length === 0) {
     return (
-      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 13, color: '#5A4638', padding: '32px 0' }}>
+      <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#5A4638', padding: '32px 0' }}>
         Loading reviews…
       </p>
     )
@@ -116,7 +116,7 @@ const ReviewsList: FC<ReviewsListProps> = ({ slug }) => {
 
   if (!isFetching && total === 0 && allReviews.length === 0) {
     return (
-      <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 14, color: '#5A4638', padding: '32px 0' }}>
+      <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 14, color: '#5A4638', padding: '32px 0' }}>
         No reviews yet. Be the first to share your experience.
       </p>
     )
@@ -129,13 +129,13 @@ const ReviewsList: FC<ReviewsListProps> = ({ slug }) => {
         <div style={{ display: 'flex', gap: 40, marginBottom: 32, paddingBottom: 32, borderBottom: '1px solid #E2DAC8', flexWrap: 'wrap', alignItems: 'center' }}>
           {/* Average + star row */}
           <div>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 52, color: '#1C1A17', lineHeight: 1, margin: 0 }}>
+            <p style={{ fontFamily: "var(--font-heading)", fontSize: 52, color: '#1C1A17', lineHeight: 1, margin: 0 }}>
               {avg.toFixed(1)}
             </p>
             <div style={{ marginTop: 10, marginBottom: 8 }}>
               <StarRow rating={avg} size={16} />
             </div>
-            <p style={{ fontFamily: "'Jost', system-ui, sans-serif", fontSize: 12, color: '#6B6057', margin: 0 }}>
+            <p style={{ fontFamily: "var(--font-body), system-ui, sans-serif", fontSize: 13, color: '#6B6057', margin: 0 }}>
               {total} {total === 1 ? 'review' : 'reviews'}
             </p>
           </div>
@@ -167,9 +167,9 @@ const ReviewsList: FC<ReviewsListProps> = ({ slug }) => {
             marginTop: 32,
             width: '100%',
             padding: '12px 0',
-            fontFamily: "'Jost', system-ui, sans-serif",
-            fontSize: '0.68rem',
-            letterSpacing: '0.2em',
+            fontFamily: "var(--font-body), system-ui, sans-serif",
+            fontSize: '13px',
+            letterSpacing: '0.05em',
             textTransform: 'uppercase' as const,
             background: 'transparent',
             border: '1px solid #E2DAC8',

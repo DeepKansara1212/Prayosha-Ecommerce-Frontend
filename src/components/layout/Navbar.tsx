@@ -1,20 +1,69 @@
 import React, { useState, useRef, useEffect, type FC } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { useSearchOverlay } from '@/hooks/useSearchOverlay'
 import { useCategories } from '@/hooks/useCategories'
+import { getMeanings } from '@/api/meanings.api'
+import { getSubCategories } from '@/api/subcategories.api'
 import SearchOverlay from '@/components/search/SearchOverlay'
 import { cn, slugify } from '@/lib/utils'
 import type { ApiCategory } from '@/api/categories.api'
 
-// Resolves a mega-menu label to a real admin category's slug when one exists
-// (matched by name, so a category with a custom slug still resolves correctly);
-// otherwise falls back to a best-effort slug that will start working automatically
-// once admin creates a matching category with the default auto-slug.
+// Resolves ordinary mega-menu labels to their matching admin category.
 function categoryPath(label: string, categories: ApiCategory[]): string {
   if (label.trim().toLowerCase() === 'meaning') return '/collection'
   const match = categories.find(c => c.name.trim().toLowerCase() === label.trim().toLowerCase())
   return `/collection?category=${encodeURIComponent(match?.slug ?? slugify(label))}`
+}
+
+function meaningPath(label: string, meanings: { _id: string; name: string }[]): string {
+  const meaning = meanings.find(item => item.name.trim().toLowerCase() === label.trim().toLowerCase())
+  const params = new URLSearchParams()
+  if (meaning) params.set('meaning', meaning._id)
+  else params.set('search', label)
+  return `/collection?${params.toString()}`
+}
+
+function rudrakshaPath(
+  label: string,
+  category: ApiCategory | undefined,
+  subCategories: { _id: string; name: string }[],
+): string {
+  const subCategory = subCategories.find(item => item.name.trim().toLowerCase() === label.trim().toLowerCase())
+  const params = new URLSearchParams()
+  if (category) params.set('category', category.slug)
+  if (subCategory) params.set('subCategory', subCategory._id)
+  else params.set('search', label)
+  return `/collection?${params.toString()}`
+}
+
+function useCollectionMenuData() {
+  const { data: categories = [] } = useCategories()
+  const { data: meanings = [] } = useQuery({
+    queryKey: ['collection-meanings'],
+    queryFn: getMeanings,
+    staleTime: 5 * 60_000,
+  })
+  const rudrakshaCategory = categories.find(category => category.name.trim().toLowerCase() === 'rudraksha')
+  const { data: rudrakshaSubCategories = [] } = useQuery({
+    queryKey: ['collection-subcategories', rudrakshaCategory?.slug],
+    queryFn: () => getSubCategories(rudrakshaCategory?.slug ?? ''),
+    enabled: !!rudrakshaCategory,
+    staleTime: 5 * 60_000,
+  })
+
+  return { categories, meanings, rudrakshaCategory, rudrakshaSubCategories }
+}
+
+function menuItemPath(
+  item: string,
+  section: string | undefined,
+  data: ReturnType<typeof useCollectionMenuData>,
+): string {
+  if (section === 'Meaning') return meaningPath(item, data.meanings)
+  if (section === 'Rudraksha') return rudrakshaPath(item, data.rudrakshaCategory, data.rudrakshaSubCategories)
+  return categoryPath(item, data.categories)
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -165,23 +214,23 @@ interface MegaDropdownProps {
 
 const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
   const [meaningOpen, setMeaningOpen] = useState(false)
-  const { data: categories = [] } = useCategories()
+  const menuData = useCollectionMenuData()
 
-  const handleItemClick = (item: string) => {
-    onNavigate(categoryPath(item, categories))
+  const handleItemClick = (item: string, section?: string) => {
+    onNavigate(menuItemPath(item, section, menuData))
     onClose()
   }
 
   const itemStyle: React.CSSProperties = {
     background: 'none', border: 'none', padding: '0.28rem 0', cursor: 'pointer',
     display: 'block', width: '100%', textAlign: 'left',
-    fontSize: '0.8rem', letterSpacing: '0.04em',
+    fontSize: '14px', letterSpacing: '0.03em',
     color: 'rgba(61,43,31,0.82)', transition: 'color 0.15s ease, padding-left 0.15s ease',
     lineHeight: 1.45, whiteSpace: 'normal', wordBreak: 'break-word',
   }
 
   const colHeaderStyle: React.CSSProperties = {
-    fontSize: '0.68rem', letterSpacing: '0.22em', textTransform: 'uppercase',
+    fontSize: '14px', letterSpacing: '0.04em', textTransform: 'uppercase',
     color: 'rgba(184,149,106,0.95)', fontWeight: 600,
   }
 
@@ -193,7 +242,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
     }} />
   )
 
-  const renderItems = (items: string[]) => (
+  const renderItems = (items: string[], section: string) => (
     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
       {items.map((item, idx) => (
         <li key={`${item}-${idx}`}>
@@ -230,11 +279,11 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                   {MEANING_ITEMS.map((meaning, meaningIdx) => (
                     <li key={`${meaning}-${meaningIdx}`}>
                       <button
-                        onClick={() => handleItemClick(meaning)}
+                        onClick={() => handleItemClick(meaning, 'Meaning')}
                         style={{
                           ...itemStyle,
                           padding: '0.18rem 0',
-                          fontSize: '0.74rem',
+                          fontSize: '13px',
                           color: 'rgba(61,43,31,0.72)',
                         }}
                         onMouseEnter={e => {
@@ -257,7 +306,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
             </div>
           ) : (
             <button
-              onClick={() => handleItemClick(item)}
+              onClick={() => handleItemClick(item, section)}
               style={itemStyle}
               onMouseEnter={e => {
                 const el = e.currentTarget as HTMLButtonElement
@@ -298,7 +347,7 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
       <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(184,149,106,0.4) 30%, rgba(184,149,106,0.4) 70%, transparent)' }} />
 
       <div style={{ padding: '2rem clamp(1.5rem, 5vw, 4rem) 1.75rem' }}>
-        <p style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(61,43,31,0.72)', marginBottom: '1.5rem' }}>
+        <p style={{ fontSize: '14px', letterSpacing: '0.04em', textTransform: 'uppercase', color: 'rgba(61,43,31,0.72)', marginBottom: '1.5rem' }}>
           Browse Collections
         </p>
 
@@ -325,14 +374,14 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                 </div>
 
                 {col.items.length === 0 ? (
-                  <span style={{ fontSize: '0.72rem', color: 'rgba(61,43,31,0.62)', letterSpacing: '0.08em' }}>Coming soon</span>
+                  <span style={{ fontSize: '14px', color: 'rgba(61,43,31,0.62)', letterSpacing: '0.04em' }}>Coming soon</span>
                 ) : isMultiCol ? (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '0.75rem' }}>
                     {[col.items.slice(0, Math.ceil(col.items.length / 2)), col.items.slice(Math.ceil(col.items.length / 2))].map((half, hIdx) => (
                       <ul key={hIdx} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                         {half.map((item, idx) => (
                           <li key={`${item}-${idx}`}>
-                            <button onClick={() => handleItemClick(item)} style={itemStyle}
+                            <button onClick={() => handleItemClick(item, col.title)} style={itemStyle}
                               onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(28,20,16,1)'; el.style.paddingLeft = '5px' }}
                               onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(61,43,31,0.82)'; el.style.paddingLeft = '0' }}>
                               {item}
@@ -342,21 +391,21 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                       </ul>
                     ))}
                   </div>
-                ) : renderItems(col.items)}
+                ) : renderItems(col.items, col.title)}
               </div>
             )
           })}
         </div>
 
         <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(184,149,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <p style={{ fontSize: '0.62rem', letterSpacing: '0.16em', color: 'rgba(61,43,31,0.72)', textTransform: 'uppercase' }}>
+          <p style={{ fontSize: '13px', letterSpacing: '0.05em', color: 'rgba(61,43,31,0.72)', textTransform: 'uppercase' }}>
             All handcrafted · Ethically sourced
           </p>
           <button
             onClick={() => { onNavigate('/collection'); onClose() }}
             style={{
               background: 'none', border: '1px solid rgba(184,149,106,0.35)', padding: '0.45rem 1.4rem',
-              cursor: 'pointer', fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase',
+              cursor: 'pointer', fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase',
               color: 'rgba(61,43,31,0.9)', transition: 'border-color 0.2s, color 0.2s, background 0.2s',
               borderRadius: '1px', whiteSpace: 'nowrap', minHeight: '44px',
             }}
@@ -379,7 +428,7 @@ interface MobileAccordionProps {
 
 const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => {
   const [openCol, setOpenCol] = useState<string | null>(null)
-  const { data: categories = [] } = useCategories()
+  const menuData = useCollectionMenuData()
 
   return (
     <div className="w-full px-6 mt-2" style={{ maxHeight: '55vh', overflowY: 'auto' }}>
@@ -390,7 +439,7 @@ const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => 
             className="w-full flex items-center justify-between py-3 bg-transparent border-none cursor-pointer min-h-[44px]"
             aria-expanded={openCol === col.title}
           >
-            <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: openCol === col.title ? 'rgba(61,43,31,1)' : 'rgba(61,43,31,0.82)', transition: 'color 0.2s' }}>
+            <span style={{ fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: openCol === col.title ? 'rgba(61,43,31,1)' : 'rgba(61,43,31,0.82)', transition: 'color 0.2s' }}>
               {col.title}
             </span>
             <ChevronDownIcon open={openCol === col.title} />
@@ -401,14 +450,14 @@ const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => 
               {col.items.map((item, idx) => (
                 <button
                   key={`${item}-${idx}`}
-                  onClick={() => onNavigate(categoryPath(item, categories))}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', letterSpacing: '0.06em', color: 'rgba(61,43,31,0.82)', padding: '0.2rem 0', textAlign: 'left', minHeight: '44px' }}
+                  onClick={() => onNavigate(menuItemPath(item, col.title, menuData))}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', letterSpacing: '0.06em', color: 'rgba(61,43,31,0.82)', padding: '0.2rem 0', textAlign: 'left', minHeight: '44px' }}
                 >
                   {item}
                 </button>
               ))}
               {col.items.length === 0 && (
-                <span style={{ fontSize: '0.65rem', color: 'rgba(61,43,31,0.62)' }}>Coming soon</span>
+                <span style={{ fontSize: '13px', color: 'rgba(61,43,31,0.62)' }}>Coming soon</span>
               )}
             </div>
           </div>
@@ -502,7 +551,7 @@ const Navbar: FC = () => {
             <button
               onClick={() => go('/collection')}
               className={cn(
-                'font-display font-light tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200',
+                'font-display font-light tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200',
                 isActive('/collection') ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
               )}
               style={{ fontSize: 'clamp(1.6rem,6vw,2.5rem)' }}
@@ -532,7 +581,7 @@ const Navbar: FC = () => {
                 ? setMobileCalculatorOpen(v => !v)
                 : go(item.path)}
               className={cn(
-                'font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.1em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]',
+                'font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]',
                 isActive(item.path) ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
               )}
               aria-expanded={item.path === '/bracelet-calculator' ? mobileCalculatorOpen : undefined}
@@ -548,7 +597,7 @@ const Navbar: FC = () => {
                   <button
                     key={path}
                     onClick={() => go(path)}
-                    className="min-h-[44px] bg-transparent border-none cursor-pointer font-body text-xs tracking-[0.12em] uppercase text-bark"
+                    className="min-h-[44px] bg-transparent border-none cursor-pointer font-body text-xs tracking-[0.05em] uppercase text-bark"
                   >
                     {label}
                   </button>
@@ -574,7 +623,7 @@ const Navbar: FC = () => {
               aria-label={label}
             >
               <Icon />
-              <span className="font-body text-[0.55rem] uppercase tracking-[0.18em]">{label}</span>
+              <span className="font-body text-xs uppercase tracking-[0.05em]">{label}</span>
             </button>
           ))}
         </div>
@@ -624,7 +673,8 @@ const Navbar: FC = () => {
                     ? setCalculatorOpen(v => !v)
                     : go(item.path)}
                   className={cn(
-                    'font-body text-[0.72rem] tracking-[0.2em] uppercase transition-all duration-200 bg-transparent border-none cursor-pointer relative pb-0.5 flex items-center gap-1.5 min-h-[44px]',
+                    'font-body text-xs tracking-[0.05em] uppercase transition-all duration-200 bg-transparent border-none cursor-pointer relative pb-0.5 flex items-center gap-1.5 min-h-[44px]',
+                    item.label === 'About Us' && 'whitespace-nowrap',
                     'after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gold-light after:transition-all after:duration-300',
                     isActive(item.path) || (item.path === '/collection' && dropdownOpen) || (item.path === '/bracelet-calculator' && calculatorOpen)
                       ? 'text-deep after:w-full'
@@ -650,7 +700,7 @@ const Navbar: FC = () => {
                       <button
                         key={path}
                         onClick={() => go(path)}
-                        className="block w-full bg-transparent border-none px-5 py-3 text-left font-body text-xs uppercase tracking-[0.12em] text-bark hover:text-deep"
+                        className="block w-full bg-transparent border-none px-5 py-3 text-left font-body text-xs uppercase tracking-[0.05em] text-bark hover:text-deep"
                       >
                         {label}
                       </button>

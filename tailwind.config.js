@@ -19,13 +19,17 @@ const config: Config = {
         sage:         '#6A8570',
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        body:    ['Jost', 'system-ui', 'sans-serif'],
+        sans:    ['var(--font-body)'],
+        body:    ['var(--font-body)'],
+        heading:['var(--font-heading)'],
+        display:['var(--font-heading)'],
+        serif:  ['var(--font-heading)'],
       },
       fontSize: {
-        'eyebrow': ['0.68rem', { letterSpacing: '0.3em',  lineHeight: '1' }],
-        'label':   ['0.62rem', { letterSpacing: '0.3em',  lineHeight: '1' }],
-        'tag':     ['0.58rem', { letterSpacing: '0.22em', lineHeight: '1' }],
+        'xs':      ['0.8125rem', { lineHeight: '1.25' }],
+        'eyebrow': ['0.8125rem', { letterSpacing: '0.05em', lineHeight: '1.25' }],
+        'label':   ['0.8125rem', { letterSpacing: '0.05em', lineHeight: '1.25' }],
+        'tag':     ['0.8125rem', { letterSpacing: '0.05em', lineHeight: '1.25' }],
         'price':   ['0.82rem', { letterSpacing: '0.02em', lineHeight: '1' }],
       },
       screens: {

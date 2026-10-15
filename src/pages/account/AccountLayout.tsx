@@ -10,7 +10,7 @@ const ACCOUNT_CSS = `
     display: block; width: 100%;
     background: #EDE8DC; border: 1px solid #E2DAC8; border-radius: 4px;
     padding: 12px 16px;
-    font-family: Jost, system-ui, sans-serif; font-size: 14px; color: #1C1A17;
+    font-family: var(--font-body); font-size: 14px; color: #1C1A17;
     outline: none; box-sizing: border-box;
     transition: border-color 150ms, box-shadow 150ms;
   }
@@ -21,8 +21,8 @@ const ACCOUNT_CSS = `
   .acct-btn-gold {
     display: inline-flex; align-items: center; justify-content: center;
     background: #C49A3C; color: #fff; border: none; border-radius: 4px;
-    font-family: Jost, system-ui, sans-serif; font-size: 11px; font-weight: 400;
-    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: var(--font-body); font-size: 13px; font-weight: 400;
+    text-transform: uppercase; letter-spacing: 0.05em;
     padding: 12px 28px; cursor: pointer;
     transition: background 150ms, transform 100ms;
   }
@@ -33,8 +33,8 @@ const ACCOUNT_CSS = `
     display: inline-flex; align-items: center; justify-content: center;
     background: none; color: #6B6057;
     border: 1px solid #E2DAC8; border-radius: 4px;
-    font-family: Jost, system-ui, sans-serif; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: var(--font-body); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.05em;
     padding: 12px 24px; cursor: pointer;
     transition: border-color 150ms, color 150ms;
   }
@@ -45,8 +45,8 @@ const ACCOUNT_CSS = `
     display: inline-flex; align-items: center; justify-content: center;
     background: none; color: #A85050;
     border: 1px solid #E2C8C8; border-radius: 4px;
-    font-family: Jost, system-ui, sans-serif; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: var(--font-body); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.05em;
     padding: 12px 24px; cursor: pointer;
     transition: background 150ms, border-color 150ms;
   }
@@ -54,23 +54,23 @@ const ACCOUNT_CSS = `
 
   .acct-label {
     display: block;
-    font-family: Jost, system-ui, sans-serif; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 0.08em; color: #6B6057;
+    font-family: var(--font-body); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.05em; color: #6B6057;
     margin-bottom: 6px;
   }
   .acct-error {
-    font-family: Jost, system-ui, sans-serif; font-size: 12px; color: #A85050;
+    font-family: var(--font-body); font-size: 13px; color: #A85050;
     margin-top: 4px;
   }
   .acct-section-header {
     margin-bottom: 32px;
   }
   .acct-eyebrow {
-    font-family: Jost, system-ui, sans-serif; font-size: 11px;
-    text-transform: uppercase; letter-spacing: 0.18em; color: #C49A3C;
+    font-family: var(--font-body); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.05em; color: #C49A3C;
   }
   .acct-page-title {
-    font-family: "Cormorant Garamond", Georgia, serif; font-weight: 300;
+    font-family: var(--font-heading); font-weight: 400;
     font-size: clamp(24px, 4vw, 32px); color: #1C1A17; margin: 6px 0 0;
   }
 `;
@@ -199,7 +199,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
                 aria-hidden="true"
                 style={{
                   color: "#fff",
-                  fontFamily: "Jost",
+                  fontFamily: 'var(--font-body)',
                   fontSize: 18,
                   fontWeight: 500,
                   lineHeight: 1,
@@ -226,7 +226,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
             </div>
             <p
               style={{
-                fontFamily: "Jost",
+                fontFamily: 'var(--font-body)',
                 fontWeight: 500,
                 fontSize: 14,
                 color: "#1C1A17",
@@ -237,8 +237,8 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
             </p>
             <p
               style={{
-                fontFamily: "Jost",
-                fontSize: 12,
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
                 color: "#6B6057",
                 margin: "4px 0 0",
               }}
@@ -262,10 +262,10 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
                     width: "100%",
                     textAlign: "left",
                     padding: "11px 24px",
-                    fontFamily: "Jost",
-                    fontSize: 11,
+                    fontFamily: 'var(--font-body)',
+                    fontSize: 13,
                     textTransform: "uppercase",
-                    letterSpacing: "0.1em",
+                    letterSpacing: "0.05em",
                     background: active ? "#F0EAF7" : "none",
                     color: active ? "#7B5EA7" : "#6B6057",
                     border: "none",
@@ -294,10 +294,10 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
                 width: "100%",
                 textAlign: "left",
                 padding: "11px 24px",
-                fontFamily: "Jost",
-                fontSize: 11,
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
                 textTransform: "uppercase",
-                letterSpacing: "0.1em",
+                letterSpacing: "0.05em",
                 background: "none",
                 color: "#A85050",
                 border: "none",
@@ -345,8 +345,8 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
               style={{
                 flex: 1,
                 padding: "10px 2px",
-                fontFamily: "Jost",
-                fontSize: 8,
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
                 background: active ? "#F0EAF7" : "none",

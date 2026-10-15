@@ -48,7 +48,7 @@ const Benefits: FC = () => {
             <h3 className="font-display text-[1.1rem] font-normal text-cream mb-2">
               {b.title}
             </h3>
-            <p className="font-body font-normal text-[0.76rem] leading-[1.8] text-cream/80">
+            <p className="font-body font-normal text-xs leading-[1.8] text-cream/80">
               {b.description}
             </p>
           </article>

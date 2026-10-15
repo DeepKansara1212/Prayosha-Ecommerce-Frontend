@@ -56,15 +56,15 @@ const CheckoutFailedPage: FC = () => {
 
           {/* Eyebrow */}
           <p style={{
-            fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase',
-            letterSpacing: '0.28em', color: '#A85050', margin: '0 0 12px',
+            fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+            letterSpacing: '0.05em', color: '#A85050', margin: '0 0 12px',
           }}>
             Payment Failed
           </p>
 
           {/* Headline */}
           <h1 style={{
-            fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 300,
+            fontFamily: 'var(--font-heading)', fontWeight: 400,
             fontSize: 'clamp(26px, 5vw, 38px)', color: '#1C1A17', lineHeight: 1.2, margin: '0 0 16px',
           }}>
             Something went wrong
@@ -76,10 +76,10 @@ const CheckoutFailedPage: FC = () => {
               display: 'inline-block', padding: '12px 24px', marginBottom: 24,
               background: '#FDF0F0', border: '1px solid #E8C8C8', borderRadius: 6,
             }}>
-              <p style={{ fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: '#A85050', margin: '0 0 4px' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#A85050', margin: '0 0 4px' }}>
                 Reference
               </p>
-              <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
                 {failedOrder.orderNumber}
               </p>
             </div>
@@ -87,13 +87,13 @@ const CheckoutFailedPage: FC = () => {
 
           {/* Message */}
           <p style={{
-            fontFamily: 'Jost', fontSize: 13, color: '#6B6057', lineHeight: 1.75,
+            fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', lineHeight: 1.75,
             maxWidth: 360, margin: '0 auto 12px',
           }}>
             Your payment could not be processed. No amount has been deducted.
           </p>
           <p style={{
-            fontFamily: 'Jost', fontSize: 13, color: '#6B6057', lineHeight: 1.75,
+            fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', lineHeight: 1.75,
             maxWidth: 360, margin: '0 auto 36px',
           }}>
             Please try again or contact our support team if the issue persists.
@@ -105,7 +105,7 @@ const CheckoutFailedPage: FC = () => {
               onClick={retry}
               style={{
                 background: '#C49A3C', color: '#fff', border: 'none', borderRadius: 4,
-                fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em',
+                fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
                 padding: '14px 28px', cursor: 'pointer',
                 transition: 'background 150ms',
               }}
@@ -117,7 +117,7 @@ const CheckoutFailedPage: FC = () => {
               style={{
                 background: 'none', color: '#A85050',
                 border: '1px solid #E8C8C8', borderRadius: 4,
-                fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em',
+                fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
                 padding: '14px 28px', cursor: 'pointer',
                 transition: 'border-color 150ms, color 150ms',
               }}
@@ -131,7 +131,7 @@ const CheckoutFailedPage: FC = () => {
             onClick={goCollection}
             style={{
               marginTop: 20, background: 'none', border: 'none', cursor: 'pointer',
-              fontFamily: 'Jost', fontSize: 12, color: '#5A4638',
+              fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638',
               textDecoration: 'underline', textUnderlineOffset: 3,
             }}
           >

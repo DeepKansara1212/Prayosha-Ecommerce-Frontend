@@ -114,7 +114,7 @@ const WhatsAppChatButton: FC = () => {
   return (
     <div
       className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3"
-      style={{ fontFamily: "'Jost', sans-serif" }}
+      style={{ fontFamily: "var(--font-body)" }}
     >
       {/* ── Chat Card ── */}
       {cardOpen && (
@@ -135,11 +135,11 @@ const WhatsAppChatButton: FC = () => {
               <h2
                 id={headingId}
                 className="font-display text-deep text-[1.1rem] leading-tight"
-                style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1C1A17' }}
+                style={{ fontFamily: "var(--font-heading)", color: '#1C1A17' }}
               >
                 Chat with us on WhatsApp
               </h2>
-              <p className="font-body text-[0.72rem] mt-0.5" style={{ color: '#5A4638' }}>
+              <p className="font-body text-xs mt-0.5" style={{ color: '#5A4638' }}>
                 Typically replies within minutes
               </p>
             </div>
@@ -163,7 +163,7 @@ const WhatsAppChatButton: FC = () => {
             rows={3}
             className="w-full font-body text-[0.82rem] border rounded-lg px-3 py-2.5 outline-none resize-none placeholder:text-muted/40 transition-colors"
             style={{
-              fontFamily: "'Jost', sans-serif",
+              fontFamily: "var(--font-body)",
               color: '#1C1A17',
               borderColor: '#E2DAC8',
               background: '#F5F0E8',
@@ -174,8 +174,8 @@ const WhatsAppChatButton: FC = () => {
           {/* Start Chat button */}
           <button
             onClick={startChat}
-            className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-lg font-body text-[0.78rem] uppercase tracking-[0.12em] text-white transition-all duration-200"
-            style={{ background: '#25D366', border: 'none', cursor: 'pointer', fontFamily: "'Jost', sans-serif" }}
+            className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-lg font-body text-xs uppercase tracking-[0.05em] text-white transition-all duration-200"
+            style={{ background: '#25D366', border: 'none', cursor: 'pointer', fontFamily: "var(--font-body)" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#1ebe57' }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#25D366' }}
           >

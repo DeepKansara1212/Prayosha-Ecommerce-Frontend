@@ -12,7 +12,7 @@ interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
   ({ label, error, className, ...inputProps }, ref) => (
     <div>
-      <label className="block font-body text-[0.68rem] uppercase tracking-[0.15em] text-bark mb-2">
+      <label className="block font-body text-xs uppercase tracking-[0.05em] text-bark mb-2">
         {label}
       </label>
       <input
@@ -20,7 +20,7 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
         className={`w-full border bg-cream px-4 py-3 font-body text-[0.85rem] text-deep placeholder:text-muted focus:outline-none focus:border-gold transition-colors ${error ? 'border-rose' : 'border-warm'} ${className ?? ''}`}
         {...inputProps}
       />
-      {error && <p role="alert" className="mt-1.5 font-body text-[0.72rem] text-rose">{error}</p>}
+      {error && <p role="alert" className="mt-1.5 font-body text-xs text-rose">{error}</p>}
     </div>
   ),
 )
@@ -36,7 +36,7 @@ interface SelectFieldProps extends SelectHTMLAttributes<HTMLSelectElement> {
 export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
   ({ label, error, className, children, ...selectProps }, ref) => (
     <div>
-      <label className="block font-body text-[0.68rem] uppercase tracking-[0.15em] text-bark mb-2">
+      <label className="block font-body text-xs uppercase tracking-[0.05em] text-bark mb-2">
         {label}
       </label>
       <select
@@ -46,7 +46,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
       >
         {children}
       </select>
-      {error && <p role="alert" className="mt-1.5 font-body text-[0.72rem] text-rose">{error}</p>}
+      {error && <p role="alert" className="mt-1.5 font-body text-xs text-rose">{error}</p>}
     </div>
   ),
 )
@@ -113,7 +113,7 @@ export const LocationSearchField: FC<LocationSearchFieldProps> = ({ label, value
 
   return (
     <div ref={containerRef} className="relative">
-      <label className="block font-body text-[0.68rem] uppercase tracking-[0.15em] text-bark mb-2">
+      <label className="block font-body text-xs uppercase tracking-[0.05em] text-bark mb-2">
         {label}
       </label>
 
@@ -123,7 +123,7 @@ export const LocationSearchField: FC<LocationSearchFieldProps> = ({ label, value
           <button
             type="button"
             onClick={handleChange}
-            className="shrink-0 font-body text-[0.65rem] uppercase tracking-[0.1em] text-gold hover:text-bark transition-colors"
+            className="shrink-0 font-body text-xs uppercase tracking-[0.05em] text-gold hover:text-bark transition-colors"
           >
             Change
           </button>
@@ -143,27 +143,27 @@ export const LocationSearchField: FC<LocationSearchFieldProps> = ({ label, value
       {showDropdown && (
         <div className="absolute z-20 mt-1 w-full max-h-60 overflow-y-auto border border-warm bg-cream shadow-lg">
           {searching ? (
-            <div className="px-4 py-3 font-body text-[0.78rem] text-muted">Searching…</div>
+            <div className="px-4 py-3 font-body text-xs text-muted">Searching…</div>
           ) : isError ? (
-            <div className="px-4 py-3 font-body text-[0.78rem] text-rose">Unable to search locations right now. Please try again.</div>
+            <div className="px-4 py-3 font-body text-xs text-rose">Unable to search locations right now. Please try again.</div>
           ) : results && results.length > 0 ? (
             results.map((r, i) => (
               <button
                 key={`${r.displayName}-${i}`}
                 type="button"
                 onClick={() => handleSelect(r)}
-                className="block w-full text-left px-4 py-2.5 font-body text-[0.8rem] text-deep hover:bg-warm transition-colors"
+                className="block w-full text-left px-4 py-2.5 font-body text-xs text-deep hover:bg-warm transition-colors"
               >
                 {r.displayName}
               </button>
             ))
           ) : (
-            <div className="px-4 py-3 font-body text-[0.78rem] text-muted">No matching location found. Try a nearby city.</div>
+            <div className="px-4 py-3 font-body text-xs text-muted">No matching location found. Try a nearby city.</div>
           )}
         </div>
       )}
 
-      {error && <p role="alert" className="mt-1.5 font-body text-[0.72rem] text-rose">{error}</p>}
+      {error && <p role="alert" className="mt-1.5 font-body text-xs text-rose">{error}</p>}
     </div>
   )
 }

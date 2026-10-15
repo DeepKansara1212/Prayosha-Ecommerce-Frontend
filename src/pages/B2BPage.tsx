@@ -87,7 +87,7 @@ const B2BPage: FC = () => {
           <div className="absolute top-1/3 right-1/4 w-72 h-72 rounded-full pointer-events-none" style={{ background: '#7B5EA7', opacity: 0.15, filter: 'blur(80px)' }} aria-hidden="true" />
 
           <div className="relative z-10 animate-fadeUp" style={{ padding: 'clamp(3rem,7vw,5rem) clamp(1.25rem,5vw,4rem)' }}>
-            <p className="flex items-center gap-3 font-body text-[0.62rem] uppercase tracking-[0.35em] text-gold-light mb-5">
+            <p className="flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-5">
               <span className="w-8 h-px bg-gold-light" aria-hidden="true" />
               Wholesale & Bulk Orders
             </p>
@@ -124,7 +124,7 @@ const B2BPage: FC = () => {
                   <h2 className="font-display font-light text-[clamp(1.8rem,3vw,2.4rem)] text-deep mb-2">
                     Send your inquiry
                   </h2>
-                  <p className="font-body font-extralight text-[0.8rem] text-muted mb-8">
+                  <p className="font-body font-extralight text-xs text-muted mb-8">
                     Fill in the form below and we'll connect with you on WhatsApp instantly.
                   </p>
 
@@ -132,7 +132,7 @@ const B2BPage: FC = () => {
 
                     {/* Name */}
                     <div>
-                      <label htmlFor="b2b-name" className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">
+                      <label htmlFor="b2b-name" className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
                         Your Name <span className="text-rose ml-1" aria-hidden="true">*</span>
                       </label>
                       <input
@@ -148,7 +148,7 @@ const B2BPage: FC = () => {
                         )}
                       />
                       {errors.name && (
-                        <p id="b2b-name-err" role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">
+                        <p id="b2b-name-err" role="alert" className="mt-1.5 font-body text-xs text-rose">
                           {errors.name.message}
                         </p>
                       )}
@@ -156,7 +156,7 @@ const B2BPage: FC = () => {
 
                     {/* Mobile */}
                     <div>
-                      <label htmlFor="b2b-mobile" className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">
+                      <label htmlFor="b2b-mobile" className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
                         Mobile Number <span className="text-rose ml-1" aria-hidden="true">*</span>
                       </label>
                       <input
@@ -174,7 +174,7 @@ const B2BPage: FC = () => {
                         )}
                       />
                       {errors.mobileNumber && (
-                        <p id="b2b-mobile-err" role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">
+                        <p id="b2b-mobile-err" role="alert" className="mt-1.5 font-body text-xs text-rose">
                           {errors.mobileNumber.message}
                         </p>
                       )}
@@ -182,7 +182,7 @@ const B2BPage: FC = () => {
 
                     {/* Message */}
                     <div>
-                      <label htmlFor="b2b-message" className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">
+                      <label htmlFor="b2b-message" className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
                         Message
                       </label>
                       <textarea
@@ -198,7 +198,7 @@ const B2BPage: FC = () => {
                         )}
                       />
                       {errors.message && (
-                        <p id="b2b-message-err" role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">
+                        <p id="b2b-message-err" role="alert" className="mt-1.5 font-body text-xs text-rose">
                           {errors.message.message}
                         </p>
                       )}
@@ -206,7 +206,7 @@ const B2BPage: FC = () => {
 
                     {/* Unavailability note */}
                     {!isAvailable && (
-                      <p className="font-body text-[0.78rem] text-muted border border-warm px-4 py-3 rounded">
+                      <p className="font-body text-xs text-muted border border-warm px-4 py-3 rounded">
                         WhatsApp contact is currently unavailable. Please use the{' '}
                         <Link to="/contact" className="text-gold hover:text-gold-light underline underline-offset-2 transition-colors">
                           Contact page
@@ -219,7 +219,7 @@ const B2BPage: FC = () => {
                       type="submit"
                       disabled={!isAvailable || isSubmitting}
                       className={cn(
-                        'w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 transition-all duration-300 flex items-center justify-center gap-2',
+                        'w-full font-body text-xs uppercase tracking-[0.05em] py-4 transition-all duration-300 flex items-center justify-center gap-2',
                         !isAvailable || isSubmitting
                           ? 'bg-muted text-cream/70 cursor-not-allowed'
                           : 'text-white hover:opacity-90',
@@ -258,7 +258,7 @@ const B2BPage: FC = () => {
               >
                 <h3
                   className="font-display font-light text-[1.3rem] text-deep mb-5"
-                  style={{ fontFamily: "'Cormorant Garamond', serif", color: '#1C1A17' }}
+                  style={{ fontFamily: "var(--font-heading)", color: '#1C1A17' }}
                 >
                   Bulk & Wholesale Orders
                 </h3>
@@ -274,7 +274,7 @@ const B2BPage: FC = () => {
                 </div>
 
                 <div className="mt-6 pt-5 border-t" style={{ borderColor: '#E2DAC8' }}>
-                  <p className="font-body text-[0.62rem] uppercase tracking-[0.18em] mb-1" style={{ color: '#5A4638' }}>
+                  <p className="font-body text-xs uppercase tracking-[0.05em] mb-1" style={{ color: '#5A4638' }}>
                     Typical response time
                   </p>
                   <p className="font-body font-light text-[0.82rem]" style={{ color: '#6B6057' }}>
@@ -284,7 +284,7 @@ const B2BPage: FC = () => {
               </div>
 
               <div className="p-7 border-l-2 border-gold" style={{ background: 'rgba(245,240,232,0.5)' }}>
-                <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] text-gold mb-3">
+                <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">
                   Quick links
                 </p>
                 {[
@@ -294,7 +294,7 @@ const B2BPage: FC = () => {
                   <Link
                     key={label}
                     to={to}
-                    className="block font-body text-[0.78rem] py-2 border-b last:border-0 transition-colors duration-200 hover:text-gold"
+                    className="block font-body text-xs py-2 border-b last:border-0 transition-colors duration-200 hover:text-gold"
                     style={{ color: '#6B6057', borderColor: '#E2DAC8' }}
                   >
                     {label} <span style={{ color: '#5A4638', opacity: 0.7 }}>→</span>

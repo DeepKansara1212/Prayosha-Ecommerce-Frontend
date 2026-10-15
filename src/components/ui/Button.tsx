@@ -29,7 +29,7 @@ const Button: FC<ButtonProps> = ({
         href={href}
         onClick={handleClick}
         className={cn(
-          'inline-flex items-center gap-2 font-body text-[0.7rem] uppercase tracking-[0.15em]',
+          'inline-flex items-center gap-2 font-body text-xs uppercase tracking-[0.05em]',
           'text-cream opacity-75 no-underline transition-opacity duration-300',
           'hover:opacity-100 whitespace-nowrap',
           className,
@@ -46,7 +46,7 @@ const Button: FC<ButtonProps> = ({
       href={href}
       onClick={handleClick}
       className={cn(
-        'inline-block font-body text-[0.7rem] uppercase tracking-[0.2em]',
+        'inline-block font-body text-xs uppercase tracking-[0.05em]',
         'bg-gold text-deep px-8 py-[0.9rem] no-underline whitespace-nowrap',
         'transition-all duration-300 hover:bg-gold-light hover:-translate-y-px',
         className,

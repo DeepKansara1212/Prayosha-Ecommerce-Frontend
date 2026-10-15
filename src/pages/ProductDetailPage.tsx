@@ -51,8 +51,8 @@ const StarRating: FC<{ rating: number; reviewCount: number }> = ({ rating, revie
         </svg>
       ))}
     </div>
-    <span className="font-body text-[0.75rem] text-gold">{rating}</span>
-    <span className="font-body text-[0.72rem] text-muted">({reviewCount} reviews)</span>
+    <span className="font-body text-xs text-gold">{rating}</span>
+    <span className="font-body text-xs text-muted">({reviewCount} reviews)</span>
   </div>
 )
 
@@ -86,7 +86,7 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
         <span className="text-[clamp(6rem,20vw,12rem)] select-none">{product.emoji}</span>
         {product.badge && (
           <span className={cn(
-            'absolute top-4 left-4 font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-1.5',
+            'absolute top-4 left-4 font-body text-xs uppercase tracking-[0.05em] px-3 py-1.5',
             product.badge === 'Bestseller' && 'bg-gold text-deep',
             product.badge === 'New'        && 'bg-amethyst text-cream',
             product.badge === 'Limited'    && 'bg-rose text-cream',
@@ -163,7 +163,7 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
             />}
         {product.badge && (
           <span className={cn(
-            'absolute top-4 left-4 font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-1.5',
+            'absolute top-4 left-4 font-body text-xs uppercase tracking-[0.05em] px-3 py-1.5',
             product.badge === 'Bestseller' && 'bg-gold text-deep',
             product.badge === 'New'        && 'bg-amethyst text-cream',
             product.badge === 'Limited'    && 'bg-rose text-cream',
@@ -174,7 +174,7 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
           </span>
         )}
         {product.images.length + (product.video ? 1 : 0) > 1 && (
-          <span className="absolute bottom-3 right-3 font-body text-[0.6rem] uppercase tracking-[0.15em] text-cream/70 bg-deep/50 backdrop-blur-sm px-2 py-1">
+          <span className="absolute bottom-3 right-3 font-body text-xs uppercase tracking-[0.05em] text-cream/70 bg-deep/50 backdrop-blur-sm px-2 py-1">
             {active + 1} / {product.images.length + (product.video ? 1 : 0)}
           </span>
         )}
@@ -203,7 +203,7 @@ const ImageGallery: FC<{ product: ProductDetail }> = ({ product }) => {
             onClick={event => event.stopPropagation()}
           />
           {product.images.length > 1 && (
-            <p className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/30 px-3 py-1 font-body text-xs tracking-[0.15em] text-white/85">
+            <p className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/30 px-3 py-1 font-body text-xs tracking-[0.05em] text-white/85">
               {active + 1} / {product.images.length}
             </p>
           )}
@@ -230,7 +230,7 @@ const RelatedProducts: FC<{ related: ProductDetail[]; onNavigate: (id: string) =
 
   return (
     <div className="mt-12 pt-10 border-t border-warm">
-      <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-6">You may also like</p>
+      <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-6">You may also like</p>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {related.slice(0, 4).map(rp => (
           <button
@@ -244,7 +244,7 @@ const RelatedProducts: FC<{ related: ProductDetail[]; onNavigate: (id: string) =
                 : rp.emoji
               }
             </div>
-            <p className="font-body text-[0.58rem] uppercase tracking-[0.18em] text-muted mb-0.5">{rp.category}</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-0.5">{rp.category}</p>
             <p className="font-display text-[1rem] font-light text-deep leading-tight mb-1">{rp.name}</p>
             <p className="font-display text-[0.95rem] font-light text-bark">{rp.priceDisplay}</p>
           </button>
@@ -363,7 +363,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
           className="border-b border-warm pt-3 pb-3 px-[clamp(1.25rem,5vw,4rem)]"
         >
           <nav aria-label="Breadcrumb">
-            <ol className="flex items-center gap-2 font-body text-[0.65rem] uppercase tracking-[0.15em] text-muted flex-wrap">
+            <ol className="flex items-center gap-2 font-body text-xs uppercase tracking-[0.05em] text-muted flex-wrap">
               <li><button onClick={() => { navigate('/'); window.scrollTo({ top: 0 }) }} className="hover:text-bark transition-colors bg-transparent border-none cursor-pointer">Home</button></li>
               <li aria-hidden="true" className="text-muted/40">›</li>
               <li><button onClick={onNavigateToCollection} className="hover:text-bark transition-colors bg-transparent border-none cursor-pointer">Collection</button></li>
@@ -388,17 +388,17 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
             <div className="min-w-0">
               {/* Category + chakra */}
               <div className="flex items-center gap-2 flex-wrap mb-3">
-                <span className="font-body text-[0.6rem] uppercase tracking-[0.2em] text-muted">{product.category}</span>
+                <span className="font-body text-xs uppercase tracking-[0.05em] text-muted">{product.category}</span>
                 <span className="text-muted/30">·</span>
                 <span
-                  className="font-body text-[0.6rem] uppercase tracking-[0.15em] px-2.5 py-1 border"
+                  className="font-body text-xs uppercase tracking-[0.05em] px-2.5 py-1 border"
                   style={{ color: chakraColour, borderColor: `${chakraColour}50`, background: `${chakraColour}12` }}
                 >
                   {product.chakra} Chakra
                 </span>
                 {product.badge && (
                   <span className={cn(
-                    'font-body text-[0.58rem] uppercase tracking-[0.18em] px-2.5 py-1',
+                    'font-body text-xs uppercase tracking-[0.05em] px-2.5 py-1',
                     product.badge === 'Bestseller' && 'bg-gold text-deep',
                     product.badge === 'New'        && 'bg-amethyst text-cream',
                     product.badge === 'Limited'    && 'bg-rose text-cream',
@@ -426,29 +426,20 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                 <span className="font-display font-light text-[2.2rem] text-deep">{product.priceDisplay}</span>
                 {product.price !== undefined && (
                   <>
-                    <span className="font-body text-[0.7rem] text-muted line-through">₹{Math.round(product.price * 1.2).toLocaleString('en-IN')}</span>
-                    <span className="font-body text-[0.68rem] text-sage font-normal">Save 17%</span>
+                    <span className="font-body text-xs text-muted line-through">₹{Math.round(product.price * 1.2).toLocaleString('en-IN')}</span>
+                    <span className="font-body text-xs text-sage font-normal">Save 17%</span>
                   </>
                 )}
               </div>
               {product.price !== undefined && (
-                <p className="font-body text-[0.7rem] text-muted mb-5">Inclusive of all taxes · Free returns within 7 days</p>
+                <p className="font-body text-xs text-muted mb-5">Inclusive of all taxes</p>
               )}
-
-              {/* Intention tags */}
-              <div className="flex flex-wrap gap-2 mb-5">
-                {product.intention.split(' · ').map(tag => (
-                  <span key={tag} className="font-body text-[0.62rem] uppercase tracking-[0.12em] px-3 py-1.5 bg-warm text-muted border border-warm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
 
               {/* Stock status */}
               <div className="flex items-center gap-2 mb-5">
                 <div className={cn('w-2 h-2 rounded-full', product.inStock && product.stockCount > 5 ? 'bg-sage' : product.inStock ? 'bg-[#D4921A]' : 'bg-rose')} aria-hidden="true" />
                 <p className={cn(
-                  'font-body text-[0.72rem] uppercase tracking-[0.12em]',
+                  'font-body text-xs uppercase tracking-[0.05em]',
                   product.inStock && product.stockCount > 5 ? 'text-sage' : product.inStock ? 'text-[#D4921A]' : 'text-rose',
                 )}>
                   {product.inStock && product.stockCount > 5 ? 'In Stock' : product.inStock ? `Only ${product.stockCount} remaining — order soon` : 'Out of Stock'}
@@ -456,10 +447,10 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
               </div>
 
               {/* Origin */}
-              <div className="flex items-center gap-2 mb-6 font-body text-[0.72rem] text-muted">
+              {/* <div className="flex items-center gap-2 mb-6 font-body text-xs text-muted">
                 <span className="text-base" aria-hidden="true">🌍</span>
                 <span>Sourced from <span className="text-bark">{product.origin}</span></span>
-              </div>
+              </div> */}
 
               <div className="h-px bg-warm mb-6" />
 
@@ -470,7 +461,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                     href={getProductInquiryUrl(product, publicSettings?.whatsappNumber)}
                     target={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? '_blank' : undefined}
                     rel={hasWhatsAppNumber(publicSettings?.whatsappNumber) ? 'noopener noreferrer' : undefined}
-                    className="block w-full text-center font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
+                    className="block w-full text-center font-body text-xs uppercase tracking-[0.05em] py-4 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
                   >
                     Add to Inquiry
                   </a>
@@ -484,7 +475,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                       onClick={handleAddToCart}
                       disabled={!product.inStock}
                       className={cn(
-                        'w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 transition-all duration-300',
+                        'w-full font-body text-xs uppercase tracking-[0.05em] py-4 transition-all duration-300',
                         !product.inStock
                           ? 'bg-warm text-muted cursor-not-allowed'
                           : addedToCart
@@ -499,7 +490,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                     {product.inStock && (
                       <button
                         onClick={() => { onAddToCart(product.id); onNavigateToCart() }}
-                        className="w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
+                        className="w-full font-body text-xs uppercase tracking-[0.05em] py-4 bg-gold text-deep hover:bg-gold-light transition-colors duration-200"
                       >
                         Buy Now
                       </button>
@@ -510,7 +501,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                 <button
                   onClick={handleToggleWishlist}
                   className={cn(
-                    'w-full flex items-center justify-center gap-2.5 font-body text-[0.68rem] uppercase tracking-[0.18em] py-3.5 border transition-all duration-200',
+                    'w-full flex items-center justify-center gap-2.5 font-body text-xs uppercase tracking-[0.05em] py-3.5 border transition-all duration-200',
                     isWishlisted
                       ? 'border-rose text-rose bg-rose/5'
                       : 'border-warm text-muted hover:border-muted hover:text-bark',
@@ -525,7 +516,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                 {isInCart && !addedToCart && (
                   <button
                     onClick={onNavigateToCart}
-                    className="w-full font-body text-[0.68rem] uppercase tracking-[0.15em] py-2.5 text-gold hover:text-gold-light transition-colors text-center"
+                    className="w-full font-body text-xs uppercase tracking-[0.05em] py-2.5 text-gold hover:text-gold-light transition-colors text-center"
                   >
                     View Cart →
                   </button>
@@ -537,14 +528,13 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                 {[
                   { icon: '📦', title: 'Sacred packaging', desc: 'Organic cotton wrap with ritual card' },
                   { icon: '🌙', title: 'Moon-cleansed', desc: 'Energetically cleared before dispatch' },
-                  { icon: '🔄', title: 'Free returns', desc: '7-day hassle-free returns' },
                   { icon: '✦',  title: 'Certified authentic', desc: 'Gemologist-verified, provenance guaranteed' },
                 ].map(({ icon, title, desc }) => (
                   <div key={title} className="flex items-start gap-3">
                     <span className="text-base flex-none mt-0.5" aria-hidden="true">{icon}</span>
                     <div>
-                      <p className="font-body text-[0.7rem] text-bark">{title}</p>
-                      <p className="font-body font-extralight text-[0.68rem] text-muted">{desc}</p>
+                      <p className="font-body text-xs text-bark">{title}</p>
+                      <p className="font-body font-extralight text-xs text-muted">{desc}</p>
                     </div>
                   </div>
                 ))}
@@ -562,7 +552,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                   aria-selected={activeTab === tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    'flex-none font-body text-[0.68rem] uppercase tracking-[0.2em] px-6 py-4 border-b-2 -mb-px transition-all duration-200 whitespace-nowrap',
+                    'flex-none font-body text-xs uppercase tracking-[0.05em] px-6 py-4 border-b-2 -mb-px transition-all duration-200 whitespace-nowrap',
                     activeTab === tab
                       ? 'border-gold text-bark'
                       : 'border-transparent text-muted hover:text-bark',
@@ -580,7 +570,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                     <ul className="space-y-3 mb-8">
                       {descriptionLines.map((line, i) => (
                         <li key={i} className="flex items-start gap-3">
-                          <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                          <span className="text-gold text-xs mt-1.5 flex-none">✦</span>
                           <p className="font-body font-extralight text-[0.85rem] leading-[2] text-bark">{line}</p>
                         </li>
                       ))}
@@ -590,11 +580,11 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                   )}
                   {product.properties.length > 0 && (
                     <>
-                      <p className="font-body text-[0.62rem] uppercase tracking-[0.25em] text-gold mb-4">Properties & Benefits</p>
+                      <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-4">Properties & Benefits</p>
                       <ul className="space-y-3">
                         {product.properties.map((p, i) => (
                           <li key={i} className="flex items-start gap-3">
-                            <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                            <span className="text-gold text-xs mt-1.5 flex-none">✦</span>
                             <p className="font-body font-extralight text-[0.83rem] leading-relaxed text-bark">{p}</p>
                           </li>
                         ))}
@@ -604,13 +594,13 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
                   {product.howToUse.length > 0 && (
                     <div className="mt-8 p-5 bg-warm border-l-2" style={{ borderColor: chakraColour }}>
-                      <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] mb-2" style={{ color: chakraColour }}>
+                      <p className="font-body text-xs uppercase tracking-[0.05em] mb-2" style={{ color: chakraColour }}>
                         How to Use — Ritual Guide
                       </p>
                       <ul className="space-y-2">
                         {product.howToUse.map((step, i) => (
                           <li key={i} className="flex items-start gap-3">
-                            <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                            <span className="text-gold text-xs mt-1.5 flex-none">✦</span>
                             <p className="font-body font-extralight text-[0.83rem] leading-[1.9] text-bark">{step}</p>
                           </li>
                         ))}
@@ -633,10 +623,9 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                       { label: 'Origin', value: product.origin },
                       { label: 'Chakra', value: product.chakra },
                       { label: 'Category', value: product.category },
-                      { label: 'Intention', value: product.intention },
                     ].filter(({ value }) => value?.trim()).map(({ label, value }, i) => (
                       <div key={label} className={cn('flex p-4 gap-4 border-b border-warm', i % 2 === 0 && 'sm:border-r')}>
-                        <span className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted w-24 flex-none pt-0.5">{label}</span>
+                        <span className="font-body text-xs uppercase tracking-[0.05em] text-muted w-24 flex-none pt-0.5">{label}</span>
                         <span className="font-body text-[0.82rem] text-bark break-words">{value}</span>
                       </div>
                     ))}
@@ -644,11 +633,11 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
                   {product.careInstructions.length > 0 && (
                     <div className="mt-6 p-5 bg-warm">
-                      <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">Crystal Care</p>
+                      <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">Crystal Care</p>
                       <ul className="space-y-2">
                         {product.careInstructions.map((instruction, i) => (
                           <li key={i} className="flex items-start gap-3">
-                            <span className="text-gold text-[0.6rem] mt-1.5 flex-none">✦</span>
+                            <span className="text-gold text-xs mt-1.5 flex-none">✦</span>
                             <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark">{instruction}</p>
                           </li>
                         ))}

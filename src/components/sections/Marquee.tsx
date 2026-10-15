@@ -12,7 +12,7 @@ const Marquee: FC = () => {
         <div className="flex flex-wrap justify-center">
           {MARQUEE_ITEMS.map((item, i) => (
             <span key={i} className="inline-flex items-center">
-              <span className="font-body text-[0.62rem] tracking-[0.28em] uppercase text-deep px-6">
+              <span className="font-body text-xs tracking-[0.05em] uppercase text-deep px-6">
                 {item}
               </span>
               {i < MARQUEE_ITEMS.length - 1 && (
@@ -33,7 +33,7 @@ const Marquee: FC = () => {
       >
         {ALL_ITEMS.map((item, i) => (
           <span key={i} className="inline-flex items-center">
-            <span className="font-body text-[0.62rem] tracking-[0.28em] uppercase text-deep px-6">
+            <span className="font-body text-xs tracking-[0.05em] uppercase text-deep px-6">
               {item}
             </span>
             <span className="text-bark/50 px-1 text-xs">◆</span>

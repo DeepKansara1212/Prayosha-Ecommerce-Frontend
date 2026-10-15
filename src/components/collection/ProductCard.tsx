@@ -17,7 +17,7 @@ const StarRating: FC<{ rating: number }> = ({ rating }) => (
       <span
         key={n}
         className={cn(
-          'text-[0.55rem]',
+          'text-xs',
           n <= Math.floor(rating) ? 'text-gold' : 'text-bark',
         )}
         aria-hidden="true"
@@ -25,13 +25,11 @@ const StarRating: FC<{ rating: number }> = ({ rating }) => (
         ★
       </span>
     ))}
-    <span className="font-body text-[0.6rem] text-muted ml-1">({rating})</span>
+    <span className="font-body text-xs text-muted ml-1">({rating})</span>
   </span>
 )
 
 const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWishlist }) => {
-  const lowStock = product.inStock && product.stockCount <= 5
-
   const { data: settings } = useQuery({
     queryKey: ['public-settings'],
     queryFn: getPublicSettings,
@@ -65,7 +63,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.badge && (
             <span className={cn(
-              'font-body text-[0.55rem] uppercase tracking-[0.18em] px-2.5 py-1',
+              'font-body text-xs uppercase tracking-[0.05em] px-2.5 py-1',
               product.badge === 'Bestseller' && 'bg-gold text-deep',
               product.badge === 'New'        && 'bg-amethyst text-cream',
               product.badge === 'Limited'    && 'bg-rose text-cream',
@@ -73,16 +71,6 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
               product.badge === 'Gifting'    && 'bg-sage text-cream',
             )}>
               {product.badge}
-            </span>
-          )}
-          {lowStock && (
-            <span className="font-body text-[0.55rem] uppercase tracking-[0.18em] px-2.5 py-1 bg-deep/80 text-gold-light backdrop-blur-sm">
-              Only {product.stockCount} left
-            </span>
-          )}
-          {showFreeGift && (
-            <span className="font-body text-[0.55rem] uppercase tracking-[0.18em] px-2.5 py-1 bg-gold text-deep flex items-center gap-1">
-              <span aria-hidden="true">🎁</span> Free Gift
             </span>
           )}
         </div>
@@ -105,15 +93,21 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
         </button>
 
         {/* Quick-view overlay */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center py-3 bg-deep/85 backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-          <span className="font-body text-[0.65rem] uppercase tracking-[0.2em] text-cream">View Details</span>
+        <div className="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-center py-3 bg-deep/85 backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+          <span className="font-body text-xs uppercase tracking-[0.05em] text-cream">View Details</span>
         </div>
       </div>
 
       {/* Info */}
       <div className="p-4 border-t border-warm flex flex-1 flex-col">
+        {showFreeGift && (
+          <span className="mb-3 inline-flex w-fit items-center gap-2 border border-gold/40 bg-[#FAF0D8] px-3 py-2 font-body text-xs uppercase tracking-[0.05em] text-bark">
+            <span className="text-base leading-none" aria-hidden="true">🎁</span>
+            Free gift
+          </span>
+        )}
         <p
-          className="font-body text-[0.58rem] uppercase tracking-[0.22em] text-muted mb-1 leading-[1.4]"
+          className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-1 leading-[1.4]"
           style={{
             minHeight: '2.8em',
             display: '-webkit-box',
@@ -137,7 +131,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
           {product.name}
         </h3>
         <p
-          className="font-body font-extralight text-[0.72rem] text-muted mb-3 leading-snug"
+          className="font-body font-extralight text-xs text-muted mb-3 leading-snug"
           style={{
             minHeight: '6.875em',
             display: '-webkit-box',
@@ -159,7 +153,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
           </span>
           <button
             onClick={e => { e.stopPropagation(); onSelect(product) }}
-            className="font-body text-[0.6rem] uppercase tracking-[0.18em] px-3 py-2 bg-deep text-cream hover:bg-gold hover:text-deep transition-colors duration-200"
+            className="font-body text-xs uppercase tracking-[0.05em] px-3 py-2 bg-deep text-cream hover:bg-gold hover:text-deep transition-colors duration-200"
             aria-label={product.price === undefined ? `Enquire about ${product.name}` : `View ${product.name} details`}
           >
             {product.price === undefined ? 'Enquire' : 'View'}

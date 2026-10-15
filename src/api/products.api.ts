@@ -63,6 +63,7 @@ export interface ProductQueryParams {
   badge?: string
   chakra?: string
   purpose?: string
+  meaning?: string
   subCategory?: string
   inStock?: boolean
   page?: number

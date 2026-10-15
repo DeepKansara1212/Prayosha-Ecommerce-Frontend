@@ -57,7 +57,7 @@ const AddressFields: FC<{
         {(['home', 'work', 'other'] as const).map(opt => (
           <label key={opt} style={{
             display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
-            fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', textTransform: 'capitalize',
+            fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', textTransform: 'capitalize',
           }}>
             <input type="radio" value={opt} {...register('label')} style={{ accentColor: '#7B5EA7' }} />
             {opt}
@@ -97,7 +97,7 @@ const AddressFields: FC<{
 
     <label style={{
       display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
-      fontFamily: 'Jost', fontSize: 13, color: '#1C1A17', marginBottom: 28,
+      fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', marginBottom: 28,
     }}>
       <input type="checkbox" {...register('isDefault')} style={{ accentColor: '#7B5EA7', width: 16, height: 16 }} />
       Set as default address
@@ -183,7 +183,7 @@ const AddressDrawer: FC<DrawerProps> = ({ open, address, onClose }) => {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           background: '#EDE8DC',
         }}>
-          <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
             {address ? 'Edit Address' : 'Add New Address'}
           </p>
           <button
@@ -238,10 +238,10 @@ const ConfirmDialog: FC<{
       padding: '28px 32px', width: 'min(360px, 90vw)',
       boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
     }}>
-      <p style={{ fontFamily: '"Cormorant Garamond", Georgia, serif', fontWeight: 400, fontSize: 20, color: '#1C1A17', margin: '0 0 8px' }}>
+      <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 20, color: '#1C1A17', margin: '0 0 8px' }}>
         Delete Address?
       </p>
-      <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '0 0 24px' }}>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '0 0 24px' }}>
         This address will be permanently removed.
       </p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
@@ -291,7 +291,7 @@ const AddressCard: FC<{
           <span style={{
             display: 'inline-block', padding: '2px 10px', borderRadius: 10,
             border: '1px solid #C4B89A', color: '#6B6057',
-            fontFamily: 'Jost', fontSize: 10, textTransform: 'capitalize', letterSpacing: '0.06em',
+            fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'capitalize', letterSpacing: '0.06em',
           }}>
             {address.label}
           </span>
@@ -299,17 +299,17 @@ const AddressCard: FC<{
             <span style={{
               display: 'inline-block', padding: '2px 10px', borderRadius: 10,
               border: '1px solid #C49A3C', color: '#C49A3C',
-              fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em',
+              fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em',
             }}>
               Default
             </span>
           )}
         </div>
 
-        <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 4px' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 4px' }}>
           {address.fullName}
         </p>
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0, lineHeight: 1.7 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0, lineHeight: 1.7 }}>
           {address.line1}
           {address.line2 && `, ${address.line2}`}
           <br />

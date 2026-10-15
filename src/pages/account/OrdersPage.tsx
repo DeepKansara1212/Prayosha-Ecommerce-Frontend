@@ -33,7 +33,7 @@ const StatusBadge: FC<{ status: string }> = ({ status }) => {
     <span style={{
       display: 'inline-block', padding: '3px 10px', borderRadius: 12,
       border: `1px solid ${color}`, color, background: '#fff',
-      fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em',
+      fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
     }}>
       {label}
     </span>
@@ -75,10 +75,10 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
 
         {/* Info */}
         <div style={{ flex: 1, minWidth: 160 }}>
-          <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: '0 0 3px', letterSpacing: '0.04em' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '0 0 3px', letterSpacing: '0.04em' }}>
             #{order.orderNumber}
           </p>
-          <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9A8F85', margin: '0 0 10px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9A8F85', margin: '0 0 10px' }}>
             {fmtDate(order.createdAt)}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
@@ -87,7 +87,7 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
               <span style={{
                 display: 'inline-block', padding: '3px 10px', borderRadius: 12,
                 background: '#F5F0E8', border: '1px solid #E2DAC8',
-                fontFamily: 'Jost', fontSize: 10, color: '#6B6057',
+                fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057',
               }}>
                 🚚 Tracking Available
               </span>
@@ -97,15 +97,15 @@ const OrderCard: FC<{ order: Order; onView: () => void }> = ({ order, onView }) 
 
         {/* Price + CTA */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12, flexShrink: 0 }}>
-          <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 16, color: '#C49A3C', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: '#C49A3C', margin: 0 }}>
             {fmtPrice(order.total)}
           </p>
           <button
             onClick={onView}
             style={{
               background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-              fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase',
-              letterSpacing: '0.1em', color: '#7B5EA7',
+              fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+              letterSpacing: '0.05em', color: '#7B5EA7',
             }}
           >
             View Details →

@@ -30,21 +30,36 @@ const CollectionPage: FC<CollectionPageProps> = ({
   onNavigateToProduct,
 }) => {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const [category, setCategory] = useState<string>(searchParams.get('category') ?? '')
-  const [purpose, setPurpose]   = useState<string>(searchParams.get('purpose') ?? '')
-  const [subCategory, setSubCategory] = useState<string>(searchParams.get('subCategory') ?? '')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const category = searchParams.get('category') ?? ''
+  const purpose = searchParams.get('purpose') ?? ''
+  const meaning = searchParams.get('meaning') ?? ''
+  const subCategory = searchParams.get('subCategory') ?? ''
+  const search = searchParams.get('search') ?? ''
   const [sort, setSort]         = useState<SortOption>('featured')
   const [page, setPage]         = useState(1)
 
-  const handleCategory = (slug: string) => { setCategory(slug); setSubCategory(''); setPage(1) }
-  const handlePurpose  = (id: string) => { setPurpose(id);  setPage(1) }
-  const handleSubCategory = (id: string) => { setSubCategory(id); setPage(1) }
+  const updateFilter = (key: string, value: string) => {
+    const nextParams = new URLSearchParams(searchParams)
+    if (value) nextParams.set(key, value)
+    else nextParams.delete(key)
+    nextParams.delete('search')
+    if (key === 'category') nextParams.delete('subCategory')
+    setSearchParams(nextParams, { replace: true })
+    setPage(1)
+  }
+
+  const handleCategory = (slug: string) => updateFilter('category', slug)
+  const handlePurpose  = (id: string) => updateFilter('purpose', id)
+  const handleMeaning  = (id: string) => updateFilter('meaning', id)
+  const handleSubCategory = (id: string) => updateFilter('subCategory', id)
   const handleSort     = (s: SortOption) => { setSort(s);       setPage(1) }
 
   const params = {
     category: category || undefined,
+    search: search || undefined,
     purpose: purpose || undefined,
+    meaning: meaning || undefined,
     subCategory: subCategory || undefined,
     sort,
     page,
@@ -66,11 +81,13 @@ const CollectionPage: FC<CollectionPageProps> = ({
         <FilterBar
           active={category}
           purpose={purpose}
+          meaning={meaning}
           subCategory={subCategory}
           sort={sort}
           total={pagination?.total ?? 0}
           onCategory={handleCategory}
           onPurpose={handlePurpose}
+          onMeaning={handleMeaning}
           onSubCategory={handleSubCategory}
           onSort={handleSort}
         />
@@ -94,7 +111,7 @@ const CollectionPage: FC<CollectionPageProps> = ({
               title={category ? 'No products in this category yet' : 'No crystals found'}
               description={category ? 'Check back soon — new pieces are added regularly.' : 'Try adjusting your filters or browsing all categories.'}
               actionLabel="Browse All Collections"
-              onAction={() => setCategory('')}
+              onAction={() => updateFilter('category', '')}
             />
           ) : (
             <>
@@ -115,10 +132,10 @@ const CollectionPage: FC<CollectionPageProps> = ({
 
         {/* Bottom strip */}
         <div className="border-t border-warm text-center" style={{ padding: 'clamp(3rem,6vw,5rem) clamp(1.25rem,5vw,4rem)' }}>
-          <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">The Prayosha Crystal Promise</p>
+          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">The Prayosha Crystal Promise</p>
           <p className="font-display font-light text-[clamp(1.4rem,3vw,2rem)] text-bark max-w-2xl mx-auto leading-relaxed">
             Every stone is hand-selected, certified authentic, and moon-cleansed before it reaches you.
-            <em className="italic text-amethyst"> No exceptions.</em>
+            <em className="not-italic text-amethyst"> No exceptions.</em>
           </p>
           <div className="flex justify-center gap-8 mt-8 flex-wrap">
             {[
@@ -129,15 +146,15 @@ const CollectionPage: FC<CollectionPageProps> = ({
             ].map(b => (
               <div key={b.label} className="text-center min-w-[110px]">
                 <p className="text-xl mb-2" aria-hidden="true">{b.icon}</p>
-                <p className="font-body text-[0.65rem] uppercase tracking-[0.15em] text-bark mb-1">{b.label}</p>
-                <p className="font-body font-extralight text-[0.7rem] text-muted">{b.sub}</p>
+                <p className="font-body text-xs uppercase tracking-[0.05em] text-bark mb-1">{b.label}</p>
+                <p className="font-body font-extralight text-xs text-muted">{b.sub}</p>
               </div>
             ))}
           </div>
 
           <button
             onClick={() => navigate('/about')}
-            className="mt-8 font-body text-[0.7rem] uppercase tracking-[0.2em] border border-bark text-bark px-8 py-3.5 hover:bg-bark hover:text-cream transition-all duration-200 min-h-[44px]"
+            className="mt-8 font-body text-xs uppercase tracking-[0.05em] border border-bark text-bark px-8 py-3.5 hover:bg-bark hover:text-cream transition-all duration-200 min-h-[44px]"
           >
             Our Story
           </button>

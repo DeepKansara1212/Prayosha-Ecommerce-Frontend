@@ -5,15 +5,18 @@ import { cn } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { getPurposes } from '@/api/calculators.api'
 import { getSubCategories } from '@/api/subcategories.api'
+import { getMeanings } from '@/api/meanings.api'
 
 interface FilterBarProps {
   active: string
   purpose: string
+  meaning: string
   subCategory: string
   sort: SortOption
   total: number
   onCategory: (slug: string) => void
   onPurpose: (id: string) => void
+  onMeaning: (id: string) => void
   onSubCategory: (id: string) => void
   onSort: (s: SortOption) => void
 }
@@ -28,13 +31,13 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
 
 const pillClass = (selected: boolean) =>
   cn(
-    'flex-none font-body text-[0.65rem] uppercase tracking-[0.18em] px-4 py-2 border transition-all duration-200 whitespace-nowrap',
+    'flex-none font-body text-xs uppercase tracking-[0.05em] px-4 py-2 border transition-all duration-200 whitespace-nowrap',
     selected
       ? 'bg-deep text-cream border-deep'
       : 'bg-transparent text-muted border-warm hover:border-muted hover:text-bark',
   )
 
-const FilterBar: FC<FilterBarProps> = ({ active, purpose, subCategory, sort, total, onCategory, onPurpose, onSubCategory, onSort }) => {
+const FilterBar: FC<FilterBarProps> = ({ active, purpose, meaning, subCategory, sort, total, onCategory, onPurpose, onMeaning, onSubCategory, onSort }) => {
   const { data: categories = [] } = useCategories()
   const selectedCategory = categories.find(category => category.slug === active)
   const { data: subcategories = [] } = useQuery({
@@ -46,6 +49,11 @@ const FilterBar: FC<FilterBarProps> = ({ active, purpose, subCategory, sort, tot
   const { data: purposes = [] } = useQuery({
     queryKey: ['collection-purposes'],
     queryFn: getPurposes,
+    staleTime: 5 * 60_000,
+  })
+  const { data: meanings = [] } = useQuery({
+    queryKey: ['collection-meanings'],
+    queryFn: getMeanings,
     staleTime: 5 * 60_000,
   })
 
@@ -105,22 +113,36 @@ const FilterBar: FC<FilterBarProps> = ({ active, purpose, subCategory, sort, tot
         </div>
 
         {/* Right: count + sort */}
-        <div className="flex items-center gap-4 flex-shrink-0 sm:self-end">
+        <div className="flex items-center gap-3 flex-wrap flex-shrink-0 sm:self-end">
+          <div className="relative">
+            <select
+              value={meaning}
+              onChange={e => onMeaning(e.target.value)}
+              aria-label="Filter by meaning"
+              className="font-body text-xs uppercase tracking-[0.05em] text-bark bg-transparent border border-warm pl-3 pr-7 py-2 appearance-none cursor-pointer focus:outline-none focus:border-muted"
+            >
+              <option value="">All meanings</option>
+              {meanings.map(item => (
+                <option key={item._id} value={item._id}>{item.name}</option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted text-xs">▾</span>
+          </div>
           <div className="relative">
             <select
               value={purpose}
               onChange={e => onPurpose(e.target.value)}
               aria-label="Filter by purpose"
-              className="font-body text-[0.7rem] uppercase tracking-[0.12em] text-bark bg-transparent border border-warm pl-3 pr-7 py-2 appearance-none cursor-pointer focus:outline-none focus:border-muted"
+              className="font-body text-xs uppercase tracking-[0.05em] text-bark bg-transparent border border-warm pl-3 pr-7 py-2 appearance-none cursor-pointer focus:outline-none focus:border-muted"
             >
               <option value="">All purposes</option>
               {purposes.map(item => (
                 <option key={item._id} value={item._id}>{item.name}</option>
               ))}
             </select>
-            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted text-[0.6rem]">▾</span>
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted text-xs">▾</span>
           </div>
-          <span className="font-body text-[0.7rem] text-muted tracking-[0.05em]">
+          <span className="font-body text-xs text-muted tracking-[0.05em]">
             {total} {total === 1 ? 'stone' : 'stones'}
           </span>
           <div className="relative">
@@ -128,13 +150,13 @@ const FilterBar: FC<FilterBarProps> = ({ active, purpose, subCategory, sort, tot
               value={sort}
               onChange={e => onSort(e.target.value as SortOption)}
               aria-label="Sort products"
-              className="font-body text-[0.7rem] uppercase tracking-[0.12em] text-bark bg-transparent border border-warm pl-3 pr-7 py-2 appearance-none cursor-pointer focus:outline-none focus:border-muted"
+              className="font-body text-xs uppercase tracking-[0.05em] text-bark bg-transparent border border-warm pl-3 pr-7 py-2 appearance-none cursor-pointer focus:outline-none focus:border-muted"
             >
               {SORT_OPTIONS.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
-            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted text-[0.6rem]">▾</span>
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted text-xs">▾</span>
           </div>
         </div>
       </div>

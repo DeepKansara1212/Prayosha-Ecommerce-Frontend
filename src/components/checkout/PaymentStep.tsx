@@ -75,10 +75,10 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: method === 'razorpay' ? 8 : 0 }}>
             <RadioDot selected={method === 'razorpay'} />
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
                 Pay Online
               </p>
-              <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: '3px 0 0' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '3px 0 0' }}>
                 Card · UPI · Net Banking · Wallets
               </p>
             </div>
@@ -87,7 +87,7 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
               {['VISA', 'UPI', 'RuPay'].map(label => (
                 <span key={label} style={{
                   padding: '3px 7px', border: '1px solid #E2DAC8', borderRadius: 4,
-                  fontFamily: 'Jost', fontSize: 9, color: '#6B6057',
+                  fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057',
                   letterSpacing: '0.04em', textTransform: 'uppercase',
                 }}>
                   {label}
@@ -96,7 +96,7 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
             </div>
           </div>
           {method === 'razorpay' && (
-            <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#7B5EA7', marginLeft: 30, marginBottom: 0 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#7B5EA7', marginLeft: 30, marginBottom: 0 }}>
               ✦ Secured by Razorpay
             </p>
           )}
@@ -107,16 +107,16 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: method === 'cod' ? 8 : 0 }}>
             <RadioDot selected={method === 'cod'} />
             <div>
-              <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
                 Cash on Delivery
               </p>
-              <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: '3px 0 0' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '3px 0 0' }}>
                 +₹{COD_SURCHARGE} handling charge
               </p>
             </div>
           </div>
           {method === 'cod' && (
-            <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', marginLeft: 30, marginBottom: 0 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', marginLeft: 30, marginBottom: 0 }}>
               Pay when your crystals arrive
             </p>
           )}
@@ -130,10 +130,10 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
           padding: '12px 16px', marginBottom: 20,
           background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
         }}>
-          <span style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>
             Total (incl. COD charge)
           </span>
-          <span style={{ fontFamily: 'Jost', fontSize: 16, fontWeight: 500, color: '#C49A3C' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 500, color: '#C49A3C' }}>
             ₹{displayTotal.toLocaleString('en-IN')}
           </span>
         </div>
@@ -144,7 +144,7 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
         <div style={{
           padding: '10px 14px', marginBottom: 16, borderRadius: 4,
           background: '#FDF0F0', border: '1px solid #E2C8C8',
-          fontFamily: 'Jost', fontSize: 13, color: '#A85050',
+          fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050',
         }}>
           {error}
         </div>

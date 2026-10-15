@@ -39,7 +39,7 @@ const StatusTracker: FC<{ status: OrderStatus }> = ({ status }) => {
         <svg viewBox="0 0 24 24" fill="none" stroke="#A85050" strokeWidth="1.5" width={20} height={20}>
           <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6M9 9l6 6" />
         </svg>
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#A85050', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: 0 }}>
           This order has been cancelled.
         </p>
       </div>
@@ -91,7 +91,7 @@ const StatusTracker: FC<{ status: OrderStatus }> = ({ status }) => {
 
               {/* Label */}
               <span style={{
-                fontFamily: 'Jost', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em',
+                fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
                 color: completed ? '#7B5EA7' : current ? '#C49A3C' : '#C4B89A',
                 textAlign: 'center',
               }}>
@@ -122,14 +122,14 @@ const PriceRow: FC<{ label: string; value: string; bold?: boolean; accent?: bool
     padding: '7px 0',
   }}>
     <span style={{
-      fontFamily: 'Jost', fontSize: 13,
+      fontFamily: 'var(--font-body)', fontSize: 13,
       fontWeight: bold ? 500 : 400,
       color: bold ? '#1C1A17' : '#6B6057',
     }}>
       {label}
     </span>
     <span style={{
-      fontFamily: 'Jost', fontSize: bold ? 16 : 13,
+      fontFamily: 'var(--font-body)', fontSize: bold ? 16 : 13,
       fontWeight: bold ? 600 : 400,
       color: accent ? '#C49A3C' : bold ? '#1C1A17' : '#1C1A17',
     }}>
@@ -146,8 +146,8 @@ const Card: FC<{ title: string; children: ReactNode }> = ({ title, children }) =
   }}>
     <div style={{
       padding: '14px 20px', borderBottom: '1px solid #E2DAC8',
-      fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase',
-      letterSpacing: '0.1em', color: '#6B6057',
+      fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+      letterSpacing: '0.05em', color: '#6B6057',
     }}>
       {title}
     </div>
@@ -177,14 +177,14 @@ const TrackingSection: FC<{ order: Order }> = ({ order }) => {
     <Card title="Shipment Tracking">
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
         {order.carrier && (
-          <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
             Courier: <span style={{ color: '#1C1A17', fontWeight: 500 }}>{order.carrier}</span>
           </p>
         )}
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
           AWB: <span style={{ color: '#1C1A17', fontWeight: 500 }}>{awb}</span>
         </p>
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
           Status: <span style={{ color: '#7B5EA7', fontWeight: 500 }}>{status}</span>
         </p>
         {order.trackingUrl && (
@@ -193,7 +193,7 @@ const TrackingSection: FC<{ order: Order }> = ({ order }) => {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              fontFamily: 'Jost', fontSize: 12, color: '#7B5EA7',
+              fontFamily: 'var(--font-body)', fontSize: 13, color: '#7B5EA7',
               textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4,
             }}
           >
@@ -214,17 +214,17 @@ const TrackingSection: FC<{ order: Order }> = ({ order }) => {
                   boxShadow: '0 0 0 2px #fff, 0 0 0 3px #7B5EA7',
                 }} />
                 <div>
-                  <p style={{ fontFamily: 'Jost', fontSize: 11, color: '#9A8F85', margin: '0 0 4px' }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9A8F85', margin: '0 0 4px' }}>
                     {fmtCheckpointDate(cp.time)}
                   </p>
                   <p style={{
-                    fontFamily: 'Jost', fontSize: 13, fontWeight: 500,
+                    fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
                     color: '#1C1A17', margin: '0 0 2px',
                   }}>
                     {cp.message}
                   </p>
                   {cp.location && (
-                    <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#6B6057', margin: 0 }}>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                       {cp.location}
                     </p>
                   )}
@@ -270,7 +270,7 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
         onClick={goBack}
         style={{
           background: 'none', border: 'none', cursor: 'pointer', padding: '0 0 24px',
-          fontFamily: 'Jost', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em',
+          fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
           color: '#7B5EA7', display: 'flex', alignItems: 'center', gap: 6,
         }}
       >
@@ -317,7 +317,7 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
       )}
 
       {error && (
-        <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#A85050', textAlign: 'center', padding: '60px 0' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', textAlign: 'center', padding: '60px 0' }}>
           {error}
         </p>
       )}
@@ -330,7 +330,7 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
             <h1 className="acct-page-title" style={{ fontSize: 'clamp(20px, 3vw, 26px)' }}>
               Order Details
             </h1>
-            <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9A8F85', margin: '6px 0 0' }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9A8F85', margin: '6px 0 0' }}>
               Placed on {fmtDate(order.createdAt)}
             </p>
           </div>
@@ -378,19 +378,19 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
                       {/* Info */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{
-                          fontFamily: '"Cormorant Garamond", Georgia, serif',
+                          fontFamily: 'var(--font-heading)',
                           fontWeight: 400, fontSize: 15, color: '#1C1A17',
                           margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                         }}>
                           {item.name}
                         </p>
-                        <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9A8F85', margin: '4px 0 0' }}>
+                        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9A8F85', margin: '4px 0 0' }}>
                           Qty: {item.quantity}
                         </p>
                       </div>
 
                       {/* Price */}
-                      <p style={{ fontFamily: 'Jost', fontSize: 14, fontWeight: 500, color: '#1C1A17', margin: 0, flexShrink: 0 }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#1C1A17', margin: 0, flexShrink: 0 }}>
                         {fmtPrice(item.price * item.quantity)}
                       </p>
                     </div>
@@ -409,17 +409,17 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
               {/* Shipping address */}
               <Card title="Shipping Address">
                 <address style={{ fontStyle: 'normal' }}>
-                  <p style={{ fontFamily: 'Jost', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 6px' }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 6px' }}>
                     {order.shippingAddress.fullName}
                   </p>
-                  <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '0 0 2px', lineHeight: 1.6 }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '0 0 2px', lineHeight: 1.6 }}>
                     {order.shippingAddress.line1}
                     {order.shippingAddress.line2 && `, ${order.shippingAddress.line2}`}
                   </p>
-                  <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '0 0 2px' }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '0 0 2px' }}>
                     {order.shippingAddress.city}, {order.shippingAddress.state} – {order.shippingAddress.pincode}
                   </p>
-                  <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: '8px 0 0' }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '8px 0 0' }}>
                     {order.shippingAddress.phone}
                   </p>
                 </address>
@@ -439,10 +439,10 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
               </Card>
 
               <Card title="Payment">
-                <p style={{ fontFamily: 'Jost', fontSize: 13, color: '#6B6057', margin: 0, textTransform: 'capitalize' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0, textTransform: 'capitalize' }}>
                   {order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'}
                 </p>
-                <p style={{ fontFamily: 'Jost', fontSize: 12, color: '#9A8F85', margin: '6px 0 0', textTransform: 'capitalize' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9A8F85', margin: '6px 0 0', textTransform: 'capitalize' }}>
                   Status: {order.paymentStatus}
                 </p>
               </Card>

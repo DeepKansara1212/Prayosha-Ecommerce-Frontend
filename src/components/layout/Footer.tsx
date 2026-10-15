@@ -21,24 +21,24 @@ const Footer: FC = () => (
         >
           <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-14 w-auto object-contain mix-blend-multiply" />
         </Link>
-        <p className="font-body font-normal text-[0.76rem] leading-relaxed text-bark max-w-[240px] mb-5">
+        <p className="font-body font-normal text-xs leading-relaxed text-bark max-w-[240px] mb-5">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.
         </p>
-        <div className="flex flex-col gap-1.5 mb-5">
+        <div className="flex flex-col gap-3 mb-5">
           <a
             href="mailto:prayoshacrytals@gmail.com"
-            className="font-body font-normal text-[0.78rem] text-bark no-underline transition-colors duration-300 hover:text-deep"
+            className="font-body font-normal text-xs text-bark no-underline transition-colors duration-300 hover:text-deep"
           >
             prayoshacrytals@gmail.com
           </a>
           <a
             href="tel:+919429415057"
-            className="font-body font-normal text-[0.78rem] text-bark no-underline transition-colors duration-300 hover:text-deep"
+            className="font-body font-normal text-xs text-bark no-underline transition-colors duration-300 hover:text-deep"
           >
             +91 94294 15057
           </a>
-          <p className="font-body font-normal text-[0.78rem] leading-relaxed text-bark max-w-[240px]">
-            SHOP NO.7, OPPO. BAPS SWAMINARAYAN TEMPLE, Khambhat, 388620
+          <p className="font-body font-normal text-xs leading-relaxed text-bark max-w-[240px]">
+            Shop-1, Prayosha Complex, Opp. BAPS Swaminarayan Temple, Pramukh Swami Marg, Near Chakdol Ground, Khambhat, 388620, Gujarat
           </p>
         </div>
         <div className="flex gap-3">
@@ -60,7 +60,7 @@ const Footer: FC = () => (
       {/* Link columns */}
       {FOOTER_COLUMNS.map(col => (
         <div key={col.heading}>
-          <h5 className="font-body text-label uppercase tracking-[0.3em] text-deep mb-4">
+          <h5 className="font-body text-label uppercase tracking-[0.05em] text-deep mb-4">
             {col.heading}
           </h5>
           <ul className="list-none space-y-[0.55rem]">
@@ -68,7 +68,7 @@ const Footer: FC = () => (
               <li key={link.label}>
                 <Link
                   to={link.href}
-                  className="font-body font-normal text-[0.78rem] text-bark no-underline transition-colors duration-300 hover:text-deep"
+                  className="font-body font-normal text-xs text-bark no-underline transition-colors duration-300 hover:text-deep"
                 >
                   {link.label}
                 </Link>
@@ -81,10 +81,10 @@ const Footer: FC = () => (
 
     {/* Bottom bar */}
     <div className="bg-warm border-t border-bark/10 px-[clamp(1.25rem,5vw,4rem)] py-5 flex flex-col sm:flex-row justify-between items-center gap-2 flex-wrap">
-      <p className="font-body text-[0.68rem] tracking-[0.04em] text-bark">
+      <p className="font-body text-xs tracking-[0.04em] text-bark">
         © {new Date().getFullYear()} Prayosha Crystal. All rights reserved.
       </p>
-      <p className="font-body text-[0.68rem] text-bark">Made with love &amp; moonlight ✦</p>
+      <p className="font-body text-xs text-bark">Made with love &amp; moonlight ✦</p>
     </div>
   </footer>
 )

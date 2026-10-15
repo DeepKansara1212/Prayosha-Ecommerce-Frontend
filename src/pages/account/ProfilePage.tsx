@@ -42,7 +42,7 @@ const Toast: FC<{ message: string; type?: "success" | "error" }> = ({
       marginBottom: 20,
       background: type === "success" ? "#F0FAF4" : "#FDF0F0",
       border: `1px solid ${type === "success" ? "#C8E6D4" : "#E2C8C8"}`,
-      fontFamily: "Jost",
+      fontFamily: 'var(--font-body)',
       fontSize: 13,
       color: type === "success" ? "#5A8A6A" : "#A85050",
     }}
@@ -139,7 +139,7 @@ const ProfilePage: FC = () => {
                 aria-hidden="true"
                 style={{
                   color: "#fff",
-                  fontFamily: "Jost",
+                  fontFamily: 'var(--font-body)',
                   fontSize: 22,
                   fontWeight: 500,
                 }}
@@ -166,7 +166,7 @@ const ProfilePage: FC = () => {
           <div>
             <p
               style={{
-                fontFamily: "Jost",
+                fontFamily: 'var(--font-body)',
                 fontSize: 14,
                 fontWeight: 500,
                 color: "#1C1A17",
@@ -177,8 +177,8 @@ const ProfilePage: FC = () => {
             </p>
             <p
               style={{
-                fontFamily: "Jost",
-                fontSize: 12,
+                fontFamily: 'var(--font-body)',
+                fontSize: 13,
                 color: "#9A8F85",
                 margin: "4px 0 0",
               }}

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --font-body: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Google Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -9,6 +14,13 @@
 
   body {
     @apply font-body bg-cream text-deep overflow-x-hidden;
+    font-size: 16px;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 500;
   }
 
   /* Custom cursor on pointer-fine (mouse) devices */
@@ -30,12 +42,13 @@
 }
 
 @layer utilities {
-  /* Keep small Jost copy readable; display headings keep their light weight. */
-  .font-body.font-extralight,
-  .font-body.font-light {
+  .font-light,
+  .font-extralight,
+  .font-thin {
     font-weight: 400;
   }
 
+  /* Remove `not-italic` and restore `fontStyle: 'italic'` to italicize purple headings. */
   /* ── Scroll reveal ─────────────────────────────────── */
   .reveal {
     opacity: 0;

@@ -50,9 +50,7 @@ export async function createBanner(data: BannerFormData): Promise<HeroBanner> {
   if (data.order !== undefined) form.append('order', String(data.order))
   if (data.isActive !== undefined) form.append('isActive', String(data.isActive))
 
-  const res = await apiClient.post<{ data: { banner: HeroBanner } }>('/admin/hero-banners', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const res = await apiClient.post<{ data: { banner: HeroBanner } }>('/admin/hero-banners', form)
   return res.data.data.banner
 }
 
@@ -66,9 +64,7 @@ export async function updateBanner(id: string, data: BannerFormData): Promise<He
   if (data.order !== undefined) form.append('order', String(data.order))
   if (data.isActive !== undefined) form.append('isActive', String(data.isActive))
 
-  const res = await apiClient.patch<{ data: { banner: HeroBanner } }>(`/admin/hero-banners/${id}`, form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const res = await apiClient.patch<{ data: { banner: HeroBanner } }>(`/admin/hero-banners/${id}`, form)
   return res.data.data.banner
 }
 

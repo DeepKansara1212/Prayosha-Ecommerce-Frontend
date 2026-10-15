@@ -58,7 +58,7 @@ const FAQItem: FC<{ q: string; a: string }> = ({ q, a }) => {
       >
         <span className="font-body text-[0.82rem] leading-snug pr-4">{q}</span>
         <span
-          className={cn('flex-none w-5 h-5 border border-current rounded-full flex items-center justify-center text-[0.6rem] transition-transform duration-300', open && 'rotate-45')}
+          className={cn('flex-none w-5 h-5 border border-current rounded-full flex items-center justify-center text-xs transition-transform duration-300', open && 'rotate-45')}
           aria-hidden="true"
         >
           +
@@ -70,7 +70,7 @@ const FAQItem: FC<{ q: string; a: string }> = ({ q, a }) => {
           open ? 'max-h-48 pb-5' : 'max-h-0',
         )}
       >
-        <p className="font-body font-extralight text-[0.8rem] leading-[1.9] text-muted">{a}</p>
+        <p className="font-body font-extralight text-xs leading-[1.9] text-muted">{a}</p>
       </div>
     </div>
   )
@@ -91,7 +91,7 @@ interface InputProps {
 
 const Field: FC<InputProps> = ({ id, label, value, onChange, error, type = 'text', placeholder, required }) => (
   <div>
-    <label htmlFor={id} className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">
+    <label htmlFor={id} className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
       {label}{required && <span className="text-rose ml-1" aria-hidden="true">*</span>}
     </label>
     <input
@@ -107,7 +107,7 @@ const Field: FC<InputProps> = ({ id, label, value, onChange, error, type = 'text
         error ? 'border-rose' : 'border-warm focus:border-gold',
       )}
     />
-    {error && <p id={`${id}-err`} role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">{error}</p>}
+    {error && <p id={`${id}-err`} role="alert" className="mt-1.5 font-body text-xs text-rose">{error}</p>}
   </div>
 )
 
@@ -115,7 +115,7 @@ const Field: FC<InputProps> = ({ id, label, value, onChange, error, type = 'text
 // NOTE: This is the single source of truth for the studio address. The map
 // embed below reads from STUDIO_ADDRESS so the two can never drift apart again.
 
-const STUDIO_ADDRESS = 'SHOP NO.7, OPPO. BAPS SWAMINARAYAN TEMPLE, Khambhat, 388620'
+const STUDIO_ADDRESS = 'Shop-1, Prayosha Complex, Opp. BAPS Swaminarayan Temple, Pramukh Swami Marg, Near Chakdol Ground, Khambhat, 388620, Gujarat'
 
 const INFO_ITEMS = [
   { icon: '📍', label: 'Studio', value: STUDIO_ADDRESS },
@@ -219,7 +219,7 @@ const ContactPage: FC = () => {
                   </p>
                   <button
                     onClick={() => { setSent(false); setForm({ name: '', email: '', subject: SUBJECTS[0], message: '' }) }}
-                    className="font-body text-[0.68rem] uppercase tracking-[0.18em] text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline"
+                    className="font-body text-xs uppercase tracking-[0.05em] text-gold hover:text-gold-light transition-colors underline-offset-2 hover:underline"
                   >
                     Send another message
                   </button>
@@ -227,7 +227,7 @@ const ContactPage: FC = () => {
               ) : (
                 <>
                   <h2 className="font-display font-light text-[clamp(1.8rem,3vw,2.4rem)] text-deep mb-2">Send us a message</h2>
-                  <p className="font-body font-extralight text-[0.8rem] text-muted mb-8">
+                  <p className="font-body font-extralight text-xs text-muted mb-8">
                     Fill in the form below and a member of our team will reply within one business day.
                   </p>
 
@@ -239,7 +239,7 @@ const ContactPage: FC = () => {
 
                     {/* Subject select */}
                     <div>
-                      <label htmlFor="c-subject" className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">Subject</label>
+                      <label htmlFor="c-subject" className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">Subject</label>
                       <div className="relative">
                         <select
                           id="c-subject"
@@ -249,13 +249,13 @@ const ContactPage: FC = () => {
                         >
                           {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
-                        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted text-[0.65rem]">▾</span>
+                        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted text-xs">▾</span>
                       </div>
                     </div>
 
                     {/* Message */}
                     <div>
-                      <label htmlFor="c-message" className="block font-body text-[0.62rem] uppercase tracking-[0.2em] text-muted mb-2">
+                      <label htmlFor="c-message" className="block font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">
                         Message <span className="text-rose" aria-hidden="true">*</span>
                       </label>
                       <textarea
@@ -271,15 +271,15 @@ const ContactPage: FC = () => {
                           errors.message ? 'border-rose' : 'border-warm focus:border-gold',
                         )}
                       />
-                      {errors.message && <p id="msg-err" role="alert" className="mt-1.5 font-body text-[0.68rem] text-rose">{errors.message}</p>}
-                      <p className="mt-1.5 font-body text-[0.62rem] text-muted/60">{form.message.length} / 500 characters</p>
+                      {errors.message && <p id="msg-err" role="alert" className="mt-1.5 font-body text-xs text-rose">{errors.message}</p>}
+                      <p className="mt-1.5 font-body text-xs text-muted/60">{form.message.length} / 500 characters</p>
                     </div>
 
                     <button
                       type="submit"
                       disabled={loading}
                       className={cn(
-                        'w-full font-body text-[0.72rem] uppercase tracking-[0.22em] py-4 transition-all duration-300',
+                        'w-full font-body text-xs uppercase tracking-[0.05em] py-4 transition-all duration-300',
                         loading ? 'bg-muted text-cream/70 cursor-not-allowed' : 'bg-deep text-cream hover:bg-bark',
                       )}
                       aria-busy={loading}
@@ -292,7 +292,7 @@ const ContactPage: FC = () => {
                       ) : 'Send Message'}
                     </button>
                     {submitError && (
-                      <p role="alert" className="font-body text-[0.72rem] leading-relaxed text-rose">
+                      <p role="alert" className="font-body text-xs leading-relaxed text-rose">
                         {submitError}
                       </p>
                     )}
@@ -312,8 +312,8 @@ const ContactPage: FC = () => {
                     <div key={label} className="flex items-start gap-4">
                       <span className="text-xl flex-none mt-0.5" aria-hidden="true">{icon}</span>
                       <div>
-                        <p className="font-body text-[0.62rem] uppercase tracking-[0.15em] text-muted mb-0.5">{label}</p>
-                        <p className="font-body font-light text-[0.8rem] text-bark">{value}</p>
+                        <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-0.5">{label}</p>
+                        <p className="font-body font-light text-xs text-bark">{value}</p>
                       </div>
                     </div>
                   ))}
@@ -328,20 +328,20 @@ const ContactPage: FC = () => {
                     { day: 'Monday – Saturday', hours: '9:00 am – 6:00 pm' },
                     { day: 'Sunday',          hours: 'Closed' },
                   ].map(({ day, hours }) => (
-                    <div key={day} className="flex justify-between font-body text-[0.75rem]">
+                    <div key={day} className="flex justify-between font-body text-xs">
                       <span className="text-muted">{day}</span>
                       <span className={cn('text-bark', hours === 'Closed' && 'text-muted italic')}>{hours}</span>
                     </div>
                   ))}
                 </div>
-                <p className="mt-4 font-body font-extralight text-[0.72rem] text-muted leading-relaxed">
+                <p className="mt-4 font-body font-extralight text-xs text-muted leading-relaxed">
                   Online support responds within 24 hours on all days.
                 </p>
               </div>
 
               {/* Quick links */}
               <div className="p-7 border-l-2 border-gold bg-warm/50">
-                <p className="font-body text-[0.62rem] uppercase tracking-[0.2em] text-gold mb-3">Quick links</p>
+                <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">Quick links</p>
                 {[
                   { label: 'Browse crystals',    hash: '#/collection' },
                   { label: 'Track my order',     hash: '#/auth' },
@@ -351,7 +351,7 @@ const ContactPage: FC = () => {
                   <button
                     key={label}
                     onClick={() => { window.location.hash = hash; window.scrollTo({ top: 0 }) }}
-                    className="block w-full text-left font-body text-[0.78rem] text-bark hover:text-gold py-2 border-b border-warm/60 last:border-0 transition-colors duration-200 bg-transparent border-l-0 border-r-0 cursor-pointer"
+                    className="block w-full text-left font-body text-xs text-bark hover:text-gold py-2 border-b border-warm/60 last:border-0 transition-colors duration-200 bg-transparent border-l-0 border-r-0 cursor-pointer"
                   >
                     {label} <span className="text-muted/50">→</span>
                   </button>
@@ -365,9 +365,9 @@ const ContactPage: FC = () => {
         <div className="bg-warm">
           <div style={{ padding: 'clamp(4rem,8vw,6rem) clamp(1.25rem,5vw,4rem)' }}>
             <div className="text-center mb-10">
-              <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">Have questions?</p>
+              <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">Have questions?</p>
               <h2 className="font-display font-light text-[clamp(2rem,4vw,3rem)] text-deep">
-                Frequently <em className="italic text-amethyst">asked</em>
+                Frequently <em className="not-italic text-amethyst">asked</em>
               </h2>
             </div>
 
@@ -383,9 +383,9 @@ const ContactPage: FC = () => {
         <section aria-labelledby="branches-heading" className="section-p">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-10">
-              <p className="font-body text-[0.62rem] uppercase tracking-[0.3em] text-gold mb-3">Closer to you</p>
+              <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">Closer to you</p>
               <h2 id="branches-heading" className="font-display font-light text-[clamp(2rem,4vw,3rem)] text-deep">
-                Our <em className="italic text-amethyst">branches</em>
+                Our <em className="not-italic text-amethyst">branches</em>
               </h2>
               <p className="font-body font-extralight text-[0.82rem] text-muted mt-3">
                 Find Prayosha Crystals across India.
@@ -400,7 +400,7 @@ const ContactPage: FC = () => {
                 >
                   <div className="absolute left-0 top-0 h-0.5 w-full origin-left scale-x-0 bg-gold transition-transform duration-300 group-hover:scale-x-100" />
                   <div className="flex items-center justify-between mb-8">
-                    <span className="font-body text-[0.62rem] tracking-[0.2em] text-gold">
+                    <span className="font-body text-xs tracking-[0.05em] text-gold">
                       0{index + 1}
                     </span>
                     <svg
@@ -418,12 +418,12 @@ const ContactPage: FC = () => {
                     </svg>
                   </div>
                   <h3 className="font-display font-light text-[1.8rem] leading-none text-deep">{city}</h3>
-                  <p className="font-body text-[0.68rem] uppercase tracking-[0.18em] text-muted mt-2">{state}</p>
+                  <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mt-2">{state}</p>
                   <a
                     href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 mt-7 font-body text-[0.62rem] uppercase tracking-[0.16em] text-gold transition-colors hover:text-bark"
+                    className="inline-flex items-center gap-2 mt-7 font-body text-xs uppercase tracking-[0.05em] text-gold transition-colors hover:text-bark"
                     aria-label={`Find our ${city} branch on Google Maps`}
                   >
                     Find on map <span aria-hidden="true">→</span>
@@ -446,14 +446,14 @@ const ContactPage: FC = () => {
 
           {/* Floating info card over the map */}
           <div className="absolute left-4 bottom-4 sm:left-8 sm:bottom-8 bg-cream shadow-lg p-5 sm:p-6 max-w-[280px]">
-            <p className="font-body text-[0.6rem] uppercase tracking-[0.2em] text-gold mb-2">Visit our studio</p>
+            <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-2">Visit our studio</p>
             <p className="font-display font-normal text-[1rem] text-deep mb-1">Prayosha Crystals</p>
-            <p className="font-body font-extralight text-[0.75rem] text-bark leading-relaxed mb-4">{STUDIO_ADDRESS}</p>
+            <p className="font-body font-extralight text-xs text-bark leading-relaxed mb-4">{STUDIO_ADDRESS}</p>
             <a
               href={MAPS_DIRECTIONS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 font-body text-[0.68rem] uppercase tracking-[0.15em] text-gold hover:text-gold-light transition-colors"
+              className="inline-flex items-center gap-1.5 font-body text-xs uppercase tracking-[0.05em] text-gold hover:text-gold-light transition-colors"
             >
               Get Directions <span aria-hidden="true">→</span>
             </a>

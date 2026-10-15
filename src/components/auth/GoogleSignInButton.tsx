@@ -103,8 +103,8 @@ const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({ onCredential }) => {
         <p
           role="alert"
           style={{
-            fontFamily: "Jost, system-ui, sans-serif",
-            fontSize: 12,
+            fontFamily: "var(--font-body)",
+            fontSize: 13,
             color: "#A85050",
             margin: 0,
             textAlign: "center",
@@ -117,8 +117,8 @@ const GoogleSignInButton: FC<GoogleSignInButtonProps> = ({ onCredential }) => {
         <p
           role="alert"
           style={{
-            fontFamily: "Jost, system-ui, sans-serif",
-            fontSize: 12,
+            fontFamily: "var(--font-body)",
+            fontSize: 13,
             color: "#A85050",
             margin: 0,
             textAlign: "center",
