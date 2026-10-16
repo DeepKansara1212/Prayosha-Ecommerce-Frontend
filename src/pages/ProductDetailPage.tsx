@@ -267,7 +267,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
   onNavigateToCart,
 }) => {
   const navigate = useNavigate()
-  const { data: product, isLoading, isError } = useProduct(productId)
+  const { data: product, isLoading, isError, error, refetch } = useProduct(productId)
   const { data: relatedProducts = [] }        = useRelatedProducts(productId)
   const { data: publicSettings } = useQuery({
     queryKey: ['public-settings'],
@@ -336,16 +336,20 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
   // Error / not found
   if (isError || !product) {
+    const isNotFound = !isError || (error instanceof Error && error.message === 'Product not found')
+
     return (
       <>
         <Navbar />
         <main className="min-h-screen bg-cream pt-[84px] md:pt-[88px]">
           <EmptyState
             icon={<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-10 h-10"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3m.08 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>}
-            title="Stone not found"
-            description="This crystal may have found its home. Browse our collection for more."
-            actionLabel="Browse Collection"
-            onAction={onNavigateToCollection}
+            title={isNotFound ? 'Stone not found' : 'Unable to load product'}
+            description={isNotFound
+              ? 'This crystal may have found its home. Browse our collection for more.'
+              : 'We could not load this product right now. Please try again.'}
+            actionLabel={isNotFound ? 'Browse Collection' : 'Try Again'}
+            onAction={isNotFound ? onNavigateToCollection : () => { void refetch() }}
           />
         </main>
         <Footer />

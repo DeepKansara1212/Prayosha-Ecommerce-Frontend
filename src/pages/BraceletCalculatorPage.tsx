@@ -83,7 +83,7 @@ const BraceletCalculatorPage: FC = () => {
   return (
     <>
       <Navbar />
-      <main id="main-content">
+      <main id="main-content" className="pt-[80px] md:pt-[88px]">
         <div style={{ padding: 'clamp(3rem,6vw,5rem) clamp(1.25rem,5vw,4rem) clamp(2rem,4vw,3rem)' }} className="max-w-3xl mx-auto text-center">
           <SectionLabel className="justify-center">Bracelet Calculator</SectionLabel>
           <SectionTitle as="h1" className="text-bark">
