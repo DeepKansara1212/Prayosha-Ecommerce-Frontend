@@ -1,6 +1,6 @@
 # Prayosha Frontend
 
-The public-facing **Prayosha Crystal** storefront: product discovery, cart, checkout (COD + Razorpay), accounts, blog, and a lightweight in-app admin area for hero banners. Built with React 19, TypeScript, Vite 8, and Tailwind CSS 3.
+The public-facing **prayosha crystals** storefront: product discovery, cart, checkout (COD + Razorpay), accounts, blog, and a lightweight in-app admin area for hero banners. Built with React 19, TypeScript, Vite 8, and Tailwind CSS 3.
 
 > A separate full admin dashboard lives in the repo’s `Admin/` app (`/admin/*` on port 5174). This frontend includes a **minimal embedded admin** at `/admin` and `/admin/hero-banners` for banner management when logged in as `role: "admin"`.
 

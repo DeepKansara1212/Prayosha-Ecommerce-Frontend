@@ -19,7 +19,7 @@ const Footer: FC = () => (
           to="/"
           className="inline-block mb-4 no-underline opacity-100 hover:opacity-80 transition-opacity duration-200"
         >
-          <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-14 w-auto object-contain mix-blend-multiply" />
+          <img src="/prayosha-logo.png" alt="prayosha crystalss" className="h-14 w-auto object-contain mix-blend-multiply" />
         </Link>
         <p className="font-body font-normal text-xs leading-relaxed text-bark max-w-[240px] mb-5">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.
@@ -82,7 +82,7 @@ const Footer: FC = () => (
     {/* Bottom bar */}
     <div className="bg-warm border-t border-bark/10 px-[clamp(1.25rem,5vw,4rem)] py-5 flex flex-col sm:flex-row justify-between items-center gap-2 flex-wrap">
       <p className="font-body text-xs tracking-[0.04em] text-bark">
-        © {new Date().getFullYear()} Prayosha Crystal. All rights reserved.
+        © {new Date().getFullYear()} prayosha crystals. All rights reserved.
       </p>
       <p className="font-body text-xs text-bark">Made with love &amp; moonlight ✦</p>
     </div>

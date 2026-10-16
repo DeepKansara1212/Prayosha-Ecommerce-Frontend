@@ -254,7 +254,7 @@ const BlogPostPage: FC<BlogPostPageProps> = ({ slug, onNavigateToJournal, onNavi
               >
                 <div className="w-12 h-12 rounded-full bg-warm flex items-center justify-center text-xl flex-none">🌙</div>
                 <div>
-                  <p className="font-body text-xs font-medium text-deep">Prayosha Crystal Journal</p>
+                  <p className="font-body text-xs font-medium text-deep">prayosha crystals Journal</p>
                   <p className="font-body font-extralight text-xs text-muted">Crystal wisdom &amp; sacred rituals</p>
                 </div>
               </div>

@@ -56,7 +56,7 @@ const B2BPage: FC = () => {
   const onSubmit = (data: B2BFormData) => {
     const messageText = data.message?.trim() || 'No additional message'
     const waMessage = encodeURIComponent(
-      `Hi! B2B Inquiry 🔮\n\nName: ${data.name}\nMobile: ${data.mobileNumber}\nMessage: ${messageText}\n\nI'm interested in placing a bulk/wholesale order with Prayosha Crystal.`
+      `Hi! B2B Inquiry 🔮\n\nName: ${data.name}\nMobile: ${data.mobileNumber}\nMessage: ${messageText}\n\nI'm interested in placing a bulk/wholesale order with prayosha crystals.`
     )
     window.open(`https://wa.me/${whatsappNumber}?text=${waMessage}`, '_blank', 'noopener,noreferrer')
     setSent(true)
@@ -96,7 +96,7 @@ const B2BPage: FC = () => {
               <em className="italic text-gold-light">Inquiry</em>
             </h1>
             <p className="font-body font-extralight text-[0.88rem] leading-[1.85] text-cream/60 max-w-lg">
-              Place a bulk or wholesale order with Prayosha Crystal. Fill in the form below and we'll connect with you on WhatsApp.
+              Place a bulk or wholesale order with prayosha crystals. Fill in the form below and we'll connect with you on WhatsApp.
             </p>
           </div>
         </div>

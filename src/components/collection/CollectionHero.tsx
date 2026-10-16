@@ -33,7 +33,7 @@ const CollectionHero: FC = () => (
     <div className="relative z-10 max-w-2xl mx-auto">
       <p className="inline-flex items-center gap-3 font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-5">
         <span className="w-8 h-px bg-gold-light" aria-hidden="true" />
-        Prayosha Crystal · Sacred Collection
+        prayosha crystals · Sacred Collection
         <span className="w-8 h-px bg-gold-light" aria-hidden="true" />
       </p>
       <h1 className="font-display font-light text-[clamp(2.5rem,7vw,5rem)] leading-[1.05] text-cream mb-5">

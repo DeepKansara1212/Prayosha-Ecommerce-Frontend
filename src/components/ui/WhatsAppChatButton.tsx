@@ -24,7 +24,7 @@ function buildDefaultMessage(pathname: string, customOverride?: string): string 
   const orderMatch = pathname.match(/^\/account\/orders\/(.+)$/)
   if (orderMatch) return `Hi! I have a question about my order #${orderMatch[1]}.`
 
-  return "Hi! I need help with something on Prayosha Crystal."
+  return "Hi! I need help with something on prayosha crystals."
 }
 
 // ─── WhatsApp Icon ────────────────────────────────────────────────────────────

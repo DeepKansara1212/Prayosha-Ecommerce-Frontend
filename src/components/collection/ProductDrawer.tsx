@@ -360,6 +360,14 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                         <span className="font-body font-light text-xs text-bark text-right max-w-[55%]">{value}</span>
                       </div>
                     ))}
+                    {product.productDetails?.ingredients?.trim() && (
+                      <div className="mt-2 p-4 bg-warm border-l-2 border-gold">
+                        <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">Ingredients</p>
+                        <p className="font-body font-extralight text-xs leading-relaxed text-bark break-words">
+                          {product.productDetails.ingredients}
+                        </p>
+                      </div>
+                    )}
                     {product.careInstructions.length > 0 && (
                       <div className="pt-2">
                         <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">Crystal Care</p>

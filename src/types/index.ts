@@ -140,6 +140,7 @@ export interface ProductDetail {
     height?: string
     dimensions?: string
     size?: string
+    ingredients?: string
   }
   weight?: string
   dimensions?: string

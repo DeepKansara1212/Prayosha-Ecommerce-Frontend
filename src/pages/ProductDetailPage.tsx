@@ -631,6 +631,15 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                     ))}
                   </div>
 
+                  {product.productDetails?.ingredients?.trim() && (
+                    <div className="mt-6 p-5 bg-warm border-l-2 border-gold">
+                      <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">Ingredients</p>
+                      <p className="font-body font-extralight text-[0.85rem] leading-[1.9] text-bark break-words">
+                        {product.productDetails.ingredients}
+                      </p>
+                    </div>
+                  )}
+
                   {product.careInstructions.length > 0 && (
                     <div className="mt-6 p-5 bg-warm">
                       <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-2">Crystal Care</p>

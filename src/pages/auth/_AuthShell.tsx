@@ -153,7 +153,7 @@ export const AuthShell: FC<AuthShellProps> = ({ headline, headlineItalic, subtex
             color: '#6B6057',
             margin: '0 0 1.75rem',
           }}>
-            ✦ PRAYOSHA CRYSTAL
+            ✦ prayosha crystals
           </p>
 
           <h1

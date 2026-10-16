@@ -36,6 +36,7 @@ export interface ApiProduct {
     height?: string
     dimensions?: string
     size?: string
+    ingredients?: string
   }
   dimensions?: string
   size?: string

@@ -388,7 +388,7 @@ const ContactPage: FC = () => {
                 Our <em className="not-italic text-amethyst">branches</em>
               </h2>
               <p className="font-body font-extralight text-[0.82rem] text-muted mt-3">
-                Find Prayosha Crystals across India.
+                Find prayosha crystalss across India.
               </p>
             </div>
 
@@ -447,7 +447,7 @@ const ContactPage: FC = () => {
           {/* Floating info card over the map */}
           <div className="absolute left-4 bottom-4 sm:left-8 sm:bottom-8 bg-cream shadow-lg p-5 sm:p-6 max-w-[280px]">
             <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-2">Visit our studio</p>
-            <p className="font-display font-normal text-[1rem] text-deep mb-1">Prayosha Crystals</p>
+            <p className="font-display font-normal text-[1rem] text-deep mb-1">prayosha crystalss</p>
             <p className="font-body font-extralight text-xs text-bark leading-relaxed mb-4">{STUDIO_ADDRESS}</p>
             <a
               href={MAPS_DIRECTIONS_URL}

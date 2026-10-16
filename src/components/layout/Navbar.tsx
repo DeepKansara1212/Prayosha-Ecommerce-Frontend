@@ -646,9 +646,9 @@ const Navbar: FC = () => {
           <button
             onClick={() => go('/')}
             className="flex items-center z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
-            aria-label="Prayosha Crystal — go to home"
+            aria-label="prayosha crystals — go to home"
           >
-            <img src="/prayosha-logo.png" alt="Prayosha Crystals" className="h-10 md:h-12 w-auto object-contain mix-blend-multiply" />
+            <img src="/prayosha-logo.png" alt="prayosha crystalss" className="h-10 md:h-12 w-auto object-contain mix-blend-multiply" />
           </button>
 
           {/* Desktop nav links */}

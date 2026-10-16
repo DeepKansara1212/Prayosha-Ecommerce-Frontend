@@ -7,7 +7,7 @@ import { requestCookiePreferences } from '@/lib/metaPixel'
 
 // ─── Content ──────────────────────────────────────────────────────────────────
 
-const INTRO = 'At Prayosha Crystals, accessible from https://prayoshacrystals.com, we respect your privacy and are committed to protecting the personal information you share with us. This Privacy Policy explains how we collect, use, and safeguard your data.'
+const INTRO = 'At prayosha crystalss, accessible from https://prayoshacrystals.com, we respect your privacy and are committed to protecting the personal information you share with us. This Privacy Policy explains how we collect, use, and safeguard your data.'
 
 interface Section {
   id: string

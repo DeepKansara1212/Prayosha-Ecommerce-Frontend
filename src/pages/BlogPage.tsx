@@ -217,7 +217,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
       <Navbar />
       <main id="main-content">
         <section className="bg-cream" style={{ padding: "clamp(3.5rem,7vw,6rem) clamp(1.25rem,5vw,4rem) clamp(2rem,4vw,3rem)" }}>
-          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">Prayosha Crystal Journal</p>
+          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">prayosha crystals Journal</p>
           <h1 className="font-display font-light text-deep leading-tight mb-3" style={{ fontSize: "clamp(2.3rem,5vw,4rem)" }}>
             Stories for a more <em className="not-italic text-amethyst">intentional life</em>
           </h1>

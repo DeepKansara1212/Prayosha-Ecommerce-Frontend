@@ -53,7 +53,7 @@ const SECTIONS = [
     id: 'intellectual-property',
     title: 'Intellectual Property',
     body: [
-      'All logos, designs, images, text, and content on this Website are the intellectual property of Prayosha Crystals.',
+      'All logos, designs, images, text, and content on this Website are the intellectual property of prayosha crystalss.',
       'You may not copy, reproduce, or use our content without prior written permission.',
     ],
   },
@@ -69,7 +69,7 @@ const SECTIONS = [
     id: 'indemnification',
     title: 'Indemnification',
     body: [
-      'You agree to indemnify and hold harmless Prayosha Crystals from any claims, damages, or expenses resulting from your misuse of our Website or products.',
+      'You agree to indemnify and hold harmless prayosha crystalss from any claims, damages, or expenses resulting from your misuse of our Website or products.',
     ],
   },
   {
