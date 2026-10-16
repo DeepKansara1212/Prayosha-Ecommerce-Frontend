@@ -76,6 +76,8 @@ const AUTH_CSS = `
   @media (max-width: 899px) {
     .auth-shell {
       grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      align-content: start;
     }
     .auth-shell-left {
       height: 100px !important;
@@ -89,9 +91,18 @@ const AUTH_CSS = `
       gap: 0.85rem;
       max-width: none !important;
     }
+    .auth-shell-left .auth-left-body > p {
+      margin: 0 !important;
+      white-space: nowrap;
+      position: relative;
+      z-index: 1;
+    }
     .auth-shell-left .auth-headline,
     .auth-shell-left .auth-headline-italic,
     .auth-shell-left .auth-subtext { display: none; }
+    .auth-shell-right {
+      align-items: flex-start !important;
+    }
     .auth-shell-right-inner {
       padding: 2rem 1.5rem !important;
     }

@@ -610,7 +610,18 @@ const Navbar: FC = () => {
         <div className="h-px w-16 bg-cream/20 my-4" aria-hidden="true" />
 
         {/* Mobile utility links */}
-        <div className="flex gap-10 items-center">
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 items-center">
+          <button
+            onClick={() => {
+              closeMenu()
+              openSearch()
+            }}
+            className="flex flex-col items-center gap-1.5 text-bark opacity-90 hover:opacity-100 bg-transparent border-none cursor-pointer transition-opacity min-w-[44px] min-h-[44px] justify-center"
+            aria-label="Open search"
+          >
+            <SearchIcon />
+            <span className="font-body text-xs uppercase tracking-[0.05em]">Search</span>
+          </button>
           {[
             { label: 'Account',  path: '/account', Icon: UserIcon },
             { label: 'Wishlist', path: '/account/wishlist', Icon: () => <HeartIcon filled={isActive('/account/wishlist')} /> },
@@ -637,7 +648,7 @@ const Navbar: FC = () => {
         <div
           className={cn(
             'flex items-center justify-between',
-            'px-[clamp(1.25rem,5vw,4rem)] py-5',
+              'px-[clamp(1.25rem,5vw,4rem)] py-4 md:py-5',
             'transition-all duration-400',
             'bg-warm backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]',
           )}
@@ -648,7 +659,7 @@ const Navbar: FC = () => {
             className="flex items-center z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
             aria-label="prayosha crystals — go to home"
           >
-            <img src="/prayosha-logo.png" alt="prayosha crystalss" className="h-10 md:h-12 w-auto object-contain mix-blend-multiply" />
+            <img src="/prayosha-logo.png" alt="prayosha crystals" className="h-14 md:h-12 w-auto flex-none object-contain mix-blend-multiply" />
           </button>
 
           {/* Desktop nav links */}
@@ -712,32 +723,32 @@ const Navbar: FC = () => {
           </ul>
 
           {/* Icon group */}
-          <div className="flex items-center gap-4 text-bark">
+          <div className="flex items-center gap-2 md:gap-4 text-bark">
             <button
               onClick={openSearch}
               aria-label="Open search"
-              className="opacity-90 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-bark min-w-[44px] min-h-[44px] flex items-center justify-center"
+              className="hidden md:flex opacity-90 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-bark min-w-[44px] min-h-[44px] items-center justify-center"
             >
               <SearchIcon />
             </button>
             <button
               onClick={() => go('/account')}
               aria-label="Go to account"
-              className={cn('opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] flex items-center justify-center', (pathname.startsWith('/auth') || pathname.startsWith('/account')) && 'opacity-100')}
+              className={cn('hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center', (pathname.startsWith('/auth') || pathname.startsWith('/account')) && 'opacity-100')}
             >
               <UserIcon />
             </button>
             <button
               onClick={() => go('/account/wishlist')}
               aria-label="Go to wishlist"
-              className={cn('opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] flex items-center justify-center', isActive('/account/wishlist') && 'opacity-100')}
+              className={cn('hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center', isActive('/account/wishlist') && 'opacity-100')}
             >
               <HeartIcon filled={isActive('/account/wishlist')} />
             </button>
             <button
               onClick={() => go('/cart')}
               aria-label="Go to cart"
-              className={cn('opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] flex items-center justify-center', isActive('/cart') && 'opacity-100')}
+              className={cn('hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center', isActive('/cart') && 'opacity-100')}
             >
               <BagIcon />
             </button>
@@ -750,9 +761,9 @@ const Navbar: FC = () => {
               aria-expanded={open}
               aria-controls="mobile-menu"
             >
-              <span className={cn('block w-6 h-[1.5px] bg-cream transition-transform duration-300', open && 'translate-y-[6.5px] rotate-45')} />
-              <span className={cn('block w-6 h-[1.5px] bg-cream transition-opacity duration-300', open && 'opacity-0')} />
-              <span className={cn('block w-6 h-[1.5px] bg-cream transition-transform duration-300', open && '-translate-y-[6.5px] -rotate-45')} />
+              <span className={cn('block w-6 h-[1.5px] bg-bark transition-transform duration-300', open && 'translate-y-[6.5px] rotate-45')} />
+              <span className={cn('block w-6 h-[1.5px] bg-bark transition-opacity duration-300', open && 'opacity-0')} />
+              <span className={cn('block w-6 h-[1.5px] bg-bark transition-transform duration-300', open && '-translate-y-[6.5px] -rotate-45')} />
             </button>
           </div>
         </div>
