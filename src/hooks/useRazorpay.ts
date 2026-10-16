@@ -59,8 +59,28 @@ export function useRazorpay() {
     onSuccess: (result: ordersApi.OrderSuccessResponse) => void | Promise<void>,
     onFailure: () => void,
   ) => {
+    const reportFailure = async () => {
+      try {
+        await ordersApi.failRazorpayPayment(razorpayOrderId)
+      } catch (error) {
+        console.error('Failed to record the Razorpay payment failure', error)
+      }
+      onFailure()
+    }
+
     const loaded = await loadRazorpayScript()
-    if (!loaded) { onFailure(); return }
+    if (!loaded) { await reportFailure(); return }
+
+    let failureHandled = false
+    const handleFailure = async (reportPaymentFailure = true) => {
+      if (failureHandled) return
+      failureHandled = true
+      if (reportPaymentFailure) {
+        await reportFailure()
+      } else {
+        onFailure()
+      }
+    }
 
     const rzp = new window.Razorpay({
       key: (import.meta.env.VITE_RAZORPAY_KEY_ID ?? '') as string,
@@ -84,11 +104,12 @@ export function useRazorpay() {
           })
           await onSuccess(result)
         } catch {
-          onFailure()
+          await handleFailure(false)
         }
       },
+      modal: { ondismiss: () => { void handleFailure() } },
     })
-    rzp.on('payment.failed', () => onFailure())
+    rzp.on('payment.failed', () => { void handleFailure() })
     rzp.open()
   }, [user])
 

@@ -370,7 +370,7 @@ const CheckoutPage: FC = () => {
     }
 
     // Razorpay
-    const { razorpayOrderId, amount, currency, order } = await ordersApi.createRazorpayOrder({
+    const { razorpayOrderId, amount, currency } = await ordersApi.createRazorpayOrder({
       addressId: selectedAddressId,
       couponCode: coupon?.code,
     })
@@ -386,7 +386,7 @@ const CheckoutPage: FC = () => {
         navigate('/checkout/success', { replace: true })
       },
       () => {
-        sessionStorage.setItem('prayosha_last_order_failed', JSON.stringify({ orderNumber: order.orderNumber }))
+        sessionStorage.removeItem('prayosha_last_order_failed')
         navigate('/checkout/failed', { replace: true })
       },
     )

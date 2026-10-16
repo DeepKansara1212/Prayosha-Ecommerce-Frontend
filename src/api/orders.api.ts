@@ -85,7 +85,6 @@ export interface RazorpayOrderResponse {
   razorpayOrderId: string
   amount: number
   currency: string
-  order: Order
 }
 
 export interface RazorpayPaymentData {
@@ -118,6 +117,10 @@ export async function createRazorpayOrder(
 export async function verifyRazorpayPayment(data: RazorpayPaymentData): Promise<OrderSuccessResponse> {
   const res = await apiClient.post<{ data: OrderSuccessResponse }>('/orders/razorpay/verify', data)
   return res.data.data
+}
+
+export async function failRazorpayPayment(razorpay_order_id: string): Promise<void> {
+  await apiClient.post('/orders/razorpay/fail', { razorpay_order_id })
 }
 
 export async function getUserOrders(page = 1): Promise<PaginatedOrders> {

@@ -1,4 +1,4 @@
-import { useMemo, type FC } from 'react'
+import { type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 
@@ -6,14 +6,6 @@ import Navbar from '@/components/layout/Navbar'
 
 const CheckoutFailedPage: FC = () => {
   const navigate = useNavigate()
-  const failedOrder = useMemo(() => {
-    try {
-      const raw = sessionStorage.getItem('prayosha_last_order_failed')
-      return raw ? (JSON.parse(raw) as { orderNumber?: string }) : null
-    } catch {
-      return null
-    }
-  }, [])
 
   const retry = () => {
     navigate('/checkout')
@@ -69,21 +61,6 @@ const CheckoutFailedPage: FC = () => {
           }}>
             Something went wrong
           </h1>
-
-          {/* Order reference */}
-          {failedOrder?.orderNumber && (
-            <div style={{
-              display: 'inline-block', padding: '12px 24px', marginBottom: 24,
-              background: '#FDF0F0', border: '1px solid #E8C8C8', borderRadius: 6,
-            }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#A85050', margin: '0 0 4px' }}>
-                Reference
-              </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
-                {failedOrder.orderNumber}
-              </p>
-            </div>
-          )}
 
           {/* Message */}
           <p style={{
