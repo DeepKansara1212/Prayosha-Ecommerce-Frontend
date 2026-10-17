@@ -5,36 +5,68 @@ import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
 import { useSearchOverlay } from '@/hooks/useSearchOverlay'
 import { useCategories } from '@/hooks/useCategories'
 import { getMeanings } from '@/api/meanings.api'
+import { getPurposes } from '@/api/calculators.api'
 import { getSubCategories } from '@/api/subcategories.api'
 import SearchOverlay from '@/components/search/SearchOverlay'
-import { cn, slugify } from '@/lib/utils'
-import type { ApiCategory } from '@/api/categories.api'
+import { cn } from '@/lib/utils'
 
-// Resolves ordinary mega-menu labels to their matching admin category.
-function categoryPath(label: string, categories: ApiCategory[]): string {
-  if (label.trim().toLowerCase() === 'meaning') return '/collection'
-  const match = categories.find(c => c.name.trim().toLowerCase() === label.trim().toLowerCase())
-  return `/collection?category=${encodeURIComponent(match?.slug ?? slugify(label))}`
+function normalizeMenuLabel(label: string): string {
+  return label.trim().toLowerCase()
 }
 
 function meaningPath(label: string, meanings: { _id: string; name: string }[]): string {
-  const meaning = meanings.find(item => item.name.trim().toLowerCase() === label.trim().toLowerCase())
+  const meaning = meanings.find(item => normalizeMenuLabel(item.name) === normalizeMenuLabel(label))
   const params = new URLSearchParams()
   if (meaning) params.set('meaning', meaning._id)
   else params.set('search', label)
   return `/collection?${params.toString()}`
 }
 
-function rudrakshaPath(
-  label: string,
-  category: ApiCategory | undefined,
-  subCategories: { _id: string; name: string }[],
+function menuItemPath(
+  item: string,
+  section: string | undefined,
+  data: ReturnType<typeof useCollectionMenuData>,
 ): string {
-  const subCategory = subCategories.find(item => item.name.trim().toLowerCase() === label.trim().toLowerCase())
+  if (section === 'Meaning') return meaningPath(item, data.meanings)
+  if (normalizeMenuLabel(item) === 'meaning') return '/collection'
+
+  const category = data.categories.find(
+    candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
+  )
+  if (category) return `/collection?category=${encodeURIComponent(category.slug)}`
+
+  if (section === 'Purpose') {
+    const purpose = data.purposes.find(
+      candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
+    )
+    if (purpose) return `/collection?purpose=${encodeURIComponent(purpose._id)}`
+  }
+
+  const sectionCategory = data.categories.find(
+    candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(section ?? ''),
+  )
+  const matchingSubCategories = data.subCategories.filter(
+    candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
+  )
+  const subCategory = matchingSubCategories.find(
+    candidate => candidate.parentCategory === sectionCategory?._id,
+  ) ?? matchingSubCategories[0]
+
+  if (subCategory) {
+    const parentCategory = data.categories.find(
+      candidate => candidate._id === subCategory.parentCategory,
+    )
+    if (parentCategory) {
+      const params = new URLSearchParams({
+        category: parentCategory.slug,
+        subCategory: subCategory._id,
+      })
+      return `/collection?${params.toString()}`
+    }
+  }
+
   const params = new URLSearchParams()
-  if (category) params.set('category', category.slug)
-  if (subCategory) params.set('subCategory', subCategory._id)
-  else params.set('search', label)
+  params.set('search', item)
   return `/collection?${params.toString()}`
 }
 
@@ -45,25 +77,18 @@ function useCollectionMenuData() {
     queryFn: getMeanings,
     staleTime: 5 * 60_000,
   })
-  const rudrakshaCategory = categories.find(category => category.name.trim().toLowerCase() === 'rudraksha')
-  const { data: rudrakshaSubCategories = [] } = useQuery({
-    queryKey: ['collection-subcategories', rudrakshaCategory?.slug],
-    queryFn: () => getSubCategories(rudrakshaCategory?.slug ?? ''),
-    enabled: !!rudrakshaCategory,
+  const { data: purposes = [] } = useQuery({
+    queryKey: ['collection-purposes'],
+    queryFn: getPurposes,
+    staleTime: 5 * 60_000,
+  })
+  const { data: subCategories = [] } = useQuery({
+    queryKey: ['collection-menu-subcategories'],
+    queryFn: () => getSubCategories(),
     staleTime: 5 * 60_000,
   })
 
-  return { categories, meanings, rudrakshaCategory, rudrakshaSubCategories }
-}
-
-function menuItemPath(
-  item: string,
-  section: string | undefined,
-  data: ReturnType<typeof useCollectionMenuData>,
-): string {
-  if (section === 'Meaning') return meaningPath(item, data.meanings)
-  if (section === 'Rudraksha') return rudrakshaPath(item, data.rudrakshaCategory, data.rudrakshaSubCategories)
-  return categoryPath(item, data.categories)
+  return { categories, meanings, purposes, subCategories }
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
