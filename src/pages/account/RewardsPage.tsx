@@ -6,6 +6,7 @@ import { getRewardsBalance, getRewardsHistory } from '@/api/rewards.api'
 import Skeleton from '@/components/ui/Skeleton'
 import EmptyState from '@/components/ui/EmptyState'
 import Pagination from '@/components/ui/Pagination'
+import { MIN_REDEMPTION_POINTS } from '@/api/rewards.api'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -24,7 +25,7 @@ function fmtPrice(n: number) {
 const HOW_STEPS = [
   { icon: '🛒', title: 'Shop',   desc: 'Purchase any product' },
   { icon: '✨', title: 'Earn',   desc: 'Get 20 points per ₹100 spent' },
-  { icon: '🎁', title: 'Redeem', desc: 'Coming soon — stay tuned!' },
+  { icon: '🎁', title: 'Redeem', desc: `Redeem ${MIN_REDEMPTION_POINTS}+ points at checkout` },
 ] as const
 
 // ─── Row skeleton ─────────────────────────────────────────────────────────────
@@ -93,7 +94,7 @@ const RewardsPage: FC = () => {
           letterSpacing: '0.05em', color: '#C49A3C', margin: '0 0 12px',
           position: 'relative',
         }}>
-          ✦ Total Points Earned
+          ✦ Available Points
         </p>
 
         {balanceQuery.isLoading ? (
@@ -118,7 +119,7 @@ const RewardsPage: FC = () => {
           fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(196,184,154,0.75)',
           margin: 0, position: 'relative',
         }}>
-          Earn 20 points for every ₹100 you spend
+          Earn 20 points for every ₹100 you spend. Redeem a minimum of {MIN_REDEMPTION_POINTS} points at checkout; each point is worth ₹0.10.
         </p>
       </div>
 
@@ -236,9 +237,9 @@ const RewardsPage: FC = () => {
               </p>
               <p style={{
                 fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
-                color: '#C49A3C', margin: 0,
+                color: tx.type === 'redeemed' ? '#A85050' : '#C49A3C', margin: 0,
               }}>
-                +{tx.pointsEarned}
+                {tx.type === 'redeemed' ? '−' : '+'}{tx.pointsEarned}
               </p>
             </div>
           ))}

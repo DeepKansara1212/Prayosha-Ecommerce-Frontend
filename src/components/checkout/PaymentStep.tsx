@@ -1,64 +1,30 @@
 import { useState, type FC } from 'react'
 import { useCartStore, selectTotal } from '@/store/cartStore'
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const COD_SURCHARGE = 50
-
 // ─── Props ────────────────────────────────────────────────────────────────────
 
-type PaymentMethod = 'razorpay' | 'cod'
-
 interface Props {
-  onPlaceOrder: (method: PaymentMethod) => Promise<void>
+  onPlaceOrder: () => Promise<void>
   onBack: () => void
+  redeemPoints: number
 }
-
-// ─── Payment method card ──────────────────────────────────────────────────────
-
-const MethodCard: FC<{
-  selected: boolean
-  onClick: () => void
-  children: React.ReactNode
-}> = ({ selected, onClick, children }) => (
-  <button
-    onClick={onClick}
-    style={{
-      display: 'block', width: '100%', textAlign: 'left',
-      background: selected ? '#F0EAF7' : '#fff',
-      border: selected ? '2px solid #7B5EA7' : '1px solid #E2DAC8',
-      borderRadius: 6, padding: 20, cursor: 'pointer',
-      transition: 'border-color 150ms, background 150ms',
-    }}
-  >
-    {children}
-  </button>
-)
-
-const RadioDot: FC<{ selected: boolean }> = ({ selected }) => (
-  <div style={{
-    width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-    border: selected ? '5px solid #7B5EA7' : '2px solid #C4B89A',
-    background: '#fff', transition: 'border 150ms',
-  }} />
-)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
+const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, redeemPoints }) => {
   const total = useCartStore(selectTotal)
 
-  const [method, setMethod]   = useState<PaymentMethod>('razorpay')
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
 
-  const displayTotal = method === 'cod' ? total + COD_SURCHARGE : total
+  const pointsDiscount = redeemPoints / 10
+  const displayTotal = Math.max(0, total - pointsDiscount)
 
   const handlePlace = async () => {
     setError('')
     setLoading(true)
     try {
-      await onPlaceOrder(method)
+      await onPlaceOrder()
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to place order. Please try again.')
       setLoading(false)
@@ -67,75 +33,46 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
 
   return (
     <div>
-      {/* Payment method cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
-
-        {/* Razorpay */}
-        <MethodCard selected={method === 'razorpay'} onClick={() => setMethod('razorpay')}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: method === 'razorpay' ? 8 : 0 }}>
-            <RadioDot selected={method === 'razorpay'} />
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
-                Pay Online
-              </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '3px 0 0' }}>
-                Card · UPI · Net Banking · Wallets
-              </p>
-            </div>
-            {/* Badge icons */}
-            <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-              {['VISA', 'UPI', 'RuPay'].map(label => (
-                <span key={label} style={{
-                  padding: '3px 7px', border: '1px solid #E2DAC8', borderRadius: 4,
-                  fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057',
-                  letterSpacing: '0.04em', textTransform: 'uppercase',
-                }}>
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div>
-          {method === 'razorpay' && (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#7B5EA7', marginLeft: 30, marginBottom: 0 }}>
-              ✦ Secured by Razorpay
-            </p>
-          )}
-        </MethodCard>
-
-        {/* Cash on Delivery */}
-        <MethodCard selected={method === 'cod'} onClick={() => setMethod('cod')}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: method === 'cod' ? 8 : 0 }}>
-            <RadioDot selected={method === 'cod'} />
-            <div>
-              <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
-                Cash on Delivery
-              </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '3px 0 0' }}>
-                +₹{COD_SURCHARGE} handling charge
-              </p>
-            </div>
-          </div>
-          {method === 'cod' && (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', marginLeft: 30, marginBottom: 0 }}>
-              Pay when your crystals arrive
-            </p>
-          )}
-        </MethodCard>
+      <div style={{
+        padding: 20, marginBottom: 24,
+        background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
+      }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: '0 0 6px' }}>
+          Pay Online
+        </p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '0 0 8px' }}>
+          Card · UPI · Net Banking · Wallets
+        </p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#7B5EA7', margin: 0 }}>
+          ✦ Secured by Razorpay
+        </p>
       </div>
 
-      {/* COD total update */}
-      {method === 'cod' && (
+      {/* Checkout total */}
+      {redeemPoints > 0 && (
         <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          display: 'flex', flexDirection: 'column', gap: 8,
           padding: '12px 16px', marginBottom: 20,
           background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
         }}>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>
-            Total (incl. COD charge)
-          </span>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 500, color: '#C49A3C' }}>
-            ₹{displayTotal.toLocaleString('en-IN')}
-          </span>
+          {redeemPoints > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
+                {redeemPoints} points redeemed
+              </span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
+                −₹{pointsDiscount.toFixed(2)}
+              </span>
+            </div>
+          )}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>
+              Total to pay
+            </span>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 500, color: '#C49A3C' }}>
+              ₹{displayTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </div>
         </div>
       )}
 
@@ -170,7 +107,7 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack }) => {
               Placing Order…
             </span>
           ) : (
-            `Place Order · ₹${displayTotal.toLocaleString('en-IN')}`
+            `Place Order · ₹${displayTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
           )}
         </button>
         <button onClick={onBack} disabled={loading} className="acct-btn-ghost" style={{ width: '100%' }}>

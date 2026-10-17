@@ -278,6 +278,16 @@ const CheckoutSuccessPage: FC = () => {
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>−₹{order.discount.toLocaleString('en-IN')}</span>
                       </div>
                     )}
+                    {order.pointsRedeemed > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>
+                          Reward points ({order.pointsRedeemed})
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
+                          −₹{order.pointsDiscount.toFixed(2)}
+                        </span>
+                      </div>
+                    )}
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>Payment</span>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', display: 'flex', alignItems: 'center', gap: 5 }}>

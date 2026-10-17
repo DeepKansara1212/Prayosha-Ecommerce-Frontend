@@ -1,4 +1,5 @@
-import { useState, type FC } from 'react'
+import { useEffect, useState, type FC } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   useCartStore,
   selectSubtotal,
@@ -8,18 +9,21 @@ import {
   SHIPPING_COST,
 } from '@/store/cartStore'
 import { validateCoupon } from '@/api/cart.api'
+import { getRewardsBalance, MIN_REDEMPTION_POINTS } from '@/api/rewards.api'
 import { adapt } from '@/hooks/useProducts'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface Props {
+  redeemPoints: number
+  onRedeemPointsChange: (points: number) => void
   onContinue: () => void
   onBack: () => void
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
+const ReviewStep: FC<Props> = ({ redeemPoints, onRedeemPointsChange, onContinue, onBack }) => {
   const items          = useCartStore(s => s.items)
   const coupon         = useCartStore(s => s.coupon)
   const applyCoupon    = useCartStore(s => s.applyCoupon)
@@ -31,9 +35,27 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
 
   const [couponInput, setCouponInput] = useState('')
   const [couponError, setCouponError] = useState('')
+  const rewardsQuery = useQuery({
+    queryKey: ['rewards-balance'],
+    queryFn: getRewardsBalance,
+  })
 
   const discountedSubtotal = Math.max(0, subtotal - discountAmount)
   const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
+  const maxRedeemPoints = Math.min(
+    rewardsQuery.data?.rewardPoints ?? 0,
+    Math.floor(total * 10 + 1e-8),
+  )
+  const pointsDiscount = redeemPoints / 10
+  const payableTotal = Math.max(0, total - pointsDiscount)
+  const redemptionEligible = maxRedeemPoints >= MIN_REDEMPTION_POINTS
+  const redemptionAmountInvalid = redeemPoints > 0 && redeemPoints < MIN_REDEMPTION_POINTS
+
+  useEffect(() => {
+    if (redeemPoints > maxRedeemPoints) {
+      onRedeemPointsChange(redemptionEligible ? maxRedeemPoints : 0)
+    }
+  }, [maxRedeemPoints, onRedeemPointsChange, redeemPoints, redemptionEligible])
 
   const handleApply = async () => {
     const code = couponInput.trim()
@@ -179,6 +201,75 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
         )}
       </div>
 
+      {/* Rewards points */}
+      <div style={{
+        padding: 20, marginBottom: 24,
+        background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
+      }}>
+        <p style={{
+          fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
+          letterSpacing: '0.05em', color: '#6B6057', margin: '0 0 8px',
+        }}>
+          Redeem Reward Points
+        </p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '0 0 14px' }}>
+          1 point = ₹0.10 · Minimum redemption: {MIN_REDEMPTION_POINTS} points · Available: {rewardsQuery.data?.rewardPoints.toLocaleString('en-IN') ?? (rewardsQuery.isLoading ? 'Loading…' : '—')}
+        </p>
+        {rewardsQuery.isError && (
+          <p role="alert" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: '0 0 12px' }}>
+            Could not load your points. Try again before redeeming.
+            <button
+              type="button"
+              onClick={() => void rewardsQuery.refetch()}
+              style={{ marginLeft: 8, color: '#7B5EA7', background: 'none', border: 0, cursor: 'pointer' }}
+            >
+              Retry
+            </button>
+          </p>
+        )}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <input
+            aria-label="Reward points to redeem"
+            type="number"
+            min={MIN_REDEMPTION_POINTS}
+            max={maxRedeemPoints}
+            step={1}
+            value={redeemPoints}
+            disabled={!redemptionEligible}
+            onChange={event => {
+              const value = Number(event.target.value)
+              onRedeemPointsChange(Number.isFinite(value) ? Math.min(maxRedeemPoints, Math.max(0, Math.floor(value))) : 0)
+            }}
+            className="acct-input"
+            style={{ maxWidth: 180 }}
+          />
+          <button
+            type="button"
+            onClick={() => onRedeemPointsChange(maxRedeemPoints)}
+            disabled={!redemptionEligible}
+            className="acct-btn-ghost"
+            style={{ padding: '12px 16px' }}
+          >
+            Use maximum
+          </button>
+        </div>
+        {!redemptionEligible && !rewardsQuery.isLoading && !rewardsQuery.isError && (
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '10px 0 0' }}>
+            You need at least {MIN_REDEMPTION_POINTS} available points and an order that can use that many points to redeem.
+          </p>
+        )}
+        {redemptionAmountInvalid && (
+          <p role="alert" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: '10px 0 0' }}>
+            Redeem at least {MIN_REDEMPTION_POINTS} points, or enter 0 to skip redemption.
+          </p>
+        )}
+        {redeemPoints > 0 && (
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', margin: '10px 0 0' }}>
+            You’ll save ₹{pointsDiscount.toFixed(2)}
+          </p>
+        )}
+      </div>
+
       {/* Price breakdown */}
       <div style={{
         padding: 20, marginBottom: 32,
@@ -193,18 +284,21 @@ const ReviewStep: FC<Props> = ({ onContinue, onBack }) => {
           value={shipping === 0 ? 'Free' : `₹${shipping}`}
           valueColor={shipping === 0 ? '#5A8A6A' : undefined}
         />
+        {pointsDiscount > 0 && (
+          <Row label={`Reward points (${redeemPoints})`} value={`−₹${pointsDiscount.toFixed(2)}`} valueColor="#5A8A6A" />
+        )}
         <div style={{ height: 1, background: '#E2DAC8', margin: '14px 0' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#1C1A17' }}>Total</span>
           <span style={{ fontFamily: 'var(--font-body)', fontSize: 17, fontWeight: 500, color: '#C49A3C' }}>
-            ₹{total.toLocaleString('en-IN')}
+            ₹{payableTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
       </div>
 
       {/* Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <button onClick={onContinue} className="acct-btn-gold" style={{ width: '100%' }}>
+        <button onClick={onContinue} disabled={redemptionAmountInvalid} className="acct-btn-gold" style={{ width: '100%' }}>
           Continue to Payment
         </button>
         <button onClick={onBack} className="acct-btn-ghost" style={{ width: '100%' }}>

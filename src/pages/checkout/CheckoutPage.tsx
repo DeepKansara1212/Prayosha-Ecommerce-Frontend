@@ -149,12 +149,14 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
 
 // ─── Order summary sidebar ────────────────────────────────────────────────────
 
-const OrderSidebar: FC = () => {
+const OrderSidebar: FC<{ redeemPoints: number }> = ({ redeemPoints }) => {
   const items          = useCartStore(s => s.items)
   const coupon         = useCartStore(s => s.coupon)
   const subtotal       = useCartStore(selectSubtotal)
   const discountAmount = useCartStore(selectDiscountAmount)
   const total          = useCartStore(selectTotal)
+  const pointsDiscount = redeemPoints / 10
+  const payableTotal   = Math.max(0, total - pointsDiscount)
 
   const discountedSubtotal = Math.max(0, subtotal - discountAmount)
   const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
@@ -172,7 +174,7 @@ const OrderSidebar: FC = () => {
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>Order Summary</span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#C49A3C' }}>
-            ₹{total.toLocaleString('en-IN')}
+            ₹{payableTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
           <svg viewBox="0 0 16 16" width={14} height={14} fill="none" stroke="#6B6057" strokeWidth="1.5"
             style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 200ms' }}>
@@ -256,6 +258,13 @@ const OrderSidebar: FC = () => {
               </span>
             </div>
           )}
+          {pointsDiscount > 0 && (
+            <SidebarRow
+              label={`Reward points (${redeemPoints})`}
+              value={`−₹${pointsDiscount.toFixed(2)}`}
+              valueColor="#5A8A6A"
+            />
+          )}
           <SidebarRow
             label="Shipping"
             value={shipping === 0 ? 'Free' : `₹${shipping}`}
@@ -274,7 +283,7 @@ const OrderSidebar: FC = () => {
             Total
           </span>
           <span style={{ fontFamily: 'var(--font-body)', fontSize: 18, fontWeight: 500, color: '#C49A3C' }}>
-            ₹{total.toLocaleString('en-IN')}
+            ₹{payableTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
 
@@ -314,6 +323,7 @@ const CheckoutPage: FC = () => {
 
   const [step, setStep]                           = useState<Step>(1)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
+  const [redeemPoints, setRedeemPoints]             = useState(0)
 
   // Auth guard
   useEffect(() => {
@@ -354,25 +364,13 @@ const CheckoutPage: FC = () => {
     )
   }
 
-  const handlePlaceOrder = async (method: 'cod' | 'razorpay') => {
+  const handlePlaceOrder = async () => {
     if (!selectedAddressId) throw new Error('No address selected.')
 
-    if (method === 'cod') {
-      const result = await ordersApi.createCODOrder({
-        addressId: selectedAddressId,
-        couponCode: coupon?.code,
-      })
-      trackMetaPurchaseOnce(result.order)
-      sessionStorage.setItem('prayosha_last_order', JSON.stringify(result))
-      await clearCart()
-      navigate('/checkout/success', { replace: true })
-      return
-    }
-
-    // Razorpay
     const { razorpayOrderId, amount, currency } = await ordersApi.createRazorpayOrder({
       addressId: selectedAddressId,
       couponCode: coupon?.code,
+      redeemPoints,
     })
 
     await openRazorpay(
@@ -436,6 +434,8 @@ const CheckoutPage: FC = () => {
               )}
               {step === 2 && (
                 <ReviewStep
+                  redeemPoints={redeemPoints}
+                  onRedeemPointsChange={setRedeemPoints}
                   onContinue={() => setStep(3)}
                   onBack={() => setStep(1)}
                 />
@@ -444,12 +444,13 @@ const CheckoutPage: FC = () => {
                 <PaymentStep
                   onPlaceOrder={handlePlaceOrder}
                   onBack={() => setStep(2)}
+                  redeemPoints={redeemPoints}
                 />
               )}
             </div>
 
             {/* Right: sidebar */}
-            <OrderSidebar />
+            <OrderSidebar redeemPoints={redeemPoints} />
           </div>
         </div>
       </main>

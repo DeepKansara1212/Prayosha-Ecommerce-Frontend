@@ -3,6 +3,8 @@ import type { RewardsBalance, RewardTransaction } from '@/types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export const MIN_REDEMPTION_POINTS = 250
+
 export interface RewardsHistoryResponse {
   transactions: RewardTransaction[]
   totalPoints: number

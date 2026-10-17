@@ -47,6 +47,8 @@ export interface Order {
   subtotal: number
   discount: number
   total: number
+  pointsRedeemed: number
+  pointsDiscount: number
   trackingNumber?: string
   awbNumber?: string
   carrier?: string
@@ -71,14 +73,10 @@ export interface OrderLineInput {
   quantity: number
 }
 
-export interface CODOrderData {
-  addressId: string
-  couponCode?: string
-}
-
 export interface RazorpayOrderData {
   addressId: string
   couponCode?: string
+  redeemPoints?: number
 }
 
 export interface RazorpayOrderResponse {
@@ -101,11 +99,6 @@ export interface PaginatedOrders {
 }
 
 // ─── Functions ────────────────────────────────────────────────────────────────
-
-export async function createCODOrder(data: CODOrderData): Promise<OrderSuccessResponse> {
-  const res = await apiClient.post<{ data: OrderSuccessResponse }>('/orders/cod', data)
-  return res.data.data
-}
 
 export async function createRazorpayOrder(
   data: RazorpayOrderData,
