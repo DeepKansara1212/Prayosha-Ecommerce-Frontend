@@ -86,7 +86,7 @@ export function useRazorpay() {
       key: (import.meta.env.VITE_RAZORPAY_KEY_ID ?? '') as string,
       amount,
       currency,
-      name: 'prayosha crystalss',
+      name: 'prayosha crystals',
       description: 'Sacred Crystal Collection',
       order_id: razorpayOrderId,
       prefill: {

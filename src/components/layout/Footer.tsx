@@ -19,7 +19,7 @@ const Footer: FC = () => (
           to="/"
           className="inline-block mb-4 no-underline opacity-100 hover:opacity-80 transition-opacity duration-200"
         >
-          <img src="/prayosha-logo.png" alt="prayosha crystalss" className="h-14 w-auto object-contain mix-blend-multiply" />
+          <img src="/prayosha-logo.png" alt="prayosha crystals" className="h-14 w-auto object-contain mix-blend-multiply" />
         </Link>
         <p className="font-body font-normal text-xs leading-relaxed text-bark max-w-[240px] mb-5">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.

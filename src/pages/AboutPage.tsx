@@ -59,7 +59,7 @@ const AboutPage: FC = () => (
             <div className="mx-auto mb-8 h-px w-16 bg-gold/60" aria-hidden="true" />
             <div className="mx-auto max-w-3xl space-y-5 font-body font-extralight text-[0.9rem] leading-[2] text-bark sm:text-base">
               <p>
-                At prayosha crystalss, we believe the journey of a crystal matters as much as its beauty.
+                At prayosha crystals, we believe the journey of a crystal matters as much as its beauty.
                 We work with trusted partners to source natural crystals with care and respect.
               </p>
               <p>
