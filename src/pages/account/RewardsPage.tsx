@@ -184,7 +184,7 @@ const RewardsPage: FC = () => {
             padding: '12px 0',
             borderBottom: '1px solid #E2DAC8',
           }}>
-            {['Order', 'Date', 'Amount', 'Points'].map(col => (
+            {['Product', 'Date', 'Amount', 'Points'].map(col => (
               <span key={col} style={{
                 fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
                 letterSpacing: '0.05em', color: '#B0A99F',
@@ -226,8 +226,16 @@ const RewardsPage: FC = () => {
                 borderBottom: i < transactions.length - 1 ? '1px solid #E2DAC8' : 'none',
               }}
             >
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: 0 }}>
-                {tx.order ? `#${tx.order.orderNumber}` : '—'}
+              <p
+                title={tx.order?.items.map(item => item.name).join(', ')}
+                style={{
+                  fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: 0,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}
+              >
+                {tx.order?.items.length
+                  ? tx.order.items.map(item => `${item.name}${item.quantity > 1 ? ` ×${item.quantity}` : ''}`).join(', ')
+                  : '—'}
               </p>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                 {fmtDate(tx.createdAt)}
