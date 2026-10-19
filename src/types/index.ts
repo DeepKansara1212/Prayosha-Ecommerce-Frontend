@@ -127,7 +127,7 @@ export interface ProductDetail {
   emoji: string
   bgClass: string
   badge?: string
-  chakra: ChakraType
+  chakra?: ChakraType
   origin: string
   intention: string
   description: string

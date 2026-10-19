@@ -45,6 +45,7 @@ export function adapt(p: ApiProduct): ProductDetail {
     .split(/\r?\n/)
     .map(instruction => instruction.trim())
     .filter(Boolean)
+  const chakra = str(p.chakra).trim()
 
   return {
     id: p.slug,
@@ -59,7 +60,7 @@ export function adapt(p: ApiProduct): ProductDetail {
     emoji: p.emoji ?? '💎',
     bgClass: p.bgClass ?? 'bg-warm',
     badge: p.badge ? BADGE_MAP[p.badge] : undefined,
-    chakra: (p.chakra ?? 'Crown') as ChakraType,
+    ...(chakra && { chakra: chakra as ChakraType }),
     origin: p.origin ?? '',
     intention: p.tags?.join(' · ') ?? '',
     description: p.description,

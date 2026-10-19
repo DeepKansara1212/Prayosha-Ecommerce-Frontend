@@ -93,7 +93,7 @@ const CartLine: FC<CartLineProps> = ({ product, qty, inWishlist, movingToWishlis
 
         {/* Chakra + origin pills */}
         <div className="flex flex-wrap gap-1.5 mt-2 mb-3">
-          <span className="font-body text-xs uppercase tracking-[0.05em] px-2 py-1 bg-warm text-muted">{product.chakra} Chakra</span>
+          {product.chakra && <span className="font-body text-xs uppercase tracking-[0.05em] px-2 py-1 bg-warm text-muted">{product.chakra} Chakra</span>}
           <span className="font-body text-xs uppercase tracking-[0.05em] px-2 py-1 bg-warm text-muted">{product.origin}</span>
         </div>
 

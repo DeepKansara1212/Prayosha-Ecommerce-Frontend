@@ -282,7 +282,7 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
 
   const isWishlisted = wishlistIds.has(productId)
   const isInCart     = cartIds.has(productId)
-  const chakraColour = product ? (CHAKRA_COLOURS[product.chakra] ?? '#7C5C8A') : '#7C5C8A'
+  const chakraColour = product?.chakra ? (CHAKRA_COLOURS[product.chakra] ?? '#7C5C8A') : '#7C5C8A'
   const viewedProductSku = useRef<string | null>(null)
   const descriptionLines = product?.description
     .split(/\r?\n/)
@@ -393,13 +393,17 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
               {/* Category + chakra */}
               <div className="flex items-center gap-2 flex-wrap mb-3">
                 <span className="font-body text-xs uppercase tracking-[0.05em] text-muted">{product.category}</span>
-                <span className="text-muted/30">·</span>
-                <span
-                  className="font-body text-xs uppercase tracking-[0.05em] px-2.5 py-1 border"
-                  style={{ color: chakraColour, borderColor: `${chakraColour}50`, background: `${chakraColour}12` }}
-                >
-                  {product.chakra} Chakra
-                </span>
+                {product.chakra && (
+                  <>
+                    <span className="text-muted/30">·</span>
+                    <span
+                      className="font-body text-xs uppercase tracking-[0.05em] px-2.5 py-1 border"
+                      style={{ color: chakraColour, borderColor: `${chakraColour}50`, background: `${chakraColour}12` }}
+                    >
+                      {product.chakra} Chakra
+                    </span>
+                  </>
+                )}
                 {product.badge && (
                   <span className={cn(
                     'font-body text-xs uppercase tracking-[0.05em] px-2.5 py-1',

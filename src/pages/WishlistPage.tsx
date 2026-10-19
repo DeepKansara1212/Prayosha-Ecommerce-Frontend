@@ -360,7 +360,9 @@ const WishlistPage: FC<WishlistPageProps> = ({
             </div>
 
             <div className="p-6 sm:p-8">
-              <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-1">{drawerProduct.category} · {drawerProduct.chakra} Chakra</p>
+              <p className="font-body text-xs uppercase tracking-[0.05em] text-muted mb-1">
+                {drawerProduct.category}{drawerProduct.chakra && ` · ${drawerProduct.chakra} Chakra`}
+              </p>
               <h2 className="font-display font-light text-[1.8rem] text-deep mb-1 leading-tight">{drawerProduct.name}</h2>
               <p className="font-body font-extralight text-xs text-muted mb-4">{drawerProduct.subtitle}</p>
               <p className="font-body font-extralight text-[0.82rem] leading-[1.9] text-bark mb-6">{drawerProduct.description}</p>

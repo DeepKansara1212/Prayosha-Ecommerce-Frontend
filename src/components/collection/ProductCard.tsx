@@ -116,7 +116,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onSelect, wishlisted, onWi
             overflow: 'hidden',
           }}
         >
-          {product.category} · {product.chakra} Chakra
+          {product.category}{product.chakra && ` · ${product.chakra} Chakra`}
         </p>
         <h3
           className="font-display text-[1.1rem] font-normal text-deep mb-0.5 leading-tight"

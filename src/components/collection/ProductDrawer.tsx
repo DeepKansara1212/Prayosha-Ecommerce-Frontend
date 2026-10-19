@@ -82,7 +82,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
     ? COLLECTION_PRODUCTS.filter(p => product.relatedIds.includes(p.id)).slice(0, 3)
     : []
 
-  const chakraColour = product ? (CHAKRA_COLOURS[product.chakra] ?? '#7C5C8A') : '#7C5C8A'
+  const chakraColour = product?.chakra ? (CHAKRA_COLOURS[product.chakra] ?? '#7C5C8A') : '#7C5C8A'
 
   return (
     <>
@@ -175,13 +175,17 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                   <span className="font-body text-xs uppercase tracking-[0.05em] text-muted">
                     {product.category}
                   </span>
-                  <span className="text-muted/40">·</span>
-                  <span
-                    className="font-body text-xs uppercase tracking-[0.05em] px-2 py-0.5"
-                    style={{ background: `${chakraColour}22`, color: chakraColour, border: `1px solid ${chakraColour}44` }}
-                  >
-                    {product.chakra} Chakra
-                  </span>
+                  {product.chakra && (
+                    <>
+                      <span className="text-muted/40">·</span>
+                      <span
+                        className="font-body text-xs uppercase tracking-[0.05em] px-2 py-0.5"
+                        style={{ background: `${chakraColour}22`, color: chakraColour, border: `1px solid ${chakraColour}44` }}
+                      >
+                        {product.chakra} Chakra
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 <h2 className="font-display font-light text-[clamp(1.6rem,4vw,2.2rem)] leading-tight text-deep mb-1">
@@ -328,17 +332,19 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                         ))}
                       </ul>
                     )}
-                    <div
-                      className="mt-5 p-4 border-l-2 bg-warm/60"
-                      style={{ borderColor: chakraColour }}
-                    >
-                      <p className="font-body text-xs uppercase tracking-[0.05em] mb-1" style={{ color: chakraColour }}>
-                        {product.chakra} Chakra
-                      </p>
-                      <p className="font-body font-extralight text-xs text-bark/80">
-                        This stone primarily activates and balances the {product.chakra.toLowerCase()} chakra.
-                      </p>
-                    </div>
+                    {product.chakra && (
+                      <div
+                        className="mt-5 p-4 border-l-2 bg-warm/60"
+                        style={{ borderColor: chakraColour }}
+                      >
+                        <p className="font-body text-xs uppercase tracking-[0.05em] mb-1" style={{ color: chakraColour }}>
+                          {product.chakra} Chakra
+                        </p>
+                        <p className="font-body font-extralight text-xs text-bark/80">
+                          This stone primarily activates and balances the {product.chakra.toLowerCase()} chakra.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
