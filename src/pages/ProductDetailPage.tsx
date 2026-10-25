@@ -432,10 +432,12 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
               {/* Price */}
               <div className="flex items-baseline gap-3 mb-1">
                 <span className="font-display font-light text-[2.2rem] text-deep">{product.priceDisplay}</span>
-                {product.price !== undefined && (
+                {product.price !== undefined && product.comparePrice !== undefined && product.comparePrice > product.price && (
                   <>
-                    <span className="font-body text-xs text-muted line-through">₹{Math.round(product.price * 1.2).toLocaleString('en-IN')}</span>
-                    <span className="font-body text-xs text-sage font-normal">Save 17%</span>
+                    <span className="font-body text-xs text-muted line-through">₹{product.comparePrice.toLocaleString('en-IN')}</span>
+                    <span className="font-body text-xs text-sage font-normal">
+                      Save {Math.round((1 - product.price / product.comparePrice) * 100)}%
+                    </span>
                   </>
                 )}
               </div>
@@ -628,6 +630,12 @@ const ProductDetailPage: FC<ProductDetailPageProps> = ({
                       { label: 'Height', value: product.productDetails?.height },
                       { label: 'Dimensions', value: product.productDetails?.dimensions ?? product.dimensions },
                       { label: 'Size', value: product.productDetails?.size ?? product.size },
+                      { label: 'No. of Sticks', value: product.noOfSticks !== undefined ? String(product.noOfSticks) : undefined },
+                      { label: 'Shape', value: product.shape },
+                      { label: 'Color', value: product.color },
+                      { label: 'Rudraksha Faces', value: product.rudrakshaFaces },
+                      { label: 'Bead Size', value: product.beadSize },
+                      { label: 'Tags', value: product.intention },
                       { label: 'Origin', value: product.origin },
                       { label: 'Chakra', value: product.chakra },
                       { label: 'Category', value: product.category },

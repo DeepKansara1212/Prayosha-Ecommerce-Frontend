@@ -183,7 +183,7 @@ const DROPDOWN_COLUMNS: DropdownColumn[] = [
     title: 'Energy Cleansing',
     items: [
       'Vastu Purity Cone', 'Camphore Cone', 'Bath Salt', 'Healing Oil',
-      'Vastu Spray', 'Bhimseni Camphor', 'Gir Cow Dung Dhoop Stick',
+      'Vastu Spray', 'Vastu Moping Salt', 'Bhimseni Camphor', 'Gir Cow Dung Dhoop Stick',
       'Sage', 'Palosanto', 'Soap',
     ],
   },
@@ -675,7 +675,7 @@ const Navbar: FC = () => {
             'flex items-center justify-between',
               'px-[clamp(1.25rem,5vw,4rem)] py-4 md:py-5',
             'transition-all duration-400',
-            'bg-warm backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]',
+            'bg-white backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]',
           )}
         >
           {/* Logo */}
@@ -684,7 +684,7 @@ const Navbar: FC = () => {
             className="flex items-center z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
             aria-label="prayosha crystals — go to home"
           >
-            <img src="/prayosha-logo.png" alt="prayosha crystals" className="h-14 md:h-12 w-auto flex-none object-contain mix-blend-multiply" />
+            <img src="/prayosha-logo.png" alt="prayosha crystals" className="h-16 w-auto flex-none object-contain mix-blend-multiply" />
           </button>
 
           {/* Desktop nav links */}

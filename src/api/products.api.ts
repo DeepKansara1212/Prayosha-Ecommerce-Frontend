@@ -24,6 +24,11 @@ export interface ApiProduct {
   category: string | { name: string; slug: string; shipping?: ApiProductShipping }
   tags: string[]
   chakra?: string
+  shape?: string
+  color?: string
+  rudrakshaFaces?: string
+  beadSize?: string
+  noOfSticks?: number
   badge?: 'BESTSELLER' | 'NEW' | 'LIMITED' | 'RARE' | 'GIFT SET'
   stock: number
   lowStockThreshold: number

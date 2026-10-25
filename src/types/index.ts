@@ -121,6 +121,7 @@ export interface ProductDetail {
   subtitle: string
   category: ProductCategory
   price?: number
+  comparePrice?: number
   priceDisplay: string
   images: string[]
   video?: string
@@ -128,6 +129,11 @@ export interface ProductDetail {
   bgClass: string
   badge?: string
   chakra?: ChakraType
+  shape?: string
+  color?: string
+  rudrakshaFaces?: string
+  beadSize?: string
+  noOfSticks?: number
   origin: string
   intention: string
   description: string
