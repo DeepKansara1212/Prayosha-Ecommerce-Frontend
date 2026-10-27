@@ -30,11 +30,6 @@ interface CartPageProps {
   onClearCart: () => void
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const SHIPPING_THRESHOLD = 999
-const SHIPPING_COST      = 149
-
 // ─── Cart line item ───────────────────────────────────────────────────────────
 
 interface CartLineProps {
@@ -262,45 +257,11 @@ const OrderSummary: FC<SummaryProps> = ({
   subtotal, discountAmount, appliedCode,
   onPromoApply, onPromoRemove, onCheckout, itemCount, canCheckout,
 }) => {
-  const discountedSubtotal = subtotal - discountAmount
-  const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-  const total = discountedSubtotal + shipping
-
-  const freeShippingRemaining = SHIPPING_THRESHOLD - discountedSubtotal
-  const freeShippingPct = Math.min(100, (discountedSubtotal / SHIPPING_THRESHOLD) * 100)
+  const discountedSubtotal = Math.max(0, subtotal - discountAmount)
 
   return (
     <div className="bg-warm p-6 sm:p-7 sticky top-24">
       <h2 className="font-display font-light text-[1.3rem] text-deep mb-5">Order Summary</h2>
-
-      {/* Free shipping progress */}
-      {shipping > 0 && (
-        <div className="mb-5 pb-5 border-b border-warm/60">
-          <div className="flex justify-between items-center mb-2">
-            <p className="font-body text-xs text-muted">
-              Add <span className="text-bark font-normal">₹{Math.ceil(freeShippingRemaining).toLocaleString('en-IN')}</span> for free shipping
-            </p>
-            <span className="font-body text-xs text-muted">{Math.round(freeShippingPct)}%</span>
-          </div>
-          <div className="h-1 bg-warm rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gold rounded-full transition-all duration-500"
-              style={{ width: `${freeShippingPct}%` }}
-              role="progressbar"
-              aria-valuenow={Math.round(freeShippingPct)}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label="Progress toward free shipping"
-            />
-          </div>
-        </div>
-      )}
-      {shipping === 0 && (
-        <div className="mb-5 pb-5 border-b border-warm/60 flex items-center gap-2 text-sage">
-          <svg viewBox="0 0 20 20" className="w-4 h-4 flex-none" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M16.5 7.5 8 16l-4-4 1.5-1.5L8 13l7-7 1.5 1.5Z"/></svg>
-          <p className="font-body text-xs uppercase tracking-[0.05em]">Free shipping unlocked!</p>
-        </div>
-      )}
 
       {/* Line items */}
       <div className="space-y-3 mb-5">
@@ -318,9 +279,7 @@ const OrderSummary: FC<SummaryProps> = ({
 
         <div className="flex justify-between">
           <span className="font-body text-xs text-muted">Shipping</span>
-          <span className="font-body text-xs text-bark">
-            {shipping === 0 ? <span className="text-sage">Free</span> : `₹${shipping}`}
-          </span>
+          <span className="font-body text-xs text-muted">Calculated at checkout</span>
         </div>
 
       </div>
@@ -338,7 +297,7 @@ const OrderSummary: FC<SummaryProps> = ({
       {/* Total */}
       <div className="flex justify-between items-baseline mb-6">
         <span className="font-body text-xs uppercase tracking-[0.05em] text-muted">Total</span>
-        <span className="font-display text-[1.6rem] font-light text-deep">₹{Math.round(total).toLocaleString('en-IN')}</span>
+        <span className="font-display text-[1.6rem] font-light text-deep">₹{Math.round(discountedSubtotal).toLocaleString('en-IN')}</span>
       </div>
 
       {/* Checkout button */}

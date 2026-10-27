@@ -2,6 +2,7 @@ import { apiClient } from './client'
 
 export interface PublicSettings {
   freeGiftEnabled: boolean
+  freeShippingEnabled: boolean
   whatsappNumber: string
   whatsappDefaultMessage?: string
 }

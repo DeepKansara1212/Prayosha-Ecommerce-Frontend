@@ -7,18 +7,19 @@ interface Props {
   onPlaceOrder: () => Promise<void>
   onBack: () => void
   redeemPoints: number
+  shippingCharge: number
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, redeemPoints }) => {
-  const total = useCartStore(selectTotal)
+const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, redeemPoints, shippingCharge }) => {
+  const subtotal = useCartStore(selectTotal)
 
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
 
   const pointsDiscount = redeemPoints / 10
-  const displayTotal = Math.max(0, total - pointsDiscount)
+  const displayTotal = Math.max(0, subtotal + shippingCharge - pointsDiscount)
 
   const handlePlace = async () => {
     setError('')

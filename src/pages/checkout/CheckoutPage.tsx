@@ -1,4 +1,5 @@
 import { useState, useEffect, type FC } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
 import { useAuthStore } from '@/store/authStore'
@@ -7,8 +8,6 @@ import {
   selectSubtotal,
   selectDiscountAmount,
   selectTotal,
-  SHIPPING_THRESHOLD,
-  SHIPPING_COST,
 } from '@/store/cartStore'
 import { adapt } from '@/hooks/useProducts'
 import AddressStep from '@/components/checkout/AddressStep'
@@ -149,17 +148,20 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
 
 // ─── Order summary sidebar ────────────────────────────────────────────────────
 
-const OrderSidebar: FC<{ redeemPoints: number }> = ({ redeemPoints }) => {
+const OrderSidebar: FC<{
+  redeemPoints: number
+  shippingCharge: number
+  shippingLoading: boolean
+  shippingError?: string
+  shippingReady: boolean
+}> = ({ redeemPoints, shippingCharge, shippingLoading, shippingError, shippingReady }) => {
   const items          = useCartStore(s => s.items)
   const coupon         = useCartStore(s => s.coupon)
   const subtotal       = useCartStore(selectSubtotal)
   const discountAmount = useCartStore(selectDiscountAmount)
   const total          = useCartStore(selectTotal)
   const pointsDiscount = redeemPoints / 10
-  const payableTotal   = Math.max(0, total - pointsDiscount)
-
-  const discountedSubtotal = Math.max(0, subtotal - discountAmount)
-  const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
+  const payableTotal   = Math.max(0, total + shippingCharge - pointsDiscount)
 
   const [open, setOpen] = useState(false)
 
@@ -267,8 +269,8 @@ const OrderSidebar: FC<{ redeemPoints: number }> = ({ redeemPoints }) => {
           )}
           <SidebarRow
             label="Shipping"
-            value={shipping === 0 ? 'Free' : `₹${shipping}`}
-            valueColor={shipping === 0 ? '#5A8A6A' : '#1C1A17'}
+            value={shippingLoading ? 'Calculating…' : shippingError ? 'Unavailable' : !shippingReady ? 'Select address' : shippingCharge === 0 ? 'Free' : `₹${shippingCharge.toLocaleString('en-IN')}`}
+            valueColor={shippingCharge === 0 && shippingReady && !shippingLoading && !shippingError ? '#5A8A6A' : '#1C1A17'}
           />
         </div>
 
@@ -324,6 +326,24 @@ const CheckoutPage: FC = () => {
   const [step, setStep]                           = useState<Step>(1)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
   const [redeemPoints, setRedeemPoints]             = useState(0)
+  const shippingQuoteQuery = useQuery({
+    queryKey: [
+      'shipping-quote',
+      selectedAddressId,
+      coupon?.code,
+      items.map(item => [item.productId, item.quantity]),
+    ],
+    queryFn: () => ordersApi.getShippingQuote({
+      addressId: selectedAddressId!,
+      couponCode: coupon?.code,
+    }),
+    enabled: !!selectedAddressId,
+    retry: false,
+  })
+  const shippingCharge = shippingQuoteQuery.data?.shippingCharge ?? 0
+  const shippingError = shippingQuoteQuery.error instanceof Error
+    ? shippingQuoteQuery.error.message
+    : undefined
 
   // Auth guard
   useEffect(() => {
@@ -366,17 +386,27 @@ const CheckoutPage: FC = () => {
 
   const handlePlaceOrder = async () => {
     if (!selectedAddressId) throw new Error('No address selected.')
+    if (!shippingQuoteQuery.data) throw new Error('Shipping rate is not available yet.')
 
-    const { razorpayOrderId, amount, currency } = await ordersApi.createRazorpayOrder({
-      addressId: selectedAddressId,
-      couponCode: coupon?.code,
-      redeemPoints,
-    })
+    let orderPayment: Awaited<ReturnType<typeof ordersApi.createRazorpayOrder>>
+    try {
+      orderPayment = await ordersApi.createRazorpayOrder({
+        addressId: selectedAddressId,
+        couponCode: coupon?.code,
+        redeemPoints,
+        shippingCharge: shippingQuoteQuery.data.shippingCharge,
+      })
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Shipping rate changed')) {
+        await shippingQuoteQuery.refetch()
+      }
+      throw error
+    }
 
     await openRazorpay(
-      razorpayOrderId,
-      amount,
-      currency,
+      orderPayment.razorpayOrderId,
+      orderPayment.amount,
+      orderPayment.currency,
       async (result) => {
         trackMetaPurchaseOnce(result.order)
         sessionStorage.setItem('prayosha_last_order', JSON.stringify(result))
@@ -438,6 +468,10 @@ const CheckoutPage: FC = () => {
                   onRedeemPointsChange={setRedeemPoints}
                   onContinue={() => setStep(3)}
                   onBack={() => setStep(1)}
+                  shippingCharge={shippingCharge}
+                  shippingLoading={shippingQuoteQuery.isLoading || shippingQuoteQuery.isFetching}
+                  shippingError={shippingError}
+                  onRetryShipping={() => { void shippingQuoteQuery.refetch() }}
                 />
               )}
               {step === 3 && (
@@ -445,12 +479,19 @@ const CheckoutPage: FC = () => {
                   onPlaceOrder={handlePlaceOrder}
                   onBack={() => setStep(2)}
                   redeemPoints={redeemPoints}
+                  shippingCharge={shippingCharge}
                 />
               )}
             </div>
 
             {/* Right: sidebar */}
-            <OrderSidebar redeemPoints={redeemPoints} />
+            <OrderSidebar
+              redeemPoints={redeemPoints}
+              shippingCharge={shippingCharge}
+              shippingLoading={shippingQuoteQuery.isLoading || shippingQuoteQuery.isFetching}
+              shippingError={shippingError}
+              shippingReady={!!shippingQuoteQuery.data}
+            />
           </div>
         </div>
       </main>

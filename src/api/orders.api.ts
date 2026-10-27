@@ -77,6 +77,16 @@ export interface RazorpayOrderData {
   addressId: string
   couponCode?: string
   redeemPoints?: number
+  shippingCharge?: number
+}
+
+export interface ShippingQuoteData {
+  addressId: string
+  couponCode?: string
+}
+
+export interface ShippingQuoteResponse {
+  shippingCharge: number
 }
 
 export interface RazorpayOrderResponse {
@@ -104,6 +114,13 @@ export async function createRazorpayOrder(
   data: RazorpayOrderData,
 ): Promise<RazorpayOrderResponse> {
   const res = await apiClient.post<{ data: RazorpayOrderResponse }>('/orders/razorpay/create', data)
+  return res.data.data
+}
+
+export async function getShippingQuote(
+  data: ShippingQuoteData,
+): Promise<ShippingQuoteResponse> {
+  const res = await apiClient.post<{ data: ShippingQuoteResponse }>('/orders/shipping-quote', data)
   return res.data.data
 }
 

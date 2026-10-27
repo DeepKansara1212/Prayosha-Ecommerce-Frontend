@@ -5,8 +5,6 @@ import {
   selectSubtotal,
   selectDiscountAmount,
   selectTotal,
-  SHIPPING_THRESHOLD,
-  SHIPPING_COST,
 } from '@/store/cartStore'
 import { validateCoupon } from '@/api/cart.api'
 import { getRewardsBalance, MIN_REDEMPTION_POINTS } from '@/api/rewards.api'
@@ -19,11 +17,24 @@ interface Props {
   onRedeemPointsChange: (points: number) => void
   onContinue: () => void
   onBack: () => void
+  shippingCharge: number
+  shippingLoading: boolean
+  shippingError?: string
+  onRetryShipping: () => void
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const ReviewStep: FC<Props> = ({ redeemPoints, onRedeemPointsChange, onContinue, onBack }) => {
+const ReviewStep: FC<Props> = ({
+  redeemPoints,
+  onRedeemPointsChange,
+  onContinue,
+  onBack,
+  shippingCharge,
+  shippingLoading,
+  shippingError,
+  onRetryShipping,
+}) => {
   const items          = useCartStore(s => s.items)
   const coupon         = useCartStore(s => s.coupon)
   const applyCoupon    = useCartStore(s => s.applyCoupon)
@@ -40,14 +51,13 @@ const ReviewStep: FC<Props> = ({ redeemPoints, onRedeemPointsChange, onContinue,
     queryFn: getRewardsBalance,
   })
 
-  const discountedSubtotal = Math.max(0, subtotal - discountAmount)
-  const shipping = discountedSubtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
+  const orderTotal = total + shippingCharge
   const maxRedeemPoints = Math.min(
     rewardsQuery.data?.rewardPoints ?? 0,
-    Math.floor(total * 10 + 1e-8),
+    Math.floor(orderTotal * 10 + 1e-8),
   )
   const pointsDiscount = redeemPoints / 10
-  const payableTotal = Math.max(0, total - pointsDiscount)
+  const payableTotal = Math.max(0, orderTotal - pointsDiscount)
   const redemptionEligible = maxRedeemPoints >= MIN_REDEMPTION_POINTS
   const redemptionAmountInvalid = redeemPoints > 0 && redeemPoints < MIN_REDEMPTION_POINTS
 
@@ -281,9 +291,19 @@ const ReviewStep: FC<Props> = ({ redeemPoints, onRedeemPointsChange, onContinue,
         )}
         <Row
           label="Shipping"
-          value={shipping === 0 ? 'Free' : `₹${shipping}`}
-          valueColor={shipping === 0 ? '#5A8A6A' : undefined}
+          value={shippingLoading ? 'Calculating…' : shippingError ? 'Unavailable' : shippingCharge === 0 ? 'Free' : `₹${shippingCharge.toLocaleString('en-IN')}`}
+          valueColor={shippingCharge === 0 && !shippingLoading && !shippingError ? '#5A8A6A' : undefined}
         />
+        {shippingError && (
+          <div role="alert" style={{ marginBottom: 10 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: '0 0 8px' }}>
+              Could not calculate shipping: {shippingError}
+            </p>
+            <button type="button" onClick={onRetryShipping} className="acct-btn-ghost" style={{ padding: '8px 12px' }}>
+              Retry rate
+            </button>
+          </div>
+        )}
         {pointsDiscount > 0 && (
           <Row label={`Reward points (${redeemPoints})`} value={`−₹${pointsDiscount.toFixed(2)}`} valueColor="#5A8A6A" />
         )}
@@ -298,7 +318,12 @@ const ReviewStep: FC<Props> = ({ redeemPoints, onRedeemPointsChange, onContinue,
 
       {/* Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <button onClick={onContinue} disabled={redemptionAmountInvalid} className="acct-btn-gold" style={{ width: '100%' }}>
+        <button
+          onClick={onContinue}
+          disabled={redemptionAmountInvalid || shippingLoading || !!shippingError}
+          className="acct-btn-gold"
+          style={{ width: '100%' }}
+        >
           Continue to Payment
         </button>
         <button onClick={onBack} className="acct-btn-ghost" style={{ width: '100%' }}>

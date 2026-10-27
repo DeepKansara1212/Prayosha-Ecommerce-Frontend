@@ -6,9 +6,6 @@ import { trackMetaEvent } from '@/lib/metaPixel'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-export const SHIPPING_THRESHOLD = 999
-export const SHIPPING_COST = 149
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface StoreCartItem {
@@ -57,9 +54,7 @@ export const selectDiscountAmount = (s: CartState): number =>
 
 export const selectTotal = (s: CartState): number => {
   const subtotal = selectSubtotal(s)
-  const discounted = Math.max(0, subtotal - selectDiscountAmount(s))
-  const shipping = discounted >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST
-  return discounted + shipping
+  return Math.max(0, subtotal - selectDiscountAmount(s))
 }
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
