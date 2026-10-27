@@ -66,6 +66,7 @@ export function adapt(p: ApiProduct): ProductDetail {
     color: p.color,
     rudrakshaFaces: p.rudrakshaFaces,
     beadSize: p.beadSize,
+    stone: p.stone,
     noOfSticks: p.noOfSticks,
     origin: p.origin ?? '',
     intention: p.tags?.join(' · ') ?? '',

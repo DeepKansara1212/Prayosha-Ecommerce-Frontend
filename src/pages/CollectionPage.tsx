@@ -45,6 +45,10 @@ const CollectionPage: FC<CollectionPageProps> = ({
     else nextParams.delete(key)
     nextParams.delete('search')
     if (key === 'category') nextParams.delete('subCategory')
+    if (key === 'meaning') {
+      nextParams.delete('category')
+      nextParams.delete('subCategory')
+    }
     setSearchParams(nextParams, { replace: true })
     setPage(1)
   }

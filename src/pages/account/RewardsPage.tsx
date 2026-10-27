@@ -31,7 +31,7 @@ const HOW_STEPS = [
 // ─── Row skeleton ─────────────────────────────────────────────────────────────
 
 const RowSkeleton: FC = () => (
-  <div style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: '1px solid #E2DAC8', alignItems: 'center' }}>
+  <div className="rewards-history-row-skeleton" style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: '1px solid #E2DAC8', alignItems: 'center' }}>
     <Skeleton width="120px" height="14px" />
     <Skeleton width="90px"  height="14px" className="flex-1" />
     <Skeleton width="80px"  height="14px" />
@@ -167,7 +167,7 @@ const RewardsPage: FC = () => {
       <div style={{ background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 8, overflow: 'hidden' }}>
 
         {/* Table header */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid #E2DAC8' }}>
+        <div className="rewards-history-title" style={{ padding: '16px 24px', borderBottom: '1px solid #E2DAC8' }}>
           <p style={{
             fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
             letterSpacing: '0.05em', color: '#5A4638', margin: 0,
@@ -176,14 +176,14 @@ const RewardsPage: FC = () => {
           </p>
         </div>
 
-        <div style={{ padding: '0 24px' }}>
+        <div className="rewards-history-content" style={{ padding: '0 24px' }}>
 
           {/* Column headers */}
           <div style={{
             display: 'grid', gridTemplateColumns: '1fr 110px 110px 80px',
             padding: '12px 0',
             borderBottom: '1px solid #E2DAC8',
-          }}>
+          }} className="rewards-history-header">
             {['Product', 'Date', 'Amount', 'Points'].map(col => (
               <span key={col} style={{
                 fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
@@ -220,6 +220,7 @@ const RewardsPage: FC = () => {
           {!historyQuery.isLoading && transactions.map((tx, i) => (
             <div
               key={tx._id}
+              className="rewards-history-row"
               style={{
                 display: 'grid', gridTemplateColumns: '1fr 110px 110px 80px',
                 padding: '14px 0', alignItems: 'center',
@@ -228,6 +229,7 @@ const RewardsPage: FC = () => {
             >
               <p
                 title={tx.order?.items.map(item => item.name).join(', ')}
+                className="rewards-history-product"
                 style={{
                   fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: 0,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -237,13 +239,13 @@ const RewardsPage: FC = () => {
                   ? tx.order.items.map(item => `${item.name}${item.quantity > 1 ? ` ×${item.quantity}` : ''}`).join(', ')
                   : '—'}
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
+              <p className="rewards-history-date" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                 {fmtDate(tx.createdAt)}
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
+              <p className="rewards-history-amount" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                 {fmtPrice(tx.orderTotal)}
               </p>
-              <p style={{
+              <p className="rewards-history-points" style={{
                 fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
                 color: tx.type === 'redeemed' ? '#A85050' : '#C49A3C', margin: 0,
               }}>

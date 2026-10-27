@@ -133,6 +133,7 @@ export interface ProductDetail {
   color?: string
   rudrakshaFaces?: string
   beadSize?: string
+  stone?: string
   noOfSticks?: number
   origin: string
   intention: string

@@ -203,7 +203,7 @@ const TermsPage: FC = () => (
                       {'website' in s.contact && (
                         <p className="font-body font-extralight text-[0.82rem] text-bark leading-relaxed">
                           <span className="font-normal">Website:</span>{' '}
-                          <a href={s.contact.website} className="text-amethyst hover:underline">
+                          <a href={s.contact.website} className="break-all text-amethyst hover:underline">
                             {s.contact.website}
                           </a>
                         </p>

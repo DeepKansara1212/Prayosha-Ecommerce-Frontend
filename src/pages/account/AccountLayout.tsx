@@ -1,6 +1,7 @@
 import { type FC, type ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import { toast } from "@/store/toastStore";
 import Navbar from "@/components/layout/Navbar";
 
 // ─── Shared CSS ───────────────────────────────────────────────────────────────
@@ -72,6 +73,134 @@ const ACCOUNT_CSS = `
   .acct-page-title {
     font-family: var(--font-heading); font-weight: 400;
     font-size: clamp(24px, 4vw, 32px); color: #1C1A17; margin: 6px 0 0;
+  }
+  .acct-shell {
+    min-height: 100vh;
+    padding-top: 96px;
+    display: flex;
+    flex-direction: column;
+    background: #F5F0E8;
+  }
+  .acct-main {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 16px 40px;
+  }
+  .acct-mobile-nav {
+    position: sticky;
+    top: 96px;
+    z-index: 150;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    width: 100%;
+    border-bottom: 1px solid #E2DAC8;
+    background: #EDE8DC;
+  }
+  .acct-mobile-nav button {
+    min-width: 0;
+    min-height: 50px;
+    padding: 8px 2px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    color: #6B6057;
+    font-family: var(--font-body);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    text-align: center;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .acct-mobile-nav button[aria-current="page"] {
+    border-bottom-color: #7B5EA7;
+    background: #F0EAF7;
+    color: #7B5EA7;
+  }
+  .acct-mobile-nav button.acct-mobile-logout {
+    color: #A85050;
+  }
+  .acct-mobile-nav button:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline-offset: -3px;
+  }
+  .order-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  @media (min-width: 768px) {
+    .acct-shell {
+      padding-top: 72px;
+      flex-direction: row;
+    }
+    .acct-main {
+      padding: 48px clamp(24px, 5vw, 80px);
+    }
+    .acct-mobile-nav {
+      display: none;
+    }
+  }
+  @media (max-width: 360px) {
+    .acct-mobile-nav button {
+      font-size: 9px;
+      letter-spacing: 0.015em;
+    }
+  }
+  @media (max-width: 480px) {
+    .rewards-history-content {
+      padding-right: 14px !important;
+      padding-left: 14px !important;
+    }
+    .rewards-history-header {
+      display: none !important;
+    }
+    .rewards-history-row {
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 6px 12px;
+      padding: 14px 0 !important;
+    }
+    .rewards-history-product {
+      grid-column: 1 / -1;
+      white-space: normal !important;
+      overflow-wrap: anywhere;
+    }
+    .rewards-history-date,
+    .rewards-history-amount,
+    .rewards-history-points {
+      font-size: 11px !important;
+      white-space: normal;
+    }
+    .rewards-history-date {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .rewards-history-amount {
+      grid-column: 1;
+      grid-row: 3;
+    }
+    .rewards-history-date::before { content: "Date · "; color: #9A8F85; }
+    .rewards-history-amount::before { content: "Amount · "; color: #9A8F85; }
+    .rewards-history-points {
+      grid-column: 2;
+      grid-row: 2 / 4;
+      align-self: center;
+      text-align: right;
+    }
+    .rewards-history-row-skeleton {
+      display: grid !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .rewards-history-row-skeleton > * {
+      width: 100% !important;
+      min-width: 0;
+    }
+  }
+  @media (min-width: 768px) {
+    .order-detail-grid {
+      grid-template-columns: minmax(0, 1fr) 300px;
+    }
   }
 `;
 
@@ -145,9 +274,14 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
   };
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/");
-    window.scrollTo({ top: 0 });
+    try {
+      await logout();
+    } catch {
+      toast.warning("You were signed out on this device, but the server could not be reached.");
+    } finally {
+      navigate("/");
+      window.scrollTo({ top: 0 });
+    }
   };
 
   return (
@@ -156,14 +290,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
       <Navbar />
 
       {/* ── Page shell ── */}
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#F5F0E8",
-          paddingTop: 72,
-          display: "flex",
-        }}
-      >
+      <div className="acct-shell">
         {/* ── Desktop sidebar ── */}
         <aside
           className="hidden md:flex"
@@ -310,57 +437,33 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children, activeTab }) => {
           </div>
         </aside>
 
-        {/* ── Main content ── */}
-        <main
-          style={{
-            flex: 1,
-            minWidth: 0,
-            padding: "48px clamp(24px, 5vw, 80px)",
-          }}
-          className="pb-24 md:pb-12"
-        >
-          {children}
-        </main>
-      </div>
-
-      {/* ── Mobile tab bar (sticky top, below navbar) ── */}
-      <div
-        className="flex md:hidden"
-        style={{
-          position: "fixed",
-          top: 72,
-          left: 0,
-          right: 0,
-          zIndex: 150,
-          background: "#EDE8DC",
-          borderBottom: "1px solid #E2DAC8",
-        }}
-      >
-        {NAV_ITEMS.map((item) => {
-          const active = activeTab === item.key;
-          return (
+        {/* ── Mobile account navigation ── */}
+        <nav className="acct-mobile-nav md:hidden" aria-label="Account navigation">
+          {NAV_ITEMS.map((item) => (
             <button
               key={item.key}
+              type="button"
               onClick={() => handleNav(item.path)}
-              style={{
-                flex: 1,
-                padding: "10px 2px",
-                fontFamily: 'var(--font-body)',
-                fontSize: 13,
-                textTransform: "uppercase",
-                letterSpacing: "0.06em",
-                background: active ? "#F0EAF7" : "none",
-                color: active ? "#7B5EA7" : "#6B6057",
-                border: "none",
-                borderBottom: `2px solid ${active ? "#7B5EA7" : "transparent"}`,
-                cursor: "pointer",
-                textAlign: "center",
-              }}
+              aria-current={activeTab === item.key ? "page" : undefined}
             >
               {item.mobileLabel}
             </button>
-          );
-        })}
+          ))}
+          <button
+            type="button"
+            className="acct-mobile-logout"
+            onClick={() => { void handleLogout(); }}
+          >
+            Logout
+          </button>
+        </nav>
+
+        {/* ── Main content ── */}
+        <main
+          className="acct-main pb-12"
+        >
+          {children}
+        </main>
       </div>
     </>
   );

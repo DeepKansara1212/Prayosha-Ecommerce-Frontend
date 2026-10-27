@@ -33,6 +33,37 @@ interface AuthState {
   setToken(token: string): void;
 }
 
+function getGoogleAvatar(credential: string): string | undefined {
+  try {
+    const payload = credential.split(".")[1];
+    if (!payload) return undefined;
+
+    const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const paddedPayload = normalizedPayload.padEnd(
+      Math.ceil(normalizedPayload.length / 4) * 4,
+      "=",
+    );
+    const binaryPayload = atob(paddedPayload);
+    const bytes = Uint8Array.from(binaryPayload, character =>
+      character.charCodeAt(0),
+    );
+    const claims: unknown = JSON.parse(new TextDecoder().decode(bytes));
+
+    if (
+      typeof claims === "object" &&
+      claims !== null &&
+      "picture" in claims &&
+      typeof claims.picture === "string"
+    ) {
+      return claims.picture;
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
+}
+
 // ─── Store ────────────────────────────────────────────────────────────────────
 
 export const useAuthStore = create<AuthState>()(
@@ -81,7 +112,11 @@ export const useAuthStore = create<AuthState>()(
             await authApi.googleLogin(credential);
           localStorage.setItem("accessToken", accessToken);
           if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-          set({ user, accessToken, isLoading: false });
+          set({
+            user: user.avatar ? user : { ...user, avatar: getGoogleAvatar(credential) },
+            accessToken,
+            isLoading: false,
+          });
         } catch (err) {
           set({ isLoading: false });
           throw err;

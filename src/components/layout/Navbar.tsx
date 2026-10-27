@@ -1,25 +1,31 @@
-import React, { useState, useRef, useEffect, type FC } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { useLockBodyScroll } from '@/hooks/useLockBodyScroll'
-import { useSearchOverlay } from '@/hooks/useSearchOverlay'
-import { useCategories } from '@/hooks/useCategories'
-import { getMeanings } from '@/api/meanings.api'
-import { getPurposes } from '@/api/calculators.api'
-import { getSubCategories } from '@/api/subcategories.api'
-import SearchOverlay from '@/components/search/SearchOverlay'
-import { cn } from '@/lib/utils'
+import React, { useState, useRef, useEffect, type FC } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
+import { useSearchOverlay } from "@/hooks/useSearchOverlay";
+import { useCategories } from "@/hooks/useCategories";
+import { getMeanings } from "@/api/meanings.api";
+import { getPurposes } from "@/api/calculators.api";
+import { getSubCategories } from "@/api/subcategories.api";
+import SearchOverlay from "@/components/search/SearchOverlay";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/store/authStore";
 
 function normalizeMenuLabel(label: string): string {
-  return label.trim().toLowerCase()
+  return label.trim().toLowerCase();
 }
 
-function meaningPath(label: string, meanings: { _id: string; name: string }[]): string {
-  const meaning = meanings.find(item => normalizeMenuLabel(item.name) === normalizeMenuLabel(label))
-  const params = new URLSearchParams()
-  if (meaning) params.set('meaning', meaning._id)
-  else params.set('search', label)
-  return `/collection?${params.toString()}`
+function meaningPath(
+  label: string,
+  meanings: { _id: string; name: string }[],
+): string {
+  const meaning = meanings.find(
+    (item) => normalizeMenuLabel(item.name) === normalizeMenuLabel(label),
+  );
+  const params = new URLSearchParams();
+  if (meaning) params.set("meaning", meaning._id);
+  else params.set("meaning", label);
+  return `/collection?${params.toString()}`;
 }
 
 function menuItemPath(
@@ -27,265 +33,410 @@ function menuItemPath(
   section: string | undefined,
   data: ReturnType<typeof useCollectionMenuData>,
 ): string {
-  if (section === 'Meaning') return meaningPath(item, data.meanings)
-  if (normalizeMenuLabel(item) === 'meaning') return '/collection'
+  if (section === "Meaning") return meaningPath(item, data.meanings);
+  if (normalizeMenuLabel(item) === "meaning") return "/collection";
 
   const category = data.categories.find(
-    candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
-  )
-  if (category) return `/collection?category=${encodeURIComponent(category.slug)}`
+    (candidate) =>
+      normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
+  );
+  if (category)
+    return `/collection?category=${encodeURIComponent(category.slug)}`;
 
-  if (section === 'Purpose') {
+  if (section === "Purpose") {
     const purpose = data.purposes.find(
-      candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
-    )
-    if (purpose) return `/collection?purpose=${encodeURIComponent(purpose._id)}`
+      (candidate) =>
+        normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
+    );
+    if (purpose)
+      return `/collection?purpose=${encodeURIComponent(purpose._id)}`;
   }
 
   const sectionCategory = data.categories.find(
-    candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(section ?? ''),
-  )
+    (candidate) =>
+      normalizeMenuLabel(candidate.name) === normalizeMenuLabel(section ?? ""),
+  );
   const matchingSubCategories = data.subCategories.filter(
-    candidate => normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
-  )
-  const subCategory = matchingSubCategories.find(
-    candidate => candidate.parentCategory === sectionCategory?._id,
-  ) ?? matchingSubCategories[0]
+    (candidate) =>
+      normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
+  );
+  const subCategory =
+    matchingSubCategories.find(
+      (candidate) => candidate.parentCategory === sectionCategory?._id,
+    ) ?? matchingSubCategories[0];
 
   if (subCategory) {
     const parentCategory = data.categories.find(
-      candidate => candidate._id === subCategory.parentCategory,
-    )
+      (candidate) => candidate._id === subCategory.parentCategory,
+    );
     if (parentCategory) {
       const params = new URLSearchParams({
         category: parentCategory.slug,
         subCategory: subCategory._id,
-      })
-      return `/collection?${params.toString()}`
+      });
+      return `/collection?${params.toString()}`;
     }
   }
 
-  const params = new URLSearchParams()
-  params.set('search', item)
-  return `/collection?${params.toString()}`
+  const params = new URLSearchParams();
+  params.set("search", item);
+  return `/collection?${params.toString()}`;
 }
 
 function useCollectionMenuData() {
-  const { data: categories = [] } = useCategories()
+  const { data: categories = [] } = useCategories();
   const { data: meanings = [] } = useQuery({
-    queryKey: ['collection-meanings'],
+    queryKey: ["collection-meanings"],
     queryFn: getMeanings,
     staleTime: 5 * 60_000,
-  })
+  });
   const { data: purposes = [] } = useQuery({
-    queryKey: ['collection-purposes'],
+    queryKey: ["collection-purposes"],
     queryFn: getPurposes,
     staleTime: 5 * 60_000,
-  })
+  });
   const { data: subCategories = [] } = useQuery({
-    queryKey: ['collection-menu-subcategories'],
+    queryKey: ["collection-menu-subcategories"],
     queryFn: () => getSubCategories(),
     staleTime: 5 * 60_000,
-  })
+  });
 
-  return { categories, meanings, purposes, subCategories }
+  return { categories, meanings, purposes, subCategories };
 }
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
 const SearchIcon: FC = () => (
-  <svg viewBox="0 0 24 24" strokeWidth="1.5" className="w-5 h-5 stroke-current fill-none" aria-hidden="true">
-    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+  <svg
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    className="w-5 h-5 stroke-current fill-none"
+    aria-hidden="true"
+  >
+    <circle cx="11" cy="11" r="8" />
+    <path d="m21 21-4.35-4.35" />
   </svg>
-)
+);
 const HeartIcon: FC<{ filled?: boolean }> = ({ filled }) => (
-  <svg viewBox="0 0 24 24" strokeWidth="1.5" className="w-5 h-5 fill-none" stroke={filled ? '#C9837A' : 'currentColor'} aria-hidden="true">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill={filled ? '#C9837A' : 'none'} />
+  <svg
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    className="w-5 h-5 fill-none"
+    stroke={filled ? "#C9837A" : "currentColor"}
+    aria-hidden="true"
+  >
+    <path
+      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+      fill={filled ? "#C9837A" : "none"}
+    />
   </svg>
-)
+);
 const BagIcon: FC = () => (
-  <svg viewBox="0 0 24 24" strokeWidth="1.5" className="w-5 h-5 stroke-current fill-none" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    className="w-5 h-5 stroke-current fill-none"
+    aria-hidden="true"
+  >
     <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
     <line x1="3" y1="6" x2="21" y2="6" />
     <path d="M16 10a4 4 0 0 1-8 0" />
   </svg>
-)
+);
 const UserIcon: FC = () => (
-  <svg viewBox="0 0 24 24" strokeWidth="1.5" className="w-5 h-5 stroke-current fill-none" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    strokeWidth="1.5"
+    className="w-5 h-5 stroke-current fill-none"
+    aria-hidden="true"
+  >
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
     <circle cx="12" cy="7" r="4" />
   </svg>
-)
+);
+const AccountAvatar: FC<{ src?: string; className?: string }> = ({
+  src,
+  className,
+}) => {
+  const [failedImage, setFailedImage] = useState<string>();
+  const imageFailed = src !== undefined && failedImage === src;
+
+  return (
+    <span
+      className={cn(
+        "relative inline-flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-warm",
+        className,
+      )}
+    >
+      {src && !imageFailed ? (
+        <img
+          src={src}
+          alt=""
+          referrerPolicy="no-referrer"
+          className="absolute inset-0 h-full w-full rounded-full object-cover"
+          onError={() => setFailedImage(src)}
+        />
+      ) : (
+        <UserIcon />
+      )}
+    </span>
+  );
+};
 const ChevronDownIcon: FC<{ open?: boolean }> = ({ open }) => (
   <svg
     viewBox="0 0 24 24"
     strokeWidth="1.5"
-    className={cn('w-3 h-3 stroke-current fill-none transition-transform duration-300', open && 'rotate-180')}
+    className={cn(
+      "w-3 h-3 stroke-current fill-none transition-transform duration-300",
+      open && "rotate-180",
+    )}
     aria-hidden="true"
   >
     <path d="M6 9l6 6 6-6" />
   </svg>
-)
+);
 
 // ─── Mega Dropdown Data ───────────────────────────────────────────────────────
 
 interface DropdownColumn {
-  title: string
-  items: string[]
+  title: string;
+  items: string[];
 }
 
 const MEANING_ITEMS = [
-  'Control Anger',
-  'Success',
-  'Money Magnet',
-  'Dhanyog',
-  'Protection',
-  'Love & Relationships',
-  'Health',
-  'Chakra Balance',
-  'Antidepression',
-  'Stress Relief',
-  'Good Luck',
-  'Pregnancy',
-  'Addiction',
-  'Prosperity',
-  'Peace',
-  'Study',
-  'Concentration',
-  'Confidence',
-  'Growth',
-  'Happiness',
-  'Meditation',
-  'Motivation',
-  'Negative Energy Remover',
-  'Opportunities',
-  'Strength',
-]
+  "Control Anger",
+  "Success",
+  "Money Magnet",
+  "Dhanyog",
+  "Protection",
+  "Love & Relationships",
+  "Health",
+  "Chakra Balance",
+  "Antidepression",
+  "Stress Relief",
+  "Good Luck",
+  "Pregnancy",
+  "Addiction",
+  "Prosperity",
+  "Peace",
+  "Study",
+  "Concentration",
+  "Confidence",
+  "Growth",
+  "Happiness",
+  "Meditation",
+  "Motivation",
+  "Negative Energy Remover",
+  "Opportunities",
+  "Strength",
+];
 
 const DROPDOWN_COLUMNS: DropdownColumn[] = [
   {
-    title: 'Purpose',
-    items: ['Zodiac Sign', 'Meaning'],
+    title: "Purpose",
+    items: ["Zodiac Sign", "Meaning"],
   },
   {
-    title: 'Category',
+    title: "Category",
     items: [
-      'Bracelets', 'Japmalas', 'Pyramids', 'Wands', 'Trees', 'Oval',
-      'Healing Egg Stone', 'Pendants', 'Pendulum', 'Energy Generator',
-      'Markaba', 'Hanger', 'Massage Tools', 'Spheres', 'Coaster',
-      'Selenite', 'Orgonite', 'Angels', 'Idols', 'Shreeyantra',
-      'Tumbles', 'Chips', 'Cluster & Geodes', 'Raw', 'Keychain',
-      '7 Chakra', '9 Graha', 'Frame', 'Crystal Bottle', 'Vastu',
-      'Chart Board', 'Bowl',
+      "Bracelets",
+      "Japmalas",
+      "Pyramids",
+      "Wands",
+      "Trees",
+      "Oval",
+      "Healing Egg Stone",
+      "Pendants",
+      "Pendulum",
+      "Energy Generator",
+      "Markaba",
+      "Hanger",
+      "Massage Tools",
+      "Spheres",
+      "Coaster",
+      "Selenite",
+      "Orgonite",
+      "Angels",
+      "Idols",
+      "Shreeyantra",
+      "Tumbles",
+      "Chips",
+      "Cluster & Geodes",
+      "Raw",
+      "Keychain",
+      "7 Chakra",
+      "9 Graha",
+      "Frame",
+      "Crystal Bottle",
+      "Vastu",
+      "Chart Board",
+      "Bowl",
     ],
   },
   {
-    title: 'Energy Cleansing',
+    title: "Energy Cleansing",
     items: [
-      'Vastu Purity Cone', 'Camphore Cone', 'Bath Salt', 'Healing Oil',
-      'Vastu Spray', 'Vastu Moping Salt', 'Bhimseni Camphor', 'Gir Cow Dung Dhoop Stick',
-      'Sage', 'Palosanto', 'Soap',
+      "Vastu Purity Cone",
+      "Camphore Cone",
+      "Bath Salt",
+      "Healing Oil",
+      "Vastu Spray",
+      "Vastu Moping Salt",
+      "Bhimseni Camphor",
+      "Gir Cow Dung Dhoop Stick",
+      "Sage",
+      "Palosanto",
+      "Soap",
     ],
   },
   {
-    title: 'Rudraksha',
+    title: "Rudraksha",
     items: [
-      '1 Mukhi', '1 Mukhi', '2 Mukhi', '3 Mukhi', '4 Mukhi', '5 Mukhi',
-      '6 Mukhi', '7 Mukhi', '8 Mukhi', '9 Mukhi', '10 Mukhi', '11 Mukhi',
-      '12 Mukhi', '13 Mukhi', '14 Mukhi', '15 Mukhi', '16 Mukhi',
-      '17 Mukhi', '18 Mukhi', '19 Mukhi', '20 Mukhi', '21 Mukhi',
-      '22 Mukhi', '23 Mukhi', '24 Mukhi', 'Gauri Shankar',
-      'Garbh Gauri', 'Ganesh Mukhi',
+      "1 Mukhi",
+      "1 Mukhi",
+      "2 Mukhi",
+      "3 Mukhi",
+      "4 Mukhi",
+      "5 Mukhi",
+      "6 Mukhi",
+      "7 Mukhi",
+      "8 Mukhi",
+      "9 Mukhi",
+      "10 Mukhi",
+      "11 Mukhi",
+      "12 Mukhi",
+      "13 Mukhi",
+      "14 Mukhi",
+      "15 Mukhi",
+      "16 Mukhi",
+      "17 Mukhi",
+      "18 Mukhi",
+      "19 Mukhi",
+      "20 Mukhi",
+      "21 Mukhi",
+      "22 Mukhi",
+      "23 Mukhi",
+      "24 Mukhi",
+      "Gauri Shankar",
+      "Garbh Gauri",
+      "Ganesh Mukhi",
     ],
   },
   {
-    title: 'Gemstone',
+    title: "Gemstone",
     items: [
-      'Yellow Sapphire', 'Emerald', 'Blue Sapphire', 'Pearl', 'Gomed',
-      'Ruby', 'Diamond', 'Red Corel', "Cat's Eye", 'Opal', 'Turquoise',
-      'Topaz', 'Amethyst',
+      "Yellow Sapphire",
+      "Emerald",
+      "Blue Sapphire",
+      "Pearl",
+      "Gomed",
+      "Ruby",
+      "Diamond",
+      "Red Corel",
+      "Cat's Eye",
+      "Opal",
+      "Turquoise",
+      "Topaz",
+      "Amethyst",
     ],
   },
   {
-    title: 'Food',
+    title: "Food",
     items: [],
   },
-]
+];
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
 interface NavItem {
-  label: string
-  path: string
-  hasDropdown?: boolean
+  label: string;
+  path: string;
+  hasDropdown?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Collections',         path: '/collection', hasDropdown: true },
-  { label: 'Blog',                path: '/blog' },
-  { label: 'Calculator',          path: '/bracelet-calculator', hasDropdown: true },
-  { label: 'About Us',            path: '/about' },
-  { label: 'Contact',             path: '/contact' },
-  { label: 'B2B',                 path: '/b2b' },
-]
+  { label: "Collection", path: "/collection", hasDropdown: true },
+  { label: "Calculator", path: "/bracelet-calculator", hasDropdown: true },
+  { label: "B2B", path: "/b2b" },
+  { label: "Contact", path: "/contact" },
+  { label: "Blog", path: "/blog" },
+];
 
 // ─── Mega Dropdown ────────────────────────────────────────────────────────────
 
 interface MegaDropdownProps {
-  open: boolean
-  onClose: () => void
-  onNavigate: (path: string) => void
+  open: boolean;
+  onClose: () => void;
+  onNavigate: (path: string) => void;
 }
 
 const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
-  const [meaningOpen, setMeaningOpen] = useState(false)
-  const menuData = useCollectionMenuData()
+  const [meaningOpen, setMeaningOpen] = useState(false);
+  const menuData = useCollectionMenuData();
 
   const handleItemClick = (item: string, section?: string) => {
-    onNavigate(menuItemPath(item, section, menuData))
-    onClose()
-  }
+    onNavigate(menuItemPath(item, section, menuData));
+    onClose();
+  };
 
   const itemStyle: React.CSSProperties = {
-    background: 'none', border: 'none', padding: '0.28rem 0', cursor: 'pointer',
-    display: 'block', width: '100%', textAlign: 'left',
-    fontSize: '14px', letterSpacing: '0.03em',
-    color: 'rgba(61,43,31,0.82)', transition: 'color 0.15s ease, padding-left 0.15s ease',
-    lineHeight: 1.45, whiteSpace: 'normal', wordBreak: 'break-word',
-  }
+    background: "none",
+    border: "none",
+    padding: "0.28rem 0",
+    cursor: "pointer",
+    display: "block",
+    width: "100%",
+    textAlign: "left",
+    fontSize: "14px",
+    letterSpacing: "0.03em",
+    color: "rgba(61,43,31,0.82)",
+    transition: "color 0.15s ease, padding-left 0.15s ease",
+    lineHeight: 1.45,
+    whiteSpace: "normal",
+    wordBreak: "break-word",
+  };
 
   const colHeaderStyle: React.CSSProperties = {
-    fontSize: '14px', letterSpacing: '0.04em', textTransform: 'uppercase',
-    color: 'rgba(184,149,106,0.95)', fontWeight: 600,
-  }
+    fontSize: "14px",
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+    color: "rgba(184,149,106,0.95)",
+    fontWeight: 600,
+  };
 
   const dividerDot = (
-    <span style={{
-      display: 'inline-block', width: '3px', height: '3px',
-      borderRadius: '50%', background: 'rgba(184,149,106,0.45)',
-      flexShrink: 0, marginLeft: '6px',
-    }} />
-  )
+    <span
+      style={{
+        display: "inline-block",
+        width: "3px",
+        height: "3px",
+        borderRadius: "50%",
+        background: "rgba(184,149,106,0.45)",
+        flexShrink: 0,
+        marginLeft: "6px",
+      }}
+    />
+  );
 
   const renderItems = (items: string[], section: string) => (
-    <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+    <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
       {items.map((item, idx) => (
         <li key={`${item}-${idx}`}>
-          {item === 'Meaning' ? (
+          {item === "Meaning" ? (
             <div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <button
                   onClick={() => handleItemClick(item)}
                   style={{ ...itemStyle, flex: 1 }}
-                          onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLButtonElement
-                            el.style.color = 'rgba(28,20,16,1)'
-                    el.style.paddingLeft = '5px'
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLButtonElement;
+                    el.style.color = "rgba(28,20,16,1)";
+                    el.style.paddingLeft = "5px";
                   }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLButtonElement
-                            el.style.color = 'rgba(61,43,31,0.82)'
-                    el.style.paddingLeft = '0'
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLButtonElement;
+                    el.style.color = "rgba(61,43,31,0.82)";
+                    el.style.paddingLeft = "0";
                   }}
                 >
                   {item}
@@ -293,33 +444,44 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                 <button
                   type="button"
                   aria-label="Expand Meaning options"
-                  onClick={() => setMeaningOpen(prev => !prev)}
-                  style={{ ...itemStyle, width: 'auto', padding: '0.28rem 0.35rem', flexShrink: 0 }}
+                  onClick={() => setMeaningOpen((prev) => !prev)}
+                  style={{
+                    ...itemStyle,
+                    width: "auto",
+                    padding: "0.28rem 0.35rem",
+                    flexShrink: 0,
+                  }}
                 >
-                  {meaningOpen ? '▴' : '▾'}
+                  {meaningOpen ? "▴" : "▾"}
                 </button>
               </div>
               {meaningOpen && (
-                <ul style={{ listStyle: 'none', padding: '0.25rem 0 0.25rem 0.7rem', margin: 0 }}>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    padding: "0.25rem 0 0.25rem 0.7rem",
+                    margin: 0,
+                  }}
+                >
                   {MEANING_ITEMS.map((meaning, meaningIdx) => (
                     <li key={`${meaning}-${meaningIdx}`}>
                       <button
-                        onClick={() => handleItemClick(meaning, 'Meaning')}
+                        onClick={() => handleItemClick(meaning, "Meaning")}
                         style={{
                           ...itemStyle,
-                          padding: '0.18rem 0',
-                          fontSize: '13px',
-                          color: 'rgba(61,43,31,0.72)',
+                          padding: "0.18rem 0",
+                          fontSize: "13px",
+                          color: "rgba(61,43,31,0.72)",
                         }}
-                        onMouseEnter={e => {
-                          const el = e.currentTarget as HTMLButtonElement
-                          el.style.color = 'rgba(28,20,16,1)'
-                          el.style.paddingLeft = '5px'
+                        onMouseEnter={(e) => {
+                          const el = e.currentTarget as HTMLButtonElement;
+                          el.style.color = "rgba(28,20,16,1)";
+                          el.style.paddingLeft = "5px";
                         }}
-                        onMouseLeave={e => {
-                          const el = e.currentTarget as HTMLButtonElement
-                          el.style.color = 'rgba(61,43,31,0.72)'
-                          el.style.paddingLeft = '0'
+                        onMouseLeave={(e) => {
+                          const el = e.currentTarget as HTMLButtonElement;
+                          el.style.color = "rgba(61,43,31,0.72)";
+                          el.style.paddingLeft = "0";
                         }}
                       >
                         {meaning}
@@ -333,15 +495,15 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
             <button
               onClick={() => handleItemClick(item, section)}
               style={itemStyle}
-              onMouseEnter={e => {
-                const el = e.currentTarget as HTMLButtonElement
-                el.style.color = 'rgba(28,20,16,1)'
-                el.style.paddingLeft = '5px'
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.color = "rgba(28,20,16,1)";
+                el.style.paddingLeft = "5px";
               }}
-              onMouseLeave={e => {
-                const el = e.currentTarget as HTMLButtonElement
-                el.style.color = 'rgba(61,43,31,0.82)'
-                el.style.paddingLeft = '0'
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLButtonElement;
+                el.style.color = "rgba(61,43,31,0.82)";
+                el.style.paddingLeft = "0";
               }}
             >
               {item}
@@ -350,65 +512,129 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
         </li>
       ))}
     </ul>
-  )
+  );
 
   return (
     <div
       className={cn(
-        'absolute top-full left-0 right-0 z-[190]',
-        'transition-all duration-400 origin-top',
+        "absolute top-full left-0 right-0 z-[190]",
+        "transition-all duration-400 origin-top",
         open
-          ? 'opacity-100 translate-y-0 pointer-events-auto'
-          : 'opacity-0 -translate-y-2 pointer-events-none',
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 -translate-y-2 pointer-events-none",
       )}
       style={{
-        background: 'rgba(237, 229, 216, 0.98)', backdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(184,149,106,0.15)',
-        borderBottom: '1px solid rgba(184,149,106,0.08)',
-        boxShadow: '0 24px 60px rgba(0,0,0,0.65)',
+        background: "rgba(237, 229, 216, 0.98)",
+        backdropFilter: "blur(20px)",
+        borderTop: "1px solid rgba(184,149,106,0.15)",
+        borderBottom: "1px solid rgba(184,149,106,0.08)",
+        boxShadow: "0 24px 60px rgba(0,0,0,0.65)",
       }}
       onMouseLeave={onClose}
     >
-      <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(184,149,106,0.4) 30%, rgba(184,149,106,0.4) 70%, transparent)' }} />
+      <div
+        style={{
+          height: "1px",
+          background:
+            "linear-gradient(90deg, transparent, rgba(184,149,106,0.4) 30%, rgba(184,149,106,0.4) 70%, transparent)",
+        }}
+      />
 
-      <div style={{ padding: '2rem clamp(1.5rem, 5vw, 4rem) 1.75rem' }}>
-        <p style={{ fontSize: '14px', letterSpacing: '0.04em', textTransform: 'uppercase', color: 'rgba(61,43,31,0.72)', marginBottom: '1.5rem' }}>
+      <div style={{ padding: "2rem clamp(1.5rem, 5vw, 4rem) 1.75rem" }}>
+        <p
+          style={{
+            fontSize: "14px",
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            color: "rgba(61,43,31,0.72)",
+            marginBottom: "1.5rem",
+          }}
+        >
           Browse Collections
         </p>
 
-        <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 2fr 2fr 2fr 1fr 1fr',
-          gap: '0', alignItems: 'start', width: '100%',
-        }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 2fr 2fr 2fr 1fr 1fr",
+            gap: "0",
+            alignItems: "start",
+            width: "100%",
+          }}
+        >
           {DROPDOWN_COLUMNS.map((col, colIdx) => {
-            const isMultiCol = col.items.length > 14
-            const showDivider = colIdx < DROPDOWN_COLUMNS.length - 1
+            const isMultiCol = col.items.length > 14;
+            const showDivider = colIdx < DROPDOWN_COLUMNS.length - 1;
 
             return (
               <div
                 key={col.title}
                 style={{
-                  paddingLeft: colIdx === 0 ? '0' : 'clamp(0.75rem, 1.5vw, 1.5rem)',
-                  paddingRight: showDivider ? 'clamp(0.75rem, 1.5vw, 1.5rem)' : '0',
-                  borderRight: showDivider ? '1px solid rgba(184,149,106,0.1)' : 'none',
+                  paddingLeft:
+                    colIdx === 0 ? "0" : "clamp(0.75rem, 1.5vw, 1.5rem)",
+                  paddingRight: showDivider
+                    ? "clamp(0.75rem, 1.5vw, 1.5rem)"
+                    : "0",
+                  borderRight: showDivider
+                    ? "1px solid rgba(184,149,106,0.1)"
+                    : "none",
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid rgba(184,149,106,0.18)', paddingBottom: '0.6rem', marginBottom: '0.85rem' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    borderBottom: "1px solid rgba(184,149,106,0.18)",
+                    paddingBottom: "0.6rem",
+                    marginBottom: "0.85rem",
+                  }}
+                >
                   <span style={colHeaderStyle}>{col.title}</span>
                   {dividerDot}
                 </div>
 
                 {col.items.length === 0 ? (
-                  <span style={{ fontSize: '14px', color: 'rgba(61,43,31,0.62)', letterSpacing: '0.04em' }}>Coming soon</span>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: "rgba(61,43,31,0.62)",
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    Coming soon
+                  </span>
                 ) : isMultiCol ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: '0.75rem' }}>
-                    {[col.items.slice(0, Math.ceil(col.items.length / 2)), col.items.slice(Math.ceil(col.items.length / 2))].map((half, hIdx) => (
-                      <ul key={hIdx} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      columnGap: "0.75rem",
+                    }}
+                  >
+                    {[
+                      col.items.slice(0, Math.ceil(col.items.length / 2)),
+                      col.items.slice(Math.ceil(col.items.length / 2)),
+                    ].map((half, hIdx) => (
+                      <ul
+                        key={hIdx}
+                        style={{ listStyle: "none", padding: 0, margin: 0 }}
+                      >
                         {half.map((item, idx) => (
                           <li key={`${item}-${idx}`}>
-                            <button onClick={() => handleItemClick(item, col.title)} style={itemStyle}
-                              onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(28,20,16,1)'; el.style.paddingLeft = '5px' }}
-                              onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.color = 'rgba(61,43,31,0.82)'; el.style.paddingLeft = '0' }}>
+                            <button
+                              onClick={() => handleItemClick(item, col.title)}
+                              style={itemStyle}
+                              onMouseEnter={(e) => {
+                                const el = e.currentTarget as HTMLButtonElement;
+                                el.style.color = "rgba(28,20,16,1)";
+                                el.style.paddingLeft = "5px";
+                              }}
+                              onMouseLeave={(e) => {
+                                const el = e.currentTarget as HTMLButtonElement;
+                                el.style.color = "rgba(61,43,31,0.82)";
+                                el.style.paddingLeft = "0";
+                              }}
+                            >
                               {item}
                             </button>
                           </li>
@@ -416,175 +642,284 @@ const MegaDropdown: FC<MegaDropdownProps> = ({ open, onClose, onNavigate }) => {
                       </ul>
                     ))}
                   </div>
-                ) : renderItems(col.items, col.title)}
+                ) : (
+                  renderItems(col.items, col.title)
+                )}
               </div>
-            )
+            );
           })}
         </div>
 
-        <div style={{ marginTop: '1.75rem', paddingTop: '1.25rem', borderTop: '1px solid rgba(184,149,106,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <p style={{ fontSize: '13px', letterSpacing: '0.05em', color: 'rgba(61,43,31,0.72)', textTransform: 'uppercase' }}>
+        <div
+          style={{
+            marginTop: "1.75rem",
+            paddingTop: "1.25rem",
+            borderTop: "1px solid rgba(184,149,106,0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "13px",
+              letterSpacing: "0.05em",
+              color: "rgba(61,43,31,0.72)",
+              textTransform: "uppercase",
+            }}
+          >
             All handcrafted · Ethically sourced
           </p>
           <button
-            onClick={() => { onNavigate('/collection'); onClose() }}
-            style={{
-              background: 'none', border: '1px solid rgba(184,149,106,0.35)', padding: '0.45rem 1.4rem',
-              cursor: 'pointer', fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase',
-              color: 'rgba(61,43,31,0.9)', transition: 'border-color 0.2s, color 0.2s, background 0.2s',
-              borderRadius: '1px', whiteSpace: 'nowrap', minHeight: '44px',
+            onClick={() => {
+              onNavigate("/collection");
+              onClose();
             }}
-            onMouseEnter={e => { const el = e.currentTarget as HTMLButtonElement; el.style.borderColor = 'rgba(184,149,106,0.8)'; el.style.color = 'rgba(28,20,16,1)'; el.style.background = 'rgba(184,149,106,0.12)' }}
-            onMouseLeave={e => { const el = e.currentTarget as HTMLButtonElement; el.style.borderColor = 'rgba(184,149,106,0.35)'; el.style.color = 'rgba(61,43,31,0.9)'; el.style.background = 'none' }}
+            style={{
+              background: "none",
+              border: "1px solid rgba(184,149,106,0.35)",
+              padding: "0.45rem 1.4rem",
+              cursor: "pointer",
+              fontSize: "13px",
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+              color: "rgba(61,43,31,0.9)",
+              transition: "border-color 0.2s, color 0.2s, background 0.2s",
+              borderRadius: "1px",
+              whiteSpace: "nowrap",
+              minHeight: "44px",
+            }}
+            onMouseEnter={(e) => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.borderColor = "rgba(184,149,106,0.8)";
+              el.style.color = "rgba(28,20,16,1)";
+              el.style.background = "rgba(184,149,106,0.12)";
+            }}
+            onMouseLeave={(e) => {
+              const el = e.currentTarget as HTMLButtonElement;
+              el.style.borderColor = "rgba(184,149,106,0.35)";
+              el.style.color = "rgba(61,43,31,0.9)";
+              el.style.background = "none";
+            }}
           >
             View All Collections
           </button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 // ─── Mobile Collection Accordion ─────────────────────────────────────────────
 
 interface MobileAccordionProps {
-  onNavigate: (path: string) => void
+  onNavigate: (path: string) => void;
 }
 
-const MobileCollectionAccordion: FC<MobileAccordionProps> = ({ onNavigate }) => {
-  const [openCol, setOpenCol] = useState<string | null>(null)
-  const menuData = useCollectionMenuData()
+const MobileCollectionAccordion: FC<MobileAccordionProps> = ({
+  onNavigate,
+}) => {
+  const [openCol, setOpenCol] = useState<string | null>(null);
+  const menuData = useCollectionMenuData();
 
   return (
-    <div className="w-full px-6 mt-2" style={{ maxHeight: '55vh', overflowY: 'auto' }}>
+    <div
+      className="w-full px-6 mt-2"
+      style={{ maxHeight: "55vh", overflowY: "auto" }}
+    >
       {DROPDOWN_COLUMNS.map((col) => (
-        <div key={col.title} style={{ borderBottom: '1px solid rgba(184,149,106,0.12)' }}>
+        <div
+          key={col.title}
+          style={{ borderBottom: "1px solid rgba(184,149,106,0.12)" }}
+        >
           <button
             onClick={() => setOpenCol(openCol === col.title ? null : col.title)}
             className="w-full flex items-center justify-between py-3 bg-transparent border-none cursor-pointer min-h-[44px]"
             aria-expanded={openCol === col.title}
           >
-            <span style={{ fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: openCol === col.title ? 'rgba(61,43,31,1)' : 'rgba(61,43,31,0.82)', transition: 'color 0.2s' }}>
+            <span
+              style={{
+                fontSize: "13px",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+                color:
+                  openCol === col.title
+                    ? "rgba(61,43,31,1)"
+                    : "rgba(61,43,31,0.82)",
+                transition: "color 0.2s",
+              }}
+            >
               {col.title}
             </span>
             <ChevronDownIcon open={openCol === col.title} />
           </button>
 
-          <div style={{ maxHeight: openCol === col.title ? '400px' : '0', overflow: 'hidden', transition: 'max-height 0.35s ease' }}>
-            <div className="pb-3 flex flex-wrap gap-x-4 gap-y-1">
+          <div
+            style={{
+              maxHeight: openCol === col.title ? "1000px" : "0",
+              overflow: "hidden",
+              transition: "max-height 0.35s ease",
+            }}
+          >
+            <div className="mobile-collection-grid pb-3">
               {col.items.map((item, idx) => (
                 <button
                   key={`${item}-${idx}`}
-                  onClick={() => onNavigate(menuItemPath(item, col.title, menuData))}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', letterSpacing: '0.06em', color: 'rgba(61,43,31,0.82)', padding: '0.2rem 0', textAlign: 'left', minHeight: '44px' }}
+                  onClick={() =>
+                    onNavigate(menuItemPath(item, col.title, menuData))
+                  }
+                  className="mobile-collection-item"
                 >
                   {item}
                 </button>
               ))}
               {col.items.length === 0 && (
-                <span style={{ fontSize: '13px', color: 'rgba(61,43,31,0.62)' }}>Coming soon</span>
+                <span className="mobile-collection-item mobile-collection-item-note">
+                  Coming soon
+                </span>
               )}
             </div>
           </div>
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
 const Navbar: FC = () => {
-  const navigate  = useNavigate()
-  const location  = useLocation()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const user = useAuthStore((state) => state.user);
+  const firstName = user?.name.trim().split(/\s+/)[0];
+  const accountLabel = firstName ? `Hi! ${firstName}` : "Account";
+  const accountAvatar = <AccountAvatar src={user?.avatar} />;
 
-  const [open, setOpen] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [calculatorOpen, setCalculatorOpen] = useState(false)
-  const [mobileCollectionOpen, setMobileCollectionOpen] = useState(false)
-  const [mobileCalculatorOpen, setMobileCalculatorOpen] = useState(false)
-  const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
+  const [mobileCollectionOpen, setMobileCollectionOpen] = useState(false);
+  const [mobileCalculatorOpen, setMobileCalculatorOpen] = useState(false);
+  const dropdownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  const { isOpen: searchOpen, open: openSearch, close: closeSearch } = useSearchOverlay()
-  useLockBodyScroll(searchOpen)
+  const {
+    isOpen: searchOpen,
+    open: openSearch,
+    close: closeSearch,
+  } = useSearchOverlay();
+  useLockBodyScroll(searchOpen);
 
-  const pathname = location.pathname
+  const pathname = location.pathname;
 
-  const isActive = (path: string) => path === '/bracelet-calculator'
-    ? pathname === '/bracelet-calculator' || pathname === '/rudraksha-calculator'
-    : pathname === path || (path !== '/' && pathname.startsWith(path))
+  const isActive = (path: string) =>
+    path === "/bracelet-calculator"
+      ? pathname === "/bracelet-calculator" ||
+        pathname === "/rudraksha-calculator"
+      : pathname === path || (path !== "/" && pathname.startsWith(path));
 
   const closeMenu = () => {
-    setOpen(false)
-    setMobileCollectionOpen(false)
-    setMobileCalculatorOpen(false)
-    document.body.style.overflow = ''
-  }
+    menuButtonRef.current?.focus();
+    setOpen(false);
+    setMobileCollectionOpen(false);
+    setMobileCalculatorOpen(false);
+    document.body.style.overflow = "";
+  };
 
   const go = (path: string) => {
-    closeMenu()
-    navigate(path)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+    closeMenu();
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const toggleMenu = () => {
-    const next = !open
-    setOpen(next)
-    document.body.style.overflow = next ? 'hidden' : ''
+    const next = !open;
+    setOpen(next);
+    document.body.style.overflow = next ? "hidden" : "";
     if (!next) {
-      setMobileCollectionOpen(false)
-      setMobileCalculatorOpen(false)
+      setMobileCollectionOpen(false);
+      setMobileCalculatorOpen(false);
     }
-  }
+  };
 
   const handleCollectionMouseEnter = () => {
-    if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current)
-    setDropdownOpen(true)
-  }
+    if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current);
+    setDropdownOpen(true);
+  };
   const handleCollectionMouseLeave = () => {
-    dropdownTimerRef.current = setTimeout(() => setDropdownOpen(false), 120)
-  }
+    dropdownTimerRef.current = setTimeout(() => setDropdownOpen(false), 120);
+  };
   const handleDropdownMouseEnter = () => {
-    if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current)
-  }
+    if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current);
+  };
 
-  useEffect(() => () => {
-    if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current)
-  }, [])
+  useEffect(
+    () => () => {
+      if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenu();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
 
   return (
     <>
       {/* ── Mobile full-screen drawer ── */}
       <div
         className={cn(
-          'fixed inset-0 z-[199] bg-warm transition-opacity duration-350',
-          open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
+          "fixed inset-0 z-[199] bg-warm transition-opacity duration-350",
+          open
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none",
         )}
         style={{
-          display: open ? 'flex' : 'none',
-          flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start',
-          paddingTop: '6rem', gap: '0', overflowY: 'auto',
+          display: open ? "flex" : "none",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "flex-start",
+          minHeight: "100dvh",
+          boxSizing: "border-box",
+          paddingTop: "calc(6rem + env(safe-area-inset-top))",
+          paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+          gap: "0",
+          overflowY: "auto",
         }}
         aria-hidden={!open}
+        inert={!open}
         role="dialog"
+        id="mobile-menu"
         aria-label="Navigation menu"
         aria-modal="true"
       >
         {/* Collections with accordion */}
         <div className="w-full flex flex-col items-center">
-          <div className="flex items-center gap-3 min-h-[44px]" style={{ marginBottom: '0.25rem' }}>
+          <div
+            className="flex items-center gap-3 min-h-[44px]"
+            style={{ marginBottom: "0.25rem" }}
+          >
             <button
-              onClick={() => go('/collection')}
+              onClick={() => go("/collection")}
               className={cn(
-                'font-display font-light tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200',
-                isActive('/collection') ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
+                "font-display font-light tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200",
+                isActive("/collection")
+                  ? "text-deep opacity-100"
+                  : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
               )}
-              style={{ fontSize: 'clamp(1.6rem,6vw,2.5rem)' }}
+              style={{ fontSize: "clamp(1.6rem,6vw,2.5rem)" }}
             >
-              Collections
+              Collection
             </button>
             <button
-              onClick={() => setMobileCollectionOpen(v => !v)}
+              onClick={() => setMobileCollectionOpen((v) => !v)}
               className="bg-transparent border-none cursor-pointer text-bark opacity-90 hover:opacity-100 transition-all duration-200 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-expanded={mobileCollectionOpen}
               aria-label="Toggle collection categories"
@@ -593,31 +928,48 @@ const Navbar: FC = () => {
             </button>
           </div>
 
-          <div style={{ maxHeight: mobileCollectionOpen ? '60vh' : '0', overflow: 'hidden', transition: 'max-height 0.4s ease', width: '100%' }}>
+          <div
+            style={{
+              maxHeight: mobileCollectionOpen ? "60vh" : "0",
+              overflow: "hidden",
+              transition: "max-height 0.4s ease",
+              width: "100%",
+            }}
+          >
             <MobileCollectionAccordion onNavigate={go} />
           </div>
         </div>
 
         {/* Other nav links */}
-        {NAV_ITEMS.filter(i => !i.hasDropdown || i.path === '/bracelet-calculator').map(item => (
+        {NAV_ITEMS.filter(
+          (i) => !i.hasDropdown || i.path === "/bracelet-calculator",
+        ).map((item) => (
           <div key={item.path} className="flex flex-col items-center">
             <button
-              onClick={() => item.path === '/bracelet-calculator'
-                ? setMobileCalculatorOpen(v => !v)
-                : go(item.path)}
+              onClick={() =>
+                item.path === "/bracelet-calculator"
+                  ? setMobileCalculatorOpen((v) => !v)
+                  : go(item.path)
+              }
               className={cn(
-                'font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]',
-                isActive(item.path) ? 'text-deep opacity-100' : 'text-bark opacity-90 hover:opacity-100 hover:text-deep',
+                "font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]",
+                isActive(item.path)
+                  ? "text-deep opacity-100"
+                  : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
               )}
-              aria-expanded={item.path === '/bracelet-calculator' ? mobileCalculatorOpen : undefined}
+              aria-expanded={
+                item.path === "/bracelet-calculator"
+                  ? mobileCalculatorOpen
+                  : undefined
+              }
             >
               {item.label}
             </button>
-            {item.path === '/bracelet-calculator' && mobileCalculatorOpen && (
+            {item.path === "/bracelet-calculator" && mobileCalculatorOpen && (
               <div className="flex flex-wrap justify-center gap-x-6">
                 {[
-                  ['Bracelet Calculator', '/bracelet-calculator'],
-                  ['Rudraksha Calculator', '/rudraksha-calculator'],
+                  ["Bracelet Calculator", "/bracelet-calculator"],
+                  ["Rudraksha Calculator", "/rudraksha-calculator"],
                 ].map(([label, path]) => (
                   <button
                     key={path}
@@ -638,19 +990,29 @@ const Navbar: FC = () => {
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 items-center">
           <button
             onClick={() => {
-              closeMenu()
-              openSearch()
+              closeMenu();
+              openSearch();
             }}
             className="flex flex-col items-center gap-1.5 text-bark opacity-90 hover:opacity-100 bg-transparent border-none cursor-pointer transition-opacity min-w-[44px] min-h-[44px] justify-center"
             aria-label="Open search"
           >
             <SearchIcon />
-            <span className="font-body text-xs uppercase tracking-[0.05em]">Search</span>
+            <span className="font-body text-xs uppercase tracking-[0.05em]">
+              Search
+            </span>
           </button>
           {[
-            { label: 'Account',  path: '/account', Icon: UserIcon },
-            { label: 'Wishlist', path: '/account/wishlist', Icon: () => <HeartIcon filled={isActive('/account/wishlist')} /> },
-            { label: 'Cart',     path: '/cart', Icon: BagIcon },
+            {
+              label: "Wishlist",
+              path: "/account/wishlist",
+              Icon: () => <HeartIcon filled={isActive("/account/wishlist")} />,
+            },
+            { label: "Cart", path: "/cart", Icon: BagIcon },
+            {
+              label: accountLabel,
+              path: "/account",
+              Icon: () => accountAvatar,
+            },
           ].map(({ label, path, Icon }) => (
             <button
               key={label}
@@ -659,7 +1021,9 @@ const Navbar: FC = () => {
               aria-label={label}
             >
               <Icon />
-              <span className="font-body text-xs uppercase tracking-[0.05em]">{label}</span>
+              <span className="font-body text-xs uppercase tracking-[0.05em]">
+                {label}
+              </span>
             </button>
           ))}
         </div>
@@ -667,71 +1031,93 @@ const Navbar: FC = () => {
 
       {/* ── Main navbar ── */}
       <nav
-        className={cn('fixed top-0 left-0 right-0 z-[200]', 'transition-all duration-400')}
+        className={cn(
+          "fixed top-0 left-0 right-0 z-[200]",
+          "transition-all duration-400",
+        )}
         aria-label="Main navigation"
       >
         <div
           className={cn(
-            'flex items-center justify-between',
-              'px-[clamp(1.25rem,5vw,4rem)] py-4 md:py-5',
-            'transition-all duration-400',
-            'bg-white backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]',
+            "flex items-center justify-between",
+            "px-[clamp(1.25rem,5vw,4rem)] py-4 md:py-5",
+            "transition-all duration-400",
+            "bg-white backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]",
           )}
         >
           {/* Logo */}
           <button
-            onClick={() => go('/')}
+            onClick={() => go("/")}
             className="flex items-center z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
             aria-label="prayosha crystals — go to home"
           >
-            <img src="/prayosha-logo.png" alt="prayosha crystals" className="h-16 w-auto flex-none object-contain mix-blend-multiply" />
+            <img
+              src="/prayosha-logo.png"
+              alt="prayosha crystals"
+              className="h-16 w-auto flex-none object-contain mix-blend-multiply"
+            />
           </button>
 
           {/* Desktop nav links */}
           <ul className="hidden md:flex gap-8 list-none" role="list">
-            {NAV_ITEMS.map(item => (
+            {NAV_ITEMS.map((item) => (
               <li
                 key={item.path}
                 className="relative"
-                onMouseEnter={item.path === '/collection'
-                  ? handleCollectionMouseEnter
-                  : item.path === '/bracelet-calculator'
-                    ? () => setCalculatorOpen(true)
-                    : undefined}
-                onMouseLeave={item.path === '/collection'
-                  ? handleCollectionMouseLeave
-                  : item.path === '/bracelet-calculator'
-                    ? () => setCalculatorOpen(false)
-                    : undefined}
+                onMouseEnter={
+                  item.path === "/collection"
+                    ? handleCollectionMouseEnter
+                    : item.path === "/bracelet-calculator"
+                      ? () => setCalculatorOpen(true)
+                      : undefined
+                }
+                onMouseLeave={
+                  item.path === "/collection"
+                    ? handleCollectionMouseLeave
+                    : item.path === "/bracelet-calculator"
+                      ? () => setCalculatorOpen(false)
+                      : undefined
+                }
               >
                 <button
-                  onClick={() => item.path === '/bracelet-calculator'
-                    ? setCalculatorOpen(v => !v)
-                    : go(item.path)}
+                  onClick={() =>
+                    item.path === "/bracelet-calculator"
+                      ? setCalculatorOpen((v) => !v)
+                      : go(item.path)
+                  }
                   className={cn(
-                    'font-body text-xs tracking-[0.05em] uppercase transition-all duration-200 bg-transparent border-none cursor-pointer relative pb-0.5 flex items-center gap-1.5 min-h-[44px]',
-                    item.label === 'About Us' && 'whitespace-nowrap',
-                    'after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gold-light after:transition-all after:duration-300',
-                    isActive(item.path) || (item.path === '/collection' && dropdownOpen) || (item.path === '/bracelet-calculator' && calculatorOpen)
-                      ? 'text-deep after:w-full'
-                      : 'text-bark hover:text-deep after:w-0 hover:after:w-full',
+                    "font-body text-xs tracking-[0.05em] uppercase transition-all duration-200 bg-transparent border-none cursor-pointer relative pb-0.5 flex items-center gap-1.5 min-h-[44px]",
+                    "after:absolute after:bottom-0 after:left-0 after:h-px after:bg-gold-light after:transition-all after:duration-300",
+                    isActive(item.path) ||
+                      (item.path === "/collection" && dropdownOpen) ||
+                      (item.path === "/bracelet-calculator" && calculatorOpen)
+                      ? "text-deep after:w-full"
+                      : "text-bark hover:text-deep after:w-0 hover:after:w-full",
                   )}
-                  aria-expanded={item.path === '/collection'
-                    ? dropdownOpen
-                    : item.path === '/bracelet-calculator'
-                      ? calculatorOpen
-                      : undefined}
+                  aria-expanded={
+                    item.path === "/collection"
+                      ? dropdownOpen
+                      : item.path === "/bracelet-calculator"
+                        ? calculatorOpen
+                        : undefined
+                  }
                 >
                   {item.label}
                   {item.hasDropdown && (
-                    <ChevronDownIcon open={item.path === '/collection' ? dropdownOpen : calculatorOpen} />
+                    <ChevronDownIcon
+                      open={
+                        item.path === "/collection"
+                          ? dropdownOpen
+                          : calculatorOpen
+                      }
+                    />
                   )}
                 </button>
-                {item.path === '/bracelet-calculator' && calculatorOpen && (
+                {item.path === "/bracelet-calculator" && calculatorOpen && (
                   <div className="absolute left-0 top-full z-20 min-w-56 bg-warm py-2 shadow-lg">
                     {[
-                      ['Bracelet Calculator', '/bracelet-calculator'],
-                      ['Rudraksha Calculator', '/rudraksha-calculator'],
+                      ["Bracelet Calculator", "/bracelet-calculator"],
+                      ["Rudraksha Calculator", "/rudraksha-calculator"],
                     ].map(([label, path]) => (
                       <button
                         key={path}
@@ -757,38 +1143,83 @@ const Navbar: FC = () => {
               <SearchIcon />
             </button>
             <button
-              onClick={() => go('/account')}
-              aria-label="Go to account"
-              className={cn('hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center', (pathname.startsWith('/auth') || pathname.startsWith('/account')) && 'opacity-100')}
-            >
-              <UserIcon />
-            </button>
-            <button
-              onClick={() => go('/account/wishlist')}
+              onClick={() => go("/account/wishlist")}
               aria-label="Go to wishlist"
-              className={cn('hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center', isActive('/account/wishlist') && 'opacity-100')}
+              className={cn(
+                "hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center",
+                isActive("/account/wishlist") && "opacity-100",
+              )}
             >
-              <HeartIcon filled={isActive('/account/wishlist')} />
+              <HeartIcon filled={isActive("/account/wishlist")} />
             </button>
             <button
-              onClick={() => go('/cart')}
+              onClick={() => go("/cart")}
               aria-label="Go to cart"
-              className={cn('hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center', isActive('/cart') && 'opacity-100')}
+              className={cn(
+                "hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center",
+                isActive("/cart") && "opacity-100",
+              )}
             >
               <BagIcon />
             </button>
+            <button
+              onClick={() => go("/account")}
+              aria-label={firstName ? `${accountLabel}, go to account` : "Go to account"}
+              className={cn(
+                "hidden md:flex gap-2 px-2 opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer min-h-[44px] items-center justify-center",
+                (pathname.startsWith("/auth") ||
+                  pathname.startsWith("/account")) &&
+                  "opacity-100",
+              )}
+            >
+              {accountAvatar}
+              {firstName && (
+                <span className="font-body text-xs whitespace-nowrap">
+                  {accountLabel}
+                </span>
+              )}
+            </button>
+
+            {firstName && (
+              <button
+                onClick={() => go("/account")}
+                aria-label={`${accountLabel}, go to account`}
+                className="md:hidden flex max-w-[132px] items-center gap-1.5 truncate bg-transparent border-none px-1 font-body text-xs text-bark"
+              >
+                {accountAvatar}
+                {accountLabel}
+              </button>
+            )}
 
             {/* Hamburger — mobile */}
             <button
+              ref={menuButtonRef}
               onClick={toggleMenu}
               className="md:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1 z-[201] min-w-[44px] min-h-[44px] items-center justify-center"
-              aria-label={open ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-label={
+                open ? "Close navigation menu" : "Open navigation menu"
+              }
               aria-expanded={open}
               aria-controls="mobile-menu"
             >
-              <span className={cn('block w-6 h-[1.5px] bg-bark transition-transform duration-300', open && 'translate-y-[6.5px] rotate-45')} />
-              <span className={cn('block w-6 h-[1.5px] bg-bark transition-opacity duration-300', open && 'opacity-0')} />
-              <span className={cn('block w-6 h-[1.5px] bg-bark transition-transform duration-300', open && '-translate-y-[6.5px] -rotate-45')} />
+              <span
+                className={cn(
+                  "block w-6 h-[1.5px] bg-bark transition-transform duration-300",
+                  open && "translate-y-[6.5px] rotate-45",
+                )}
+              />
+              <span
+                className={cn(
+                  "block w-6 h-[1.5px] bg-bark transition-opacity duration-300",
+                  open && "opacity-0",
+                )}
+              />
+              <span
+                className={cn(
+                  "block w-6 h-[1.5px] bg-bark transition-transform duration-300",
+                  open && "-translate-y-[6.5px] -rotate-45",
+                )}
+              />
             </button>
           </div>
         </div>
@@ -799,13 +1230,17 @@ const Navbar: FC = () => {
           onMouseEnter={handleDropdownMouseEnter}
           onMouseLeave={handleCollectionMouseLeave}
         >
-          <MegaDropdown open={dropdownOpen} onClose={() => setDropdownOpen(false)} onNavigate={navigate} />
+          <MegaDropdown
+            open={dropdownOpen}
+            onClose={() => setDropdownOpen(false)}
+            onNavigate={navigate}
+          />
         </div>
       </nav>
 
       <SearchOverlay isOpen={searchOpen} onClose={closeSearch} />
     </>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

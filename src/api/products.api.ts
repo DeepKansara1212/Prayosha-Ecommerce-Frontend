@@ -28,6 +28,7 @@ export interface ApiProduct {
   color?: string
   rudrakshaFaces?: string
   beadSize?: string
+  stone?: string
   noOfSticks?: number
   badge?: 'BESTSELLER' | 'NEW' | 'LIMITED' | 'RARE' | 'GIFT SET'
   stock: number

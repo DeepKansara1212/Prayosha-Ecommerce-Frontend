@@ -343,7 +343,7 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
           )}
 
           {/* Two-column layout on desktop */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 300px', gap: 20 }} className="block md:grid">
+          <div className="order-detail-grid">
 
             {/* Left column */}
             <div>
