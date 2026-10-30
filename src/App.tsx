@@ -31,7 +31,7 @@ const OrdersPage = lazy(() => import('@/pages/account/OrdersPage'))
 const OrderDetailPage = lazy(() => import('@/pages/account/OrderDetailPage'))
 const AddressesPage = lazy(() => import('@/pages/account/AddressesPage'))
 const ProfilePage = lazy(() => import('@/pages/account/ProfilePage'))
-const RewardsPage = lazy(() => import('@/pages/account/RewardsPage'))
+const WalletPage = lazy(() => import('@/pages/account/WalletPage'))
 const CheckoutPage = lazy(() => import('@/pages/checkout/CheckoutPage'))
 const CheckoutSuccessPage = lazy(() => import('@/pages/checkout/CheckoutSuccessPage'))
 const CheckoutFailedPage = lazy(() => import('@/pages/checkout/CheckoutFailedPage'))
@@ -289,7 +289,8 @@ const App: FC = () => {
           <Route path="/account"               element={<Navigate to="/account/orders" replace />} />
           <Route path="/account/orders"        element={<OrdersPage />} />
           <Route path="/account/orders/:num"   element={<OrderDetailRoute />} />
-          <Route path="/account/rewards"       element={<RewardsPage />} />
+          <Route path="/account/wallet"        element={<WalletPage />} />
+          <Route path="/account/rewards"       element={<Navigate to="/account/wallet" replace />} />
           <Route path="/account/addresses"     element={<AddressesPage />} />
           <Route path="/account/profile"       element={<ProfilePage />} />
 

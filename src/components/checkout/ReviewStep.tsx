@@ -1,20 +1,14 @@
-import { useEffect, useState, type FC } from 'react'
+import { useEffect, useRef, useState, type FC } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import {
-  useCartStore,
-  selectSubtotal,
-  selectDiscountAmount,
-  selectTotal,
-} from '@/store/cartStore'
+import { useCartStore, selectSubtotal, selectDiscountAmount } from '@/store/cartStore'
 import { validateCoupon } from '@/api/cart.api'
-import { getRewardsBalance, MIN_REDEMPTION_POINTS } from '@/api/rewards.api'
+import { getWalletBalance } from '@/api/wallet.api'
 import { adapt } from '@/hooks/useProducts'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface Props {
-  redeemPoints: number
-  onRedeemPointsChange: (points: number) => void
+  onCashbackChange: (used: number, earned: number) => void
   onContinue: () => void
   onBack: () => void
   shippingCharge: number
@@ -26,8 +20,7 @@ interface Props {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const ReviewStep: FC<Props> = ({
-  redeemPoints,
-  onRedeemPointsChange,
+  onCashbackChange,
   onContinue,
   onBack,
   shippingCharge,
@@ -41,31 +34,52 @@ const ReviewStep: FC<Props> = ({
   const removeCoupon   = useCartStore(s => s.removeCoupon)
   const isLoading      = useCartStore(s => s.isLoading)
   const subtotal       = useCartStore(selectSubtotal)
-  const discountAmount = useCartStore(selectDiscountAmount)
-  const total          = useCartStore(selectTotal)
+  const storedDiscountAmount = useCartStore(selectDiscountAmount)
 
   const [couponInput, setCouponInput] = useState('')
   const [couponError, setCouponError] = useState('')
-  const rewardsQuery = useQuery({
-    queryKey: ['rewards-balance'],
-    queryFn: getRewardsBalance,
+  const syncedCouponCode = useRef<string | null>(null)
+  const walletQuery = useQuery({
+    queryKey: ['wallet-balance'],
+    queryFn: getWalletBalance,
+  })
+  const existingCouponQuery = useQuery({
+    queryKey: ['checkout-coupon', coupon?.code],
+    queryFn: () => validateCoupon(coupon!.code),
+    enabled: !!coupon && storedDiscountAmount === 0,
+    retry: false,
   })
 
-  const orderTotal = total + shippingCharge
-  const maxRedeemPoints = Math.min(
-    rewardsQuery.data?.rewardPoints ?? 0,
-    Math.floor(orderTotal * 10 + 1e-8),
-  )
-  const pointsDiscount = redeemPoints / 10
-  const payableTotal = Math.max(0, orderTotal - pointsDiscount)
-  const redemptionEligible = maxRedeemPoints >= MIN_REDEMPTION_POINTS
-  const redemptionAmountInvalid = redeemPoints > 0 && redeemPoints < MIN_REDEMPTION_POINTS
+  const discountAmount = coupon
+    ? storedDiscountAmount || existingCouponQuery.data?.discountAmount || 0
+    : 0
+  const productTotal = Math.max(0, subtotal - discountAmount)
+  const cashbackBalance = walletQuery.data?.cashbackBalance ?? 0
+  const cashbackUsed = Math.round(Math.min(cashbackBalance, productTotal) * 50) / 100
+  const cashbackEarned = Math.round(Math.max(0, productTotal - cashbackUsed) * 2) / 100
+  const payableTotal = Math.max(0, productTotal + shippingCharge - cashbackUsed)
+  const couponSyncFailed = !!coupon && (existingCouponQuery.isError || !!couponError)
+  const walletUnavailable = walletQuery.isLoading || walletQuery.isError
 
   useEffect(() => {
-    if (redeemPoints > maxRedeemPoints) {
-      onRedeemPointsChange(redemptionEligible ? maxRedeemPoints : 0)
+    onCashbackChange(cashbackUsed, cashbackEarned)
+  }, [cashbackUsed, cashbackEarned, onCashbackChange])
+
+  useEffect(() => {
+    if (
+      coupon &&
+      storedDiscountAmount === 0 &&
+      existingCouponQuery.data &&
+      syncedCouponCode.current !== coupon.code
+    ) {
+      const code = coupon.code
+      syncedCouponCode.current = code
+      void applyCoupon(code, existingCouponQuery.data.discountAmount).catch(() => {
+        syncedCouponCode.current = null
+        setCouponError('Could not refresh the applied coupon. Please retry.')
+      })
     }
-  }, [maxRedeemPoints, onRedeemPointsChange, redeemPoints, redemptionEligible])
+  }, [applyCoupon, coupon, existingCouponQuery.data, storedDiscountAmount])
 
   const handleApply = async () => {
     const code = couponInput.trim()
@@ -84,6 +98,18 @@ const ReviewStep: FC<Props> = ({
   const handleRemove = async () => {
     setCouponError('')
     await removeCoupon()
+  }
+
+  const retryCouponSync = () => {
+    setCouponError('')
+    if (existingCouponQuery.isError) {
+      void existingCouponQuery.refetch()
+    } else if (coupon && existingCouponQuery.data) {
+      syncedCouponCode.current = null
+      void applyCoupon(coupon.code, existingCouponQuery.data.discountAmount).catch(() => {
+        setCouponError('Could not refresh the applied coupon. Please retry.')
+      })
+    }
   }
 
   return (
@@ -211,7 +237,7 @@ const ReviewStep: FC<Props> = ({
         )}
       </div>
 
-      {/* Rewards points */}
+      {/* Cashback wallet */}
       <div style={{
         padding: 20, marginBottom: 24,
         background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
@@ -220,64 +246,42 @@ const ReviewStep: FC<Props> = ({
           fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
           letterSpacing: '0.05em', color: '#6B6057', margin: '0 0 8px',
         }}>
-          Redeem Reward Points
+          Cashback Wallet
         </p>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '0 0 14px' }}>
-          1 point = ₹0.10 · Minimum redemption: {MIN_REDEMPTION_POINTS} points · Available: {rewardsQuery.data?.rewardPoints.toLocaleString('en-IN') ?? (rewardsQuery.isLoading ? 'Loading…' : '—')}
+          Available balance: {walletQuery.isLoading
+            ? 'Loading…'
+            : walletQuery.isError
+              ? 'Unavailable'
+              : `₹${cashbackBalance.toFixed(2)}`}
         </p>
-        {rewardsQuery.isError && (
+        {walletQuery.isError && (
           <p role="alert" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: '0 0 12px' }}>
-            Could not load your points. Try again before redeeming.
+            Could not load your wallet balance. Retry before continuing.
             <button
               type="button"
-              onClick={() => void rewardsQuery.refetch()}
+              onClick={() => void walletQuery.refetch()}
               style={{ marginLeft: 8, color: '#7B5EA7', background: 'none', border: 0, cursor: 'pointer' }}
             >
               Retry
             </button>
           </p>
         )}
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <input
-            aria-label="Reward points to redeem"
-            type="number"
-            min={MIN_REDEMPTION_POINTS}
-            max={maxRedeemPoints}
-            step={1}
-            value={redeemPoints}
-            disabled={!redemptionEligible}
-            onChange={event => {
-              const value = Number(event.target.value)
-              onRedeemPointsChange(Number.isFinite(value) ? Math.min(maxRedeemPoints, Math.max(0, Math.floor(value))) : 0)
-            }}
-            className="acct-input"
-            style={{ maxWidth: 180 }}
-          />
-          <button
-            type="button"
-            onClick={() => onRedeemPointsChange(maxRedeemPoints)}
-            disabled={!redemptionEligible}
-            className="acct-btn-ghost"
-            style={{ padding: '12px 16px' }}
-          >
-            Use maximum
-          </button>
-        </div>
-        {!redemptionEligible && !rewardsQuery.isLoading && !rewardsQuery.isError && (
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '10px 0 0' }}>
-            You need at least {MIN_REDEMPTION_POINTS} available points and an order that can use that many points to redeem.
+        {couponSyncFailed && (
+          <p role="alert" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: '0 0 12px' }}>
+            {couponError || 'Could not verify the applied coupon, so cashback cannot be calculated yet.'}
+            <button
+              type="button"
+              onClick={retryCouponSync}
+              style={{ marginLeft: 8, color: '#7B5EA7', background: 'none', border: 0, cursor: 'pointer' }}
+            >
+              Retry
+            </button>
           </p>
         )}
-        {redemptionAmountInvalid && (
-          <p role="alert" style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#A85050', margin: '10px 0 0' }}>
-            Redeem at least {MIN_REDEMPTION_POINTS} points, or enter 0 to skip redemption.
-          </p>
-        )}
-        {redeemPoints > 0 && (
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', margin: '10px 0 0' }}>
-            You’ll save ₹{pointsDiscount.toFixed(2)}
-          </p>
-        )}
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', margin: '0 0 6px' }}>
+          Cashback applied automatically: −₹{cashbackUsed.toFixed(2)}
+        </p>
       </div>
 
       {/* Price breakdown */}
@@ -304,8 +308,8 @@ const ReviewStep: FC<Props> = ({
             </button>
           </div>
         )}
-        {pointsDiscount > 0 && (
-          <Row label={`Reward points (${redeemPoints})`} value={`−₹${pointsDiscount.toFixed(2)}`} valueColor="#5A8A6A" />
+        {cashbackUsed > 0 && (
+          <Row label="Wallet cashback" value={`−₹${cashbackUsed.toFixed(2)}`} valueColor="#5A8A6A" />
         )}
         <div style={{ height: 1, background: '#E2DAC8', margin: '14px 0' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -314,13 +318,22 @@ const ReviewStep: FC<Props> = ({
             ₹{payableTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
+        <div style={{
+          marginTop: 16, padding: '14px 16px',
+          background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 6,
+        }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#315F40', margin: '0 0 4px' }}>
+            Pay ₹{payableTotal.toFixed(2)} + earn ₹{cashbackEarned.toFixed(2)} cashback
+          </p>
+          
+        </div>
       </div>
 
       {/* Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <button
           onClick={onContinue}
-          disabled={redemptionAmountInvalid || shippingLoading || !!shippingError}
+          disabled={walletUnavailable || couponSyncFailed || existingCouponQuery.isLoading || shippingLoading || !!shippingError}
           className="acct-btn-gold"
           style={{ width: '100%' }}
         >

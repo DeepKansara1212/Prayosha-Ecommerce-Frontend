@@ -77,19 +77,19 @@ export interface BlogPost {
   content: BlogSection[]
 }
 
-// ─── Rewards ─────────────────────────────────────────────────────────────────
+// ─── Cashback wallet ────────────────────────────────────────────────────────
 
-export interface RewardTransaction {
+export interface WalletTransaction {
   _id: string
   order: { items: { name: string; quantity: number }[]; total: number; createdAt: string } | null
-  pointsEarned: number
+  cashbackAmount: number
   type: 'earned' | 'redeemed'
   orderTotal: number
   createdAt: string
 }
 
-export interface RewardsBalance {
-  rewardPoints: number
+export interface WalletBalance {
+  cashbackBalance: number
 }
 
 // ─── Collection page ─────────────────────────────────────────────────────────

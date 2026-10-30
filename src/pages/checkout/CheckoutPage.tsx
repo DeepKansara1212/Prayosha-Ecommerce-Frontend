@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react'
+import { useState, useEffect, useCallback, type FC } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '@/components/layout/Navbar'
@@ -149,19 +149,19 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
 // ─── Order summary sidebar ────────────────────────────────────────────────────
 
 const OrderSidebar: FC<{
-  redeemPoints: number
+  cashbackUsed: number
+  cashbackEarned: number
   shippingCharge: number
   shippingLoading: boolean
   shippingError?: string
   shippingReady: boolean
-}> = ({ redeemPoints, shippingCharge, shippingLoading, shippingError, shippingReady }) => {
+}> = ({ cashbackUsed, cashbackEarned, shippingCharge, shippingLoading, shippingError, shippingReady }) => {
   const items          = useCartStore(s => s.items)
   const coupon         = useCartStore(s => s.coupon)
   const subtotal       = useCartStore(selectSubtotal)
   const discountAmount = useCartStore(selectDiscountAmount)
   const total          = useCartStore(selectTotal)
-  const pointsDiscount = redeemPoints / 10
-  const payableTotal   = Math.max(0, total + shippingCharge - pointsDiscount)
+  const payableTotal   = Math.max(0, total + shippingCharge - cashbackUsed)
 
   const [open, setOpen] = useState(false)
 
@@ -260,10 +260,10 @@ const OrderSidebar: FC<{
               </span>
             </div>
           )}
-          {pointsDiscount > 0 && (
+          {cashbackUsed > 0 && (
             <SidebarRow
-              label={`Reward points (${redeemPoints})`}
-              value={`−₹${pointsDiscount.toFixed(2)}`}
+              label="Wallet cashback"
+              value={`−₹${cashbackUsed.toFixed(2)}`}
               valueColor="#5A8A6A"
             />
           )}
@@ -288,6 +288,17 @@ const OrderSidebar: FC<{
             ₹{payableTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
+
+        {cashbackEarned > 0 && (
+          <div style={{
+            marginTop: 16, padding: '12px 14px',
+            background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 6,
+          }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#315F40', margin: 0 }}>
+              Pay ₹{payableTotal.toFixed(2)} + earn ₹{cashbackEarned.toFixed(2)} cashback
+            </p>
+          </div>
+        )}
 
         {/* Trust signals */}
         <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #E2DAC8', display: 'flex', gap: 16, justifyContent: 'center' }}>
@@ -325,7 +336,12 @@ const CheckoutPage: FC = () => {
 
   const [step, setStep]                           = useState<Step>(1)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
-  const [redeemPoints, setRedeemPoints]             = useState(0)
+  const [cashbackUsed, setCashbackUsed] = useState(0)
+  const [cashbackEarned, setCashbackEarned] = useState(0)
+  const handleCashbackChange = useCallback((used: number, earned: number) => {
+    setCashbackUsed(used)
+    setCashbackEarned(earned)
+  }, [])
   const shippingQuoteQuery = useQuery({
     queryKey: [
       'shipping-quote',
@@ -393,7 +409,6 @@ const CheckoutPage: FC = () => {
       orderPayment = await ordersApi.createRazorpayOrder({
         addressId: selectedAddressId,
         couponCode: coupon?.code,
-        redeemPoints,
         shippingCharge: shippingQuoteQuery.data.shippingCharge,
       })
     } catch (error) {
@@ -464,8 +479,7 @@ const CheckoutPage: FC = () => {
               )}
               {step === 2 && (
                 <ReviewStep
-                  redeemPoints={redeemPoints}
-                  onRedeemPointsChange={setRedeemPoints}
+                  onCashbackChange={handleCashbackChange}
                   onContinue={() => setStep(3)}
                   onBack={() => setStep(1)}
                   shippingCharge={shippingCharge}
@@ -478,7 +492,8 @@ const CheckoutPage: FC = () => {
                 <PaymentStep
                   onPlaceOrder={handlePlaceOrder}
                   onBack={() => setStep(2)}
-                  redeemPoints={redeemPoints}
+                  cashbackUsed={cashbackUsed}
+                  cashbackEarned={cashbackEarned}
                   shippingCharge={shippingCharge}
                 />
               )}
@@ -486,7 +501,8 @@ const CheckoutPage: FC = () => {
 
             {/* Right: sidebar */}
             <OrderSidebar
-              redeemPoints={redeemPoints}
+              cashbackUsed={cashbackUsed}
+              cashbackEarned={cashbackEarned}
               shippingCharge={shippingCharge}
               shippingLoading={shippingQuoteQuery.isLoading || shippingQuoteQuery.isFetching}
               shippingError={shippingError}

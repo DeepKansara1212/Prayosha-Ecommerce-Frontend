@@ -46,9 +46,10 @@ export interface Order {
   statusHistory: OrderStatusEntry[]
   subtotal: number
   discount: number
+  shippingCharge: number
   total: number
-  pointsRedeemed: number
-  pointsDiscount: number
+  cashbackUsed: number
+  cashbackEarned: number
   trackingNumber?: string
   awbNumber?: string
   carrier?: string
@@ -56,7 +57,6 @@ export interface Order {
   shippingStatus?: string
   trackingCheckpoints?: TrackingCheckpoint[]
   razorpayOrderId?: string
-  pointsEarned: number
   hasFreeGift: boolean
   createdAt: string
   updatedAt: string
@@ -64,8 +64,8 @@ export interface Order {
 
 export interface OrderSuccessResponse {
   order: Order
-  pointsEarned: number
-  newPointsBalance: number
+  cashbackEarned: number
+  cashbackBalance: number
 }
 
 export interface OrderLineInput {
@@ -76,7 +76,6 @@ export interface OrderLineInput {
 export interface RazorpayOrderData {
   addressId: string
   couponCode?: string
-  redeemPoints?: number
   shippingCharge?: number
 }
 

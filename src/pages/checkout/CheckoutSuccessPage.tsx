@@ -10,22 +10,22 @@ import FreeGiftBanner from '@/components/ui/FreeGiftBanner'
 const CheckoutSuccessPage: FC = () => {
   const navigate = useNavigate()
 
-  const { order, pointsEarned, newPointsBalance } = useMemo<{
+  const { order, cashbackEarned, cashbackBalance } = useMemo<{
     order: Order | null
-    pointsEarned: number
-    newPointsBalance: number
+    cashbackEarned: number
+    cashbackBalance: number
   }>(() => {
     try {
       const raw = sessionStorage.getItem('prayosha_last_order')
-      if (!raw) return { order: null, pointsEarned: 0, newPointsBalance: 0 }
+      if (!raw) return { order: null, cashbackEarned: 0, cashbackBalance: 0 }
       const parsed = JSON.parse(raw) as OrderSuccessResponse
       return {
         order: parsed.order ?? null,
-        pointsEarned: parsed.pointsEarned ?? 0,
-        newPointsBalance: parsed.newPointsBalance ?? 0,
+        cashbackEarned: parsed.cashbackEarned ?? 0,
+        cashbackBalance: parsed.cashbackBalance ?? 0,
       }
     } catch {
-      return { order: null, pointsEarned: 0, newPointsBalance: 0 }
+      return { order: null, cashbackEarned: 0, cashbackBalance: 0 }
     }
   }, [])
 
@@ -225,8 +225,8 @@ const CheckoutSuccessPage: FC = () => {
                   </div>
                 </div>
               )}
-              {/* Points earned */}
-              {pointsEarned > 0 && (
+              {/* Cashback earned */}
+              {cashbackEarned > 0 && (
                 <div style={{
                   background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 8,
                   padding: '18px 24px',
@@ -235,14 +235,14 @@ const CheckoutSuccessPage: FC = () => {
                   <span style={{ fontSize: 20, flexShrink: 0 }}>✨</span>
                   <div style={{ flex: 1 }}>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: '0 0 2px' }}>
-                      You earned <strong style={{ color: '#C49A3C' }}>{pointsEarned} reward points</strong> on this order!
+                      You earned <strong style={{ color: '#C49A3C' }}>₹{cashbackEarned.toFixed(2)} cashback</strong> on this order!
                     </p>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
-                      Your total balance: <strong>{newPointsBalance} pts</strong>
+                      Your wallet balance: <strong>₹{cashbackBalance.toFixed(2)}</strong>
                     </p>
                   </div>
                   <button
-                    onClick={() => { navigate('/account/rewards'); window.scrollTo({ top: 0 }) }}
+                    onClick={() => { navigate('/account/wallet'); window.scrollTo({ top: 0 }) }}
                     style={{
                       flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer',
                       fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase',
@@ -250,7 +250,7 @@ const CheckoutSuccessPage: FC = () => {
                       minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center',
                     }}
                   >
-                    View rewards →
+                    View wallet →
                   </button>
                 </div>
               )}
@@ -278,16 +278,22 @@ const CheckoutSuccessPage: FC = () => {
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>−₹{order.discount.toLocaleString('en-IN')}</span>
                       </div>
                     )}
-                    {order.pointsRedeemed > 0 && (
+                    {order.cashbackUsed > 0 && (
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>
-                          Reward points ({order.pointsRedeemed})
+                          Wallet cashback
                         </span>
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
-                          −₹{order.pointsDiscount.toFixed(2)}
+                          −₹{order.cashbackUsed.toFixed(2)}
                         </span>
                       </div>
                     )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>Shipping</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>
+                        {order.shippingCharge === 0 ? 'Free' : `₹${order.shippingCharge.toFixed(2)}`}
+                      </span>
+                    </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638' }}>Payment</span>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', display: 'flex', alignItems: 'center', gap: 5 }}>

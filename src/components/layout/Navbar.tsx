@@ -10,6 +10,7 @@ import { getSubCategories } from "@/api/subcategories.api";
 import SearchOverlay from "@/components/search/SearchOverlay";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
+import { selectItemCount, useCartStore } from "@/store/cartStore";
 
 function normalizeMenuLabel(label: string): string {
   return label.trim().toLowerCase();
@@ -131,17 +132,27 @@ const HeartIcon: FC<{ filled?: boolean }> = ({ filled }) => (
     />
   </svg>
 );
-const BagIcon: FC = () => (
-  <svg
-    viewBox="0 0 24 24"
-    strokeWidth="1.5"
-    className="w-5 h-5 stroke-current fill-none"
-    aria-hidden="true"
-  >
-    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-    <line x1="3" y1="6" x2="21" y2="6" />
-    <path d="M16 10a4 4 0 0 1-8 0" />
-  </svg>
+const BagIcon: FC<{ count: number }> = ({ count }) => (
+  <span className="relative inline-flex">
+    <svg
+      viewBox="0 0 24 24"
+      strokeWidth="1.5"
+      className="w-5 h-5 stroke-current fill-none"
+      aria-hidden="true"
+    >
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+    {count > 0 && (
+      <span
+        aria-hidden="true"
+        className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 font-body text-[10px] leading-none text-white"
+      >
+        {count > 99 ? "99+" : count}
+      </span>
+    )}
+  </span>
 );
 const UserIcon: FC = () => (
   <svg
@@ -792,6 +803,7 @@ const Navbar: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
+  const cartItemCount = useCartStore(selectItemCount);
   const firstName = user?.name.trim().split(/\s+/)[0];
   const accountLabel = firstName ? `Hi! ${firstName}` : "Account";
   const accountAvatar = <AccountAvatar src={user?.avatar} />;
@@ -1007,7 +1019,11 @@ const Navbar: FC = () => {
               path: "/account/wishlist",
               Icon: () => <HeartIcon filled={isActive("/account/wishlist")} />,
             },
-            { label: "Cart", path: "/cart", Icon: BagIcon },
+            {
+              label: "Cart",
+              path: "/cart",
+              Icon: () => <BagIcon count={cartItemCount} />,
+            },
             {
               label: accountLabel,
               path: "/account",
@@ -1154,13 +1170,13 @@ const Navbar: FC = () => {
             </button>
             <button
               onClick={() => go("/cart")}
-              aria-label="Go to cart"
+              aria-label={`Go to cart${cartItemCount > 0 ? `, ${cartItemCount} ${cartItemCount === 1 ? "item" : "items"}` : ""}`}
               className={cn(
                 "hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center",
                 isActive("/cart") && "opacity-100",
               )}
             >
-              <BagIcon />
+              <BagIcon count={cartItemCount} />
             </button>
             <button
               onClick={() => go("/account")}

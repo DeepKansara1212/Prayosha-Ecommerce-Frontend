@@ -148,51 +148,51 @@ const ACCOUNT_CSS = `
     }
   }
   @media (max-width: 480px) {
-    .rewards-history-content {
+    .wallet-history-content {
       padding-right: 14px !important;
       padding-left: 14px !important;
     }
-    .rewards-history-header {
+    .wallet-history-header {
       display: none !important;
     }
-    .rewards-history-row {
+    .wallet-history-row {
       grid-template-columns: minmax(0, 1fr) auto !important;
       gap: 6px 12px;
       padding: 14px 0 !important;
     }
-    .rewards-history-product {
+    .wallet-history-product {
       grid-column: 1 / -1;
       white-space: normal !important;
       overflow-wrap: anywhere;
     }
-    .rewards-history-date,
-    .rewards-history-amount,
-    .rewards-history-points {
+    .wallet-history-date,
+    .wallet-history-amount,
+    .wallet-history-cashback {
       font-size: 11px !important;
       white-space: normal;
     }
-    .rewards-history-date {
+    .wallet-history-date {
       grid-column: 1;
       grid-row: 2;
     }
-    .rewards-history-amount {
+    .wallet-history-amount {
       grid-column: 1;
       grid-row: 3;
     }
-    .rewards-history-date::before { content: "Date · "; color: #9A8F85; }
-    .rewards-history-amount::before { content: "Amount · "; color: #9A8F85; }
-    .rewards-history-points {
+    .wallet-history-date::before { content: "Date · "; color: #9A8F85; }
+    .wallet-history-amount::before { content: "Order total · "; color: #9A8F85; }
+    .wallet-history-cashback {
       grid-column: 2;
       grid-row: 2 / 4;
       align-self: center;
       text-align: right;
     }
-    .rewards-history-row-skeleton {
+    .wallet-history-row-skeleton {
       display: grid !important;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
-    .rewards-history-row-skeleton > * {
+    .wallet-history-row-skeleton > * {
       width: 100% !important;
       min-width: 0;
     }
@@ -206,7 +206,7 @@ const ACCOUNT_CSS = `
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type AccountTab = "orders" | "rewards" | "addresses" | "profile";
+export type AccountTab = "orders" | "wallet" | "addresses" | "profile";
 
 interface AccountLayoutProps {
   children: ReactNode;
@@ -226,10 +226,10 @@ const NAV_ITEMS: {
     path: "/account/orders",
   },
   {
-    key: "rewards",
-    label: "My Rewards",
-    mobileLabel: "Rewards",
-    path: "/account/rewards",
+    key: "wallet",
+    label: "Cashback Wallet",
+    mobileLabel: "Wallet",
+    path: "/account/wallet",
   },
   {
     key: "addresses",

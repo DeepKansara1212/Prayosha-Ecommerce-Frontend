@@ -433,13 +433,19 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
                 {order.discount > 0 && (
                   <PriceRow label="Discount" value={`−${fmtPrice(order.discount)}`} />
                 )}
-                {order.pointsRedeemed > 0 && (
+                {order.cashbackUsed > 0 && (
                   <PriceRow
-                    label={`Reward points (${order.pointsRedeemed})`}
-                    value={`−${fmtPrice(order.pointsDiscount)}`}
+                    label="Wallet cashback"
+                    value={`−${fmtPrice(order.cashbackUsed)}`}
                   />
                 )}
-                <PriceRow label="Shipping" value="Free" />
+                {order.cashbackEarned > 0 && (
+                  <PriceRow
+                    label="Cashback earned"
+                    value={fmtPrice(order.cashbackEarned)}
+                  />
+                )}
+                <PriceRow label="Shipping" value={order.shippingCharge === 0 ? "Free" : fmtPrice(order.shippingCharge)} />
                 <div style={{ height: 1, background: '#E2DAC8', margin: '8px 0' }} />
                 <PriceRow label="Total" value={fmtPrice(order.total)} bold accent />
               </Card>

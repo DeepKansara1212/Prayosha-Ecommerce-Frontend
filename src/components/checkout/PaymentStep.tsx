@@ -6,20 +6,20 @@ import { useCartStore, selectTotal } from '@/store/cartStore'
 interface Props {
   onPlaceOrder: () => Promise<void>
   onBack: () => void
-  redeemPoints: number
+  cashbackUsed: number
+  cashbackEarned: number
   shippingCharge: number
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, redeemPoints, shippingCharge }) => {
+const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, cashbackUsed, cashbackEarned, shippingCharge }) => {
   const subtotal = useCartStore(selectTotal)
 
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
 
-  const pointsDiscount = redeemPoints / 10
-  const displayTotal = Math.max(0, subtotal + shippingCharge - pointsDiscount)
+  const displayTotal = Math.max(0, subtotal + shippingCharge - cashbackUsed)
 
   const handlePlace = async () => {
     setError('')
@@ -50,19 +50,19 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, redeemPoints, shippingCh
       </div>
 
       {/* Checkout total */}
-      {redeemPoints > 0 && (
+      {(cashbackUsed > 0 || cashbackEarned > 0) && (
         <div style={{
           display: 'flex', flexDirection: 'column', gap: 8,
           padding: '12px 16px', marginBottom: 20,
           background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
         }}>
-          {redeemPoints > 0 && (
+          {cashbackUsed > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
-                {redeemPoints} points redeemed
+                Cashback from wallet
               </span>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>
-                −₹{pointsDiscount.toFixed(2)}
+                −₹{cashbackUsed.toFixed(2)}
               </span>
             </div>
           )}
@@ -74,6 +74,11 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, redeemPoints, shippingCh
               ₹{displayTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
+          {cashbackEarned > 0 && (
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', margin: 0 }}>
+              After payment, you’ll earn ₹{cashbackEarned.toFixed(2)} cashback.
+            </p>
+          )}
         </div>
       )}
 
