@@ -77,6 +77,7 @@ export interface RazorpayOrderData {
   addressId: string
   couponCode?: string
   shippingCharge?: number
+  useCashback?: boolean
 }
 
 export interface ShippingQuoteData {
@@ -112,7 +113,11 @@ export interface PaginatedOrders {
 export async function createRazorpayOrder(
   data: RazorpayOrderData,
 ): Promise<RazorpayOrderResponse> {
-  const res = await apiClient.post<{ data: RazorpayOrderResponse }>('/orders/razorpay/create', data)
+  const res = await apiClient.post<{ data: RazorpayOrderResponse }>(
+    '/orders/razorpay/create',
+    data,
+    { timeout: 20_000 },
+  )
   return res.data.data
 }
 
@@ -124,12 +129,20 @@ export async function getShippingQuote(
 }
 
 export async function verifyRazorpayPayment(data: RazorpayPaymentData): Promise<OrderSuccessResponse> {
-  const res = await apiClient.post<{ data: OrderSuccessResponse }>('/orders/razorpay/verify', data)
+  const res = await apiClient.post<{ data: OrderSuccessResponse }>(
+    '/orders/razorpay/verify',
+    data,
+    { timeout: 15_000 },
+  )
   return res.data.data
 }
 
 export async function failRazorpayPayment(razorpay_order_id: string): Promise<void> {
-  await apiClient.post('/orders/razorpay/fail', { razorpay_order_id })
+  await apiClient.post(
+    '/orders/razorpay/fail',
+    { razorpay_order_id },
+    { timeout: 8_000 },
+  )
 }
 
 export async function getUserOrders(page = 1): Promise<PaginatedOrders> {

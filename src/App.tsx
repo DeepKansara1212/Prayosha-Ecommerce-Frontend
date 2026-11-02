@@ -275,6 +275,7 @@ const App: FC = () => {
               onRemoveItem={removeFromCart}
               onMoveToWishlist={moveToWishlist}
               onNavigateToCollection={() => navigate('/collection')}
+              onNavigateToProduct={(id) => navigate(`/product/${id}`)}
               onNavigateToWishlist={() => navigate('/account/wishlist')}
               onClearCart={clearCart}
             />

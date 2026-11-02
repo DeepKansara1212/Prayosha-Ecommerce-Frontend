@@ -8,6 +8,8 @@ import { adapt } from '@/hooks/useProducts'
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface Props {
+  cashbackSelected: boolean
+  onCashbackToggle: (selected: boolean) => void
   onCashbackChange: (used: number, earned: number) => void
   onContinue: () => void
   onBack: () => void
@@ -20,6 +22,8 @@ interface Props {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const ReviewStep: FC<Props> = ({
+  cashbackSelected,
+  onCashbackToggle,
   onCashbackChange,
   onContinue,
   onBack,
@@ -55,7 +59,8 @@ const ReviewStep: FC<Props> = ({
     : 0
   const productTotal = Math.max(0, subtotal - discountAmount)
   const cashbackBalance = walletQuery.data?.cashbackBalance ?? 0
-  const cashbackUsed = Math.round(Math.min(cashbackBalance, productTotal) * 50) / 100
+  const maxCashback = Math.round(Math.min(cashbackBalance, productTotal) * 50) / 100
+  const cashbackUsed = cashbackSelected ? maxCashback : 0
   const cashbackEarned = Math.round(Math.max(0, productTotal - cashbackUsed) * 2) / 100
   const payableTotal = Math.max(0, productTotal + shippingCharge - cashbackUsed)
   const couponSyncFailed = !!coupon && (existingCouponQuery.isError || !!couponError)
@@ -279,9 +284,32 @@ const ReviewStep: FC<Props> = ({
             </button>
           </p>
         )}
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', margin: '0 0 6px' }}>
-          Cashback applied automatically: −₹{cashbackUsed.toFixed(2)}
-        </p>
+        <label style={{
+          display: 'flex', alignItems: 'flex-start', gap: 12, padding: 14,
+          background: '#F5F0E8', border: '1px solid #D8CEB8', borderRadius: 6,
+          cursor: maxCashback > 0 && !walletUnavailable && !couponSyncFailed ? 'pointer' : 'not-allowed',
+          opacity: maxCashback > 0 && !walletUnavailable && !couponSyncFailed ? 1 : 0.65,
+        }}>
+          <input
+            type="checkbox"
+            checked={cashbackSelected}
+            onChange={event => onCashbackToggle(event.target.checked)}
+            disabled={maxCashback === 0 || walletUnavailable || couponSyncFailed}
+            style={{ width: 18, height: 18, margin: '1px 0 0', accentColor: '#5A8A6A', flexShrink: 0 }}
+          />
+          <span>
+            <span style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#315F40' }}>
+              Use ₹{maxCashback.toFixed(2)} cashback
+            </span>
+            <span style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', marginTop: 4 }}>
+              {maxCashback > 0
+                ? cashbackSelected
+                  ? `₹${cashbackUsed.toFixed(2)} will be applied to this order.`
+                  : 'Tick this box to apply your available cashback to this order.'
+                : 'No cashback is available to apply to this order.'}
+            </span>
+          </span>
+        </label>
       </div>
 
       {/* Price breakdown */}
@@ -323,7 +351,7 @@ const ReviewStep: FC<Props> = ({
           background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 6,
         }}>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#315F40', margin: '0 0 4px' }}>
-            Pay ₹{payableTotal.toFixed(2)} + earn ₹{cashbackEarned.toFixed(2)} cashback
+            You will earn ₹{cashbackEarned.toFixed(2)} cashback
           </p>
           
         </div>

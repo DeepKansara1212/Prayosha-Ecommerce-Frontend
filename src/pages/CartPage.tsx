@@ -26,6 +26,7 @@ interface CartPageProps {
   onRemoveItem: (productId: string) => void
   onMoveToWishlist: (productId: string) => void
   onNavigateToCollection: () => void
+  onNavigateToProduct: (productId: string) => void
   onNavigateToWishlist: () => void
   onClearCart: () => void
 }
@@ -371,6 +372,7 @@ const CartPage: FC<CartPageProps> = ({
   onUpdateQty,
   onRemoveItem,
   onNavigateToCollection,
+  onNavigateToProduct,
   onNavigateToWishlist,
 }) => {
   const navigate = useNavigate()
@@ -545,7 +547,13 @@ const CartPage: FC<CartPageProps> = ({
                       .filter(p => !items.some(i => i.productId === p.id))
                       .slice(0, 4)
                       .map(p => (
-                        <div key={p.id} className="flex-none w-32 cursor-pointer group">
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => onNavigateToProduct(p.id)}
+                          className="flex-none w-32 cursor-pointer group text-left"
+                          aria-label={`View ${p.name} details`}
+                        >
                           <div className={cn(p.bgClass, 'w-32 h-32 flex items-center justify-center text-3xl mb-2 overflow-hidden transition-transform duration-300 group-hover:scale-105')} aria-hidden="true">
                             {p.images?.[0]
                               ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
@@ -553,7 +561,7 @@ const CartPage: FC<CartPageProps> = ({
                           </div>
                           <p className="font-display text-[0.85rem] font-light text-deep leading-tight truncate">{p.name}</p>
                           <p className="font-body text-xs text-muted">{p.priceDisplay}</p>
-                        </div>
+                        </button>
                       ))}
                   </div>
                 </div>

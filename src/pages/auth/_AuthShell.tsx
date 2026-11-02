@@ -136,36 +136,22 @@ export const AuthShell: FC<AuthShellProps> = ({ headline, headlineItalic, subtex
           overflow: 'hidden',
         }}
       >
-        {/* Decorative orb */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: '2rem',
-            right: '2rem',
-            width: '70px',
-            height: '70px',
-            borderRadius: '50%',
-            background: 'radial-gradient(circle at 35% 35%, #9B7EC8, #C49A3C)',
-            boxShadow: '0 0 28px rgba(123,94,167,0.45), 0 0 60px rgba(196,154,60,0.2)',
-            flexShrink: 0,
-          }}
-        />
-
         <div
           className="auth-left-body"
           style={{ maxWidth: '420px', width: '100%', display: 'flex', flexDirection: 'column' }}
         >
-          <p style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '13px',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: '#6B6057',
-            margin: '0 0 1.75rem',
-          }}>
-            ✦ prayosha crystals
-          </p>
+          <img
+            src="/prayosha-logo.png"
+            alt="Prayosha Crystals"
+            style={{
+              display: 'block',
+              width: 'min(100%, 300px)',
+              height: 'auto',
+              objectFit: 'contain',
+              objectPosition: 'left center',
+              marginBottom: '1.75rem',
+            }}
+          />
 
           <h1
             className="auth-headline"

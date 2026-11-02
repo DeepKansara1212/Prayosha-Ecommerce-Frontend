@@ -295,7 +295,7 @@ const OrderSidebar: FC<{
             background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 6,
           }}>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#315F40', margin: 0 }}>
-              Pay ₹{payableTotal.toFixed(2)} + earn ₹{cashbackEarned.toFixed(2)} cashback
+              You will earn ₹{cashbackEarned.toFixed(2)} cashback
             </p>
           </div>
         )}
@@ -336,6 +336,7 @@ const CheckoutPage: FC = () => {
 
   const [step, setStep]                           = useState<Step>(1)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
+  const [cashbackSelected, setCashbackSelected] = useState(false)
   const [cashbackUsed, setCashbackUsed] = useState(0)
   const [cashbackEarned, setCashbackEarned] = useState(0)
   const handleCashbackChange = useCallback((used: number, earned: number) => {
@@ -410,6 +411,7 @@ const CheckoutPage: FC = () => {
         addressId: selectedAddressId,
         couponCode: coupon?.code,
         shippingCharge: shippingQuoteQuery.data.shippingCharge,
+        useCashback: cashbackSelected,
       })
     } catch (error) {
       if (error instanceof Error && error.message.includes('Shipping rate changed')) {
@@ -479,6 +481,8 @@ const CheckoutPage: FC = () => {
               )}
               {step === 2 && (
                 <ReviewStep
+                  cashbackSelected={cashbackSelected}
+                  onCashbackToggle={setCashbackSelected}
                   onCashbackChange={handleCashbackChange}
                   onContinue={() => setStep(3)}
                   onBack={() => setStep(1)}

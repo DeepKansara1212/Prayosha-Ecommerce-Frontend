@@ -110,7 +110,7 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, cashbackUsed, cashbackEa
                 animation: 'ck-spin 0.7s linear infinite',
                 display: 'inline-block', flexShrink: 0,
               }} />
-              Placing Order…
+              Processing payment…
             </span>
           ) : (
             `Place Order · ₹${displayTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`

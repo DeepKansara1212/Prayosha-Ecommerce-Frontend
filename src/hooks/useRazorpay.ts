@@ -41,11 +41,19 @@ function loadRazorpayScript(): Promise<boolean> {
     if (window.Razorpay) { resolve(true); return }
     const script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
-    script.onload = () => resolve(true)
-    script.onerror = () => resolve(false)
+    const timeout = window.setTimeout(() => finish(false), 15_000)
+    const finish = (loaded: boolean) => {
+      window.clearTimeout(timeout)
+      resolve(loaded)
+    }
+    script.onload = () => finish(true)
+    script.onerror = () => finish(false)
     document.head.appendChild(script)
   })
 }
+
+const delay = (milliseconds: number) =>
+  new Promise(resolve => window.setTimeout(resolve, milliseconds))
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -71,46 +79,79 @@ export function useRazorpay() {
     const loaded = await loadRazorpayScript()
     if (!loaded) { await reportFailure(); return }
 
-    let failureHandled = false
-    const handleFailure = async (reportPaymentFailure = true) => {
-      if (failureHandled) return
-      failureHandled = true
-      if (reportPaymentFailure) {
-        await reportFailure()
-      } else {
-        onFailure()
-      }
-    }
+    return new Promise<void>(resolve => {
+      let completed = false
+      let paymentSubmitted = false
 
-    const rzp = new window.Razorpay({
-      key: (import.meta.env.VITE_RAZORPAY_KEY_ID ?? '') as string,
-      amount,
-      currency,
-      name: 'prayosha crystals',
-      description: 'Sacred Crystal Collection',
-      order_id: razorpayOrderId,
-      prefill: {
-        name: user?.name ?? '',
-        email: user?.email ?? '',
-        contact: user?.phone ?? '',
-      },
-      theme: { color: '#7B5EA7' },
-      handler: async (response) => {
+      const handleFailure = async () => {
+        if (completed || paymentSubmitted) return
+        completed = true
+        await reportFailure()
+        resolve()
+      }
+
+      const handleSuccess = async (response: RazorpayPaymentResponse) => {
+        if (completed || paymentSubmitted) return
+        paymentSubmitted = true
         try {
-          const result = await ordersApi.verifyRazorpayPayment({
+          const payment = {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
-          })
+          }
+          let result: ordersApi.OrderSuccessResponse | undefined
+          let lastError: unknown
+          for (let attempt = 0; attempt < 2; attempt += 1) {
+            try {
+              result = await ordersApi.verifyRazorpayPayment(payment)
+              break
+            } catch (error) {
+              lastError = error
+              if (attempt === 0) await delay(750)
+            }
+          }
+          if (!result) {
+            throw lastError instanceof Error
+              ? lastError
+              : new Error('Payment could not be verified. Please contact support before trying again.')
+          }
           await onSuccess(result)
-        } catch {
-          await handleFailure(false)
+          completed = true
+          resolve()
+        } catch (error) {
+          console.error('Unable to verify the Razorpay payment', error)
+          completed = true
+          onFailure()
+          resolve()
         }
-      },
-      modal: { ondismiss: () => { void handleFailure() } },
+      }
+
+      try {
+        const rzp = new window.Razorpay({
+          key: (import.meta.env.VITE_RAZORPAY_KEY_ID ?? '') as string,
+          amount,
+          currency,
+          name: 'prayosha crystals',
+          description: 'Sacred Crystal Collection',
+          order_id: razorpayOrderId,
+          prefill: {
+            name: user?.name ?? '',
+            email: user?.email ?? '',
+            contact: user?.phone ?? '',
+          },
+          theme: { color: '#7B5EA7' },
+          handler: response => { void handleSuccess(response) },
+          modal: { ondismiss: () => { void handleFailure() } },
+        })
+        rzp.on('payment.failed', () => { void handleFailure() })
+        rzp.open()
+      } catch (error) {
+        console.error('Unable to open Razorpay checkout', error)
+        completed = true
+        onFailure()
+        resolve()
+      }
     })
-    rzp.on('payment.failed', () => { void handleFailure() })
-    rzp.open()
   }, [user])
 
   return { openRazorpay }
