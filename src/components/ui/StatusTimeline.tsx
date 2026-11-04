@@ -230,12 +230,6 @@ const StatusTimeline: FC<StatusTimelineProps> = ({ statusHistory, currentStatus 
                 </p>
               )}
 
-              {/* Optional note */}
-              {entry?.note && (
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: '4px 0 0', lineHeight: 1.5 }}>
-                  {entry.note}
-                </p>
-              )}
             </div>
           </li>
         )

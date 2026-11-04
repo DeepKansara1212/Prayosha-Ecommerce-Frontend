@@ -22,6 +22,7 @@ export interface ApiProduct {
   images: string[]
   video?: string
   category: string | { name: string; slug: string; shipping?: ApiProductShipping }
+  categories?: Array<string | { name: string; slug: string; shipping?: ApiProductShipping }>
   tags: string[]
   chakra?: string
   shape?: string

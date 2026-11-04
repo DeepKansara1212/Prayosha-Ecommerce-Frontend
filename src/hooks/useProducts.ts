@@ -52,7 +52,9 @@ export function adapt(p: ApiProduct): ProductDetail {
     sku: p.sku,
     name: p.name,
     subtitle: p.shortDescription ?? '',
-    category: str(p.category) as ProductCategory,
+    category: (p.categories?.length
+      ? p.categories.map(category => str(category)).join(', ')
+      : str(p.category)) as ProductCategory,
     ...(p.price !== undefined && { price: p.price }),
     ...(p.comparePrice !== undefined && { comparePrice: p.comparePrice }),
     priceDisplay: p.price !== undefined ? '₹' + p.price.toLocaleString('en-IN') : '',
