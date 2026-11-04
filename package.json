@@ -37,5 +37,9 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12"
+  },
+  "overrides": {
+    "baseline-browser-mapping": "latest",
+    "caniuse-lite": "1.0.30001820"
   }
 }

@@ -1,6 +1,5 @@
 import { useState, type FC } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import type { SortOption } from '@/types'
 import { useProducts } from '@/hooks/useProducts'
 
 import Navbar         from '@/components/layout/Navbar'
@@ -36,7 +35,6 @@ const CollectionPage: FC<CollectionPageProps> = ({
   const meaning = searchParams.get('meaning') ?? ''
   const subCategory = searchParams.get('subCategory') ?? ''
   const search = searchParams.get('search') ?? ''
-  const [sort, setSort]         = useState<SortOption>('featured')
   const [page, setPage]         = useState(1)
 
   const updateFilter = (key: string, value: string) => {
@@ -53,19 +51,13 @@ const CollectionPage: FC<CollectionPageProps> = ({
     setPage(1)
   }
 
-  const handleCategory = (slug: string) => updateFilter('category', slug)
-  const handlePurpose  = (id: string) => updateFilter('purpose', id)
-  const handleMeaning  = (id: string) => updateFilter('meaning', id)
-  const handleSubCategory = (id: string) => updateFilter('subCategory', id)
-  const handleSort     = (s: SortOption) => { setSort(s);       setPage(1) }
-
   const params = {
     category: category || undefined,
     search: search || undefined,
     purpose: purpose || undefined,
     meaning: meaning || undefined,
     subCategory: subCategory || undefined,
-    sort,
+    sort: 'featured' as const,
     page,
     limit: 12,
   }
@@ -83,17 +75,7 @@ const CollectionPage: FC<CollectionPageProps> = ({
       <Navbar />
       <main id="main-content" className="pt-[80px] md:pt-[88px]">
         <FilterBar
-          active={category}
-          purpose={purpose}
-          meaning={meaning}
-          subCategory={subCategory}
-          sort={sort}
           total={pagination?.total ?? 0}
-          onCategory={handleCategory}
-          onPurpose={handlePurpose}
-          onMeaning={handleMeaning}
-          onSubCategory={handleSubCategory}
-          onSort={handleSort}
         />
 
         <div style={{ padding: 'clamp(2.5rem,5vw,4rem) clamp(1.25rem,5vw,4rem)' }}>

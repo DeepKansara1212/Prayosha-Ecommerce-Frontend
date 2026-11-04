@@ -885,26 +885,23 @@ const Navbar: FC = () => {
 
   return (
     <>
-      {/* ── Mobile full-screen drawer ── */}
+      {/* ── Mobile navigation drawer ── */}
       <div
         className={cn(
-          "fixed inset-0 z-[199] bg-warm transition-opacity duration-350",
+          "fixed inset-0 z-[199] bg-black/25 transition-opacity duration-350",
           open
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none",
         )}
         style={{
           display: open ? "flex" : "none",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "flex-start",
+          alignItems: "stretch",
+          justifyContent: "flex-end",
           minHeight: "100dvh",
           boxSizing: "border-box",
-          paddingTop: "calc(6rem + env(safe-area-inset-top))",
-          paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
-          gap: "0",
-          overflowY: "auto",
+          paddingTop: "72px",
         }}
+        onClick={closeMenu}
         aria-hidden={!open}
         inert={!open}
         role="dialog"
@@ -912,21 +909,29 @@ const Navbar: FC = () => {
         aria-label="Navigation menu"
         aria-modal="true"
       >
+        <div
+          className="flex flex-col items-stretch overflow-y-auto bg-[#F5F0E8] shadow-[-12px_0_32px_rgba(28,26,23,0.12)]"
+          style={{
+            width: "min(88vw, 380px)",
+            height: "calc(100dvh - 72px)",
+            boxSizing: "border-box",
+            padding: "0.5rem 1.25rem max(1.25rem, env(safe-area-inset-bottom))",
+          }}
+          onClick={(event) => event.stopPropagation()}
+        >
         {/* Collections with accordion */}
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col items-stretch">
           <div
-            className="flex items-center gap-3 min-h-[44px]"
-            style={{ marginBottom: "0.25rem" }}
+            className="flex items-center justify-between min-h-[52px] border-b border-[#B8956A]/20"
           >
             <button
               onClick={() => go("/collection")}
               className={cn(
-                "font-display font-light tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200",
+                "flex-1 min-h-[52px] text-left font-display text-[1.1rem] font-light tracking-[0.02em] bg-transparent border-none cursor-pointer transition-all duration-200",
                 isActive("/collection")
                   ? "text-deep opacity-100"
                   : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
               )}
-              style={{ fontSize: "clamp(1.6rem,6vw,2.5rem)" }}
             >
               Collection
             </button>
@@ -956,7 +961,7 @@ const Navbar: FC = () => {
         {NAV_ITEMS.filter(
           (i) => !i.hasDropdown || i.path === "/bracelet-calculator",
         ).map((item) => (
-          <div key={item.path} className="flex flex-col items-center">
+          <div key={item.path} className="flex flex-col items-stretch border-b border-[#B8956A]/20">
             <button
               onClick={() =>
                 item.path === "/bracelet-calculator"
@@ -964,7 +969,7 @@ const Navbar: FC = () => {
                   : go(item.path)
               }
               className={cn(
-                "font-display font-light text-[clamp(1.6rem,6vw,2.5rem)] tracking-[0.05em] bg-transparent border-none cursor-pointer transition-all duration-200 mt-2 min-h-[44px]",
+                "font-display font-light text-[1.1rem] text-left tracking-[0.02em] bg-transparent border-none cursor-pointer transition-all duration-200 min-h-[52px]",
                 isActive(item.path)
                   ? "text-deep opacity-100"
                   : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
@@ -978,7 +983,7 @@ const Navbar: FC = () => {
               {item.label}
             </button>
             {item.path === "/bracelet-calculator" && mobileCalculatorOpen && (
-              <div className="flex flex-wrap justify-center gap-x-6">
+              <div className="flex flex-col items-stretch pb-2 pl-3">
                 {[
                   ["Bracelet Calculator", "/bracelet-calculator"],
                   ["Rudraksha Calculator", "/rudraksha-calculator"],
@@ -986,7 +991,7 @@ const Navbar: FC = () => {
                   <button
                     key={path}
                     onClick={() => go(path)}
-                    className="min-h-[44px] bg-transparent border-none cursor-pointer font-body text-xs tracking-[0.05em] uppercase text-bark"
+                    className="min-h-[44px] bg-transparent border-none cursor-pointer text-left font-body text-xs tracking-[0.05em] uppercase text-bark"
                   >
                     {label}
                   </button>
@@ -996,10 +1001,10 @@ const Navbar: FC = () => {
           </div>
         ))}
 
-        <div className="h-px w-16 bg-cream/20 my-4" aria-hidden="true" />
+        <div className="h-px w-full bg-[#B8956A]/20 my-4" aria-hidden="true" />
 
         {/* Mobile utility links */}
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 items-center">
+        <div className="flex flex-wrap justify-between gap-x-2 gap-y-3 items-center">
           <button
             onClick={() => {
               closeMenu();
@@ -1043,6 +1048,7 @@ const Navbar: FC = () => {
             </button>
           ))}
         </div>
+        </div>
       </div>
 
       {/* ── Main navbar ── */}
@@ -1055,8 +1061,8 @@ const Navbar: FC = () => {
       >
         <div
           className={cn(
-            "flex items-center justify-between",
-            "px-[clamp(1.25rem,5vw,4rem)] py-4 md:py-5",
+            "relative flex items-center justify-between",
+            "px-[clamp(1rem,5vw,4rem)] py-2 md:py-5",
             "transition-all duration-400",
             "bg-white backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]",
           )}
@@ -1070,12 +1076,15 @@ const Navbar: FC = () => {
             <img
               src="/prayosha-logo.png"
               alt="prayosha crystals"
-              className="h-16 w-auto flex-none object-contain mix-blend-multiply"
+              className="h-14 w-auto flex-none object-contain mix-blend-multiply md:h-16"
             />
           </button>
 
           {/* Desktop nav links */}
-          <ul className="hidden md:flex gap-8 list-none" role="list">
+          <ul
+            className="hidden md:flex flex-1 justify-center gap-8 list-none"
+            role="list"
+          >
             {NAV_ITEMS.map((item) => (
               <li
                 key={item.path}
@@ -1150,11 +1159,11 @@ const Navbar: FC = () => {
           </ul>
 
           {/* Icon group */}
-          <div className="flex items-center gap-2 md:gap-4 text-bark">
+          <div className="flex shrink-0 items-center gap-2 md:gap-4 text-bark">
             <button
-              onClick={openSearch}
-              aria-label="Open search"
-              className="hidden md:flex opacity-90 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-bark min-w-[44px] min-h-[44px] items-center justify-center"
+                onClick={openSearch}
+                aria-label="Open search"
+                className="flex opacity-90 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-bark min-w-[44px] min-h-[44px] items-center justify-center"
             >
               <SearchIcon />
             </button>
@@ -1196,16 +1205,13 @@ const Navbar: FC = () => {
               )}
             </button>
 
-            {firstName && (
-              <button
-                onClick={() => go("/account")}
-                aria-label={`${accountLabel}, go to account`}
-                className="md:hidden flex max-w-[132px] items-center gap-1.5 truncate bg-transparent border-none px-1 font-body text-xs text-bark"
-              >
-                {accountAvatar}
-                {accountLabel}
-              </button>
-            )}
+            <button
+              onClick={() => go("/cart")}
+              aria-label={`Go to cart${cartItemCount > 0 ? `, ${cartItemCount} ${cartItemCount === 1 ? "item" : "items"}` : ""}`}
+              className="flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center md:hidden"
+            >
+              <BagIcon count={cartItemCount} />
+            </button>
 
             {/* Hamburger — mobile */}
             <button

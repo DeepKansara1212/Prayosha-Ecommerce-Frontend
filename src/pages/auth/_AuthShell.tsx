@@ -7,6 +7,7 @@ const AUTH_CSS = `
     display: grid;
     grid-template-columns: 5fr 7fr;
     min-height: 100vh;
+    min-height: 100svh;
   }
   .auth-input {
     display: block;
@@ -76,26 +77,29 @@ const AUTH_CSS = `
   @media (max-width: 899px) {
     .auth-shell {
       grid-template-columns: 1fr;
-      grid-template-rows: auto auto;
+      grid-template-rows: auto 1fr;
       align-content: start;
+      min-height: 100vh;
+      min-height: 100svh;
     }
     .auth-shell-left {
-      height: 100px !important;
-      padding: 0 1.5rem !important;
-      overflow: hidden;
-      justify-content: flex-start !important;
+      height: auto !important;
+      min-height: 84px;
+      padding: calc(env(safe-area-inset-top) + 0.75rem) 1.25rem 0.75rem !important;
+      overflow: visible;
+      justify-content: center !important;
     }
     .auth-shell-left .auth-left-body {
-      flex-direction: row !important;
+      flex-direction: column !important;
       align-items: center;
-      gap: 0.85rem;
+      gap: 0;
       max-width: none !important;
     }
-    .auth-shell-left .auth-left-body > p {
+    .auth-shell-left .auth-left-body > img {
+      width: min(68vw, 220px) !important;
+      max-height: 56px;
+      object-position: center;
       margin: 0 !important;
-      white-space: nowrap;
-      position: relative;
-      z-index: 1;
     }
     .auth-shell-left .auth-headline,
     .auth-shell-left .auth-headline-italic,
@@ -104,7 +108,8 @@ const AUTH_CSS = `
       align-items: flex-start !important;
     }
     .auth-shell-right-inner {
-      padding: 2rem 1.5rem !important;
+      max-width: 480px !important;
+      padding: 1.5rem clamp(1.25rem,6vw,2rem) 2.5rem !important;
     }
   }
 `
