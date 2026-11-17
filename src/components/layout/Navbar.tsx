@@ -37,13 +37,6 @@ function menuItemPath(
   if (section === "Meaning") return meaningPath(item, data.meanings);
   if (normalizeMenuLabel(item) === "meaning") return "/collection";
 
-  const category = data.categories.find(
-    (candidate) =>
-      normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
-  );
-  if (category)
-    return `/collection?category=${encodeURIComponent(category.slug)}`;
-
   if (section === "Purpose") {
     const purpose = data.purposes.find(
       (candidate) =>
@@ -57,30 +50,58 @@ function menuItemPath(
     (candidate) =>
       normalizeMenuLabel(candidate.name) === normalizeMenuLabel(section ?? ""),
   );
+  if (
+    normalizeMenuLabel(section ?? "") === "rudraksha" &&
+    sectionCategory
+  ) {
+    const params = new URLSearchParams({
+      category: sectionCategory.slug,
+      rudrakshaFaces: item,
+    });
+    return `/collection?${params.toString()}`;
+  }
+
   const matchingSubCategories = data.subCategories.filter(
     (candidate) =>
       normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
   );
-  const subCategory =
-    matchingSubCategories.find(
-      (candidate) => candidate.parentCategory === sectionCategory?._id,
-    ) ?? matchingSubCategories[0];
+  const subCategory = sectionCategory
+    ? matchingSubCategories.find(
+        (candidate) => candidate.parentCategory === sectionCategory._id,
+      )
+    : undefined;
 
-  if (subCategory) {
+  if (subCategory && sectionCategory) {
+    const params = new URLSearchParams({
+      category: sectionCategory.slug,
+      subCategory: subCategory._id,
+    });
+    return `/collection?${params.toString()}`;
+  }
+
+  const category = data.categories.find(
+    (candidate) =>
+      normalizeMenuLabel(candidate.name) === normalizeMenuLabel(item),
+  );
+  if (category)
+    return `/collection?category=${encodeURIComponent(category.slug)}`;
+
+  const fallbackSubCategory = matchingSubCategories[0];
+  if (fallbackSubCategory) {
     const parentCategory = data.categories.find(
-      (candidate) => candidate._id === subCategory.parentCategory,
+      (candidate) => candidate._id === fallbackSubCategory.parentCategory,
     );
     if (parentCategory) {
       const params = new URLSearchParams({
         category: parentCategory.slug,
-        subCategory: subCategory._id,
+        subCategory: fallbackSubCategory._id,
       });
       return `/collection?${params.toString()}`;
     }
   }
 
   const params = new URLSearchParams();
-  params.set("search", item);
+  params.set("search", `"${item}"`);
   return `/collection?${params.toString()}`;
 }
 
@@ -303,7 +324,6 @@ const DROPDOWN_COLUMNS: DropdownColumn[] = [
   {
     title: "Rudraksha",
     items: [
-      "1 Mukhi",
       "1 Mukhi",
       "2 Mukhi",
       "3 Mukhi",

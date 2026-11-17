@@ -34,6 +34,7 @@ const CollectionPage: FC<CollectionPageProps> = ({
   const purpose = searchParams.get('purpose') ?? ''
   const meaning = searchParams.get('meaning') ?? ''
   const subCategory = searchParams.get('subCategory') ?? ''
+  const rudrakshaFaces = searchParams.get('rudrakshaFaces') ?? ''
   const search = searchParams.get('search') ?? ''
   const [page, setPage]         = useState(1)
 
@@ -42,7 +43,10 @@ const CollectionPage: FC<CollectionPageProps> = ({
     if (value) nextParams.set(key, value)
     else nextParams.delete(key)
     nextParams.delete('search')
-    if (key === 'category') nextParams.delete('subCategory')
+    if (key === 'category') {
+      nextParams.delete('subCategory')
+      nextParams.delete('rudrakshaFaces')
+    }
     if (key === 'meaning') {
       nextParams.delete('category')
       nextParams.delete('subCategory')
@@ -57,6 +61,7 @@ const CollectionPage: FC<CollectionPageProps> = ({
     purpose: purpose || undefined,
     meaning: meaning || undefined,
     subCategory: subCategory || undefined,
+    rudrakshaFaces: rudrakshaFaces || undefined,
     sort: 'featured' as const,
     page,
     limit: 12,

@@ -73,6 +73,7 @@ export interface ProductQueryParams {
   purpose?: string
   meaning?: string
   subCategory?: string
+  rudrakshaFaces?: string
   inStock?: boolean
   page?: number
   limit?: number

@@ -121,24 +121,25 @@ const BLANK_DEFAULTS: AddressFormValues = {
 const AddressDrawer: FC<DrawerProps> = ({ open, address, onClose }) => {
   const queryClient = useQueryClient()
 
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<AddressFormValues>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: address
+      ? { ...address }
+      : BLANK_DEFAULTS,
+  })
+
   const mutation = useMutation({
     mutationFn: (data: AddressFormValues) =>
       address ? updateAddress(address._id, data) : addAddress(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] })
       toast.success(address ? 'Address updated.' : 'Address saved.')
+      if (!address) reset(BLANK_DEFAULTS)
       onClose()
     },
     onError: () => {
       toast.error('Could not save address.')
     },
-  })
-
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<AddressFormValues>({
-    resolver: zodResolver(addressSchema),
-    defaultValues: address
-      ? { ...address }
-      : BLANK_DEFAULTS,
   })
 
   const prevAddress = useRef(address)

@@ -371,7 +371,7 @@ const ProductDrawer: FC<ProductDrawerProps> = ({
                       { label: 'Shape', value: product.shape },
                       { label: 'Color', value: product.color },
                       { label: 'Rudraksha Faces', value: product.rudrakshaFaces },
-                      { label: 'Bead Size', value: product.beadSize },
+                      { label: 'Beads', value: product.beadSize },
                       { label: 'Stone', value: product.stone },
                       { label: 'Origin', value: product.origin },
                       { label: 'Chakra',     value: product.chakra },
