@@ -36,7 +36,7 @@ const LoginPage: FC = () => {
   return (
     <AuthShell
       headline="Welcome back to"
-      headlineItalic="prayosha crystals"
+      headlineItalic="Prayosha Crystals"
       subtext="Sign in with Google to access your orders, wishlist, and the sacred stone collection curated for your journey."
     >
       <div style={{ marginBottom: '24px' }}>

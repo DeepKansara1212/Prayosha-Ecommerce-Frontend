@@ -66,9 +66,9 @@ const InlineAddressForm: FC<{
   const closeForm = () => { reset(); onClose?.() }
 
   return (
-    <div style={{
+    <div className="ck-address-form" style={{
       background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
-      padding: 24, marginBottom: 24,
+      marginBottom: 24,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <p style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17', margin: 0 }}>
@@ -89,7 +89,7 @@ const InlineAddressForm: FC<{
           <label className="acct-label">Label</label>
           <div style={{ display: 'flex', gap: 12 }}>
             {(['home', 'work', 'other'] as const).map(opt => (
-              <label key={opt} style={{
+              <label key={opt} className="ck-address-type-option" style={{
                 display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', textTransform: 'capitalize',
               }}>
@@ -100,7 +100,7 @@ const InlineAddressForm: FC<{
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+        <div className="ck-form-grid-contact">
           <div>
             <label className="acct-label">Full Name</label>
             <input className="acct-input" type="text" placeholder="Full name" autoComplete="name" {...register('fullName')} />
@@ -124,7 +124,7 @@ const InlineAddressForm: FC<{
           <input className="acct-input" type="text" placeholder="Area, Colony, Street" autoComplete="address-line2" {...register('line2')} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
+        <div className="ck-form-grid-location">
           <div>
             <label className="acct-label">City</label>
             <input className="acct-input" type="text" placeholder="City" autoComplete="address-level2" {...register('city')} />
@@ -142,7 +142,7 @@ const InlineAddressForm: FC<{
           </div>
         </div>
 
-        <label style={{
+        <label className="ck-address-default-option" style={{
           display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
           fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', marginBottom: 20,
         }}>
@@ -174,11 +174,12 @@ const AddressRadioCard: FC<{
 }> = ({ address, selected, onSelect }) => (
   <button
     onClick={onSelect}
+    className="ck-address-card"
     style={{
       display: 'block', width: '100%', textAlign: 'left',
       background: selected ? '#F0EAF7' : '#fff',
       border: selected ? '2px solid #7B5EA7' : '1px solid #E2DAC8',
-      borderRadius: 6, padding: '16px 20px', cursor: 'pointer',
+      borderRadius: 6, cursor: 'pointer',
       transition: 'border-color 150ms, background 150ms',
     }}
   >

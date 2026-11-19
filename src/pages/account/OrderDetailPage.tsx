@@ -29,6 +29,14 @@ const STEP_LABELS: Record<string, string> = {
   delivered:  'Delivered',
 }
 
+const STEP_COMPACT_LABELS: Record<string, string> = {
+  placed:     'Placed',
+  confirmed:  'Confirm',
+  processing: 'Process',
+  shipped:    'Shipped',
+  delivered:  'Deliver',
+}
+
 const StatusTracker: FC<{ status: OrderStatus }> = ({ status }) => {
   if (status === 'cancelled') {
     return (
@@ -49,33 +57,31 @@ const StatusTracker: FC<{ status: OrderStatus }> = ({ status }) => {
   const currentIdx = STEPS.indexOf(status)
 
   return (
-    <div style={{ position: 'relative', padding: '8px 0 4px' }}>
+    <div className="order-status-tracker">
       {/* Connector line */}
-      <div style={{
-        position: 'absolute', top: 19, left: 0, right: 0, height: 2,
-        background: '#E2DAC8', zIndex: 0,
-      }} />
-      <div style={{
-        position: 'absolute', top: 19, left: 0, height: 2,
-        width: `${(currentIdx / (STEPS.length - 1)) * 100}%`,
-        background: '#7B5EA7', zIndex: 1,
-        transition: 'width 0.6s ease',
-      }} />
+      <div aria-hidden="true" className="order-status-line" />
+      <div
+        aria-hidden="true"
+        className="order-status-progress"
+        style={{ width: `${Math.max(0, currentIdx) * 20}%` }}
+      />
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', zIndex: 2 }}>
+      <ol aria-label="Order progress" className="order-status-steps">
         {STEPS.map((step, idx) => {
           const completed = idx < currentIdx
           const current   = idx === currentIdx
 
           return (
-            <div key={step} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+            <li
+              key={step}
+              className="order-status-step"
+              aria-label={STEP_LABELS[step]}
+              aria-current={current ? 'step' : undefined}
+            >
               {/* Dot */}
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              <div className="order-status-dot" style={{
                 background: completed ? '#7B5EA7' : current ? '#fff' : '#fff',
                 border: `2px solid ${completed ? '#7B5EA7' : current ? '#C49A3C' : '#C4B89A'}`,
-                flexShrink: 0,
                 boxShadow: current ? '0 0 0 3px rgba(196,154,60,0.2)' : 'none',
                 animation: current ? 'acctPulse 2s ease-in-out infinite' : 'none',
               }}>
@@ -90,17 +96,18 @@ const StatusTracker: FC<{ status: OrderStatus }> = ({ status }) => {
               </div>
 
               {/* Label */}
-              <span style={{
-                fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em',
+              <span className="order-status-label" style={{
                 color: completed ? '#7B5EA7' : current ? '#C49A3C' : '#C4B89A',
-                textAlign: 'center',
               }}>
-                {STEP_LABELS[step]}
+                <span className="order-status-label-full">{STEP_LABELS[step]}</span>
+                <span className="order-status-label-compact" aria-hidden="true">
+                  {STEP_COMPACT_LABELS[step]}
+                </span>
               </span>
-            </div>
+            </li>
           )
         })}
-      </div>
+      </ol>
 
       <style>{`
         @keyframes acctPulse {

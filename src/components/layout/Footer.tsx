@@ -11,37 +11,37 @@ const SOCIALS = [
 ] as const
 
 const Footer: FC = () => (
-  <footer aria-label="Site footer">
-    <div className="bg-warm section-p grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10">
+  <footer className="site-footer" aria-label="Site footer">
+    <div className="footer-main">
       {/* Brand */}
-      <div>
+      <div className="footer-brand">
         <Link
           to="/"
-          className="inline-block mb-4 no-underline opacity-100 hover:opacity-80 transition-opacity duration-200"
+          className="footer-logo"
         >
-          <img src="/prayosha-logo.png" alt="prayosha crystals" className="h-14 w-auto object-contain mix-blend-multiply" />
+          <img src="/prayosha-logo.png" alt="prayosha crystals" />
         </Link>
-        <p className="font-body font-normal text-xs leading-relaxed text-bark max-w-[240px] mb-5">
+        <p className="footer-description">
           Sacred stones for conscious living. Ethically sourced crystals and healing gems from around the world.
         </p>
-        <div className="flex flex-col gap-3 mb-5">
+        <div className="footer-contact">
           <a
             href="mailto:prayoshacrytals@gmail.com"
-            className="font-body font-normal text-xs text-bark no-underline transition-colors duration-300 hover:text-deep"
+            className="footer-contact-link"
           >
             prayoshacrytals@gmail.com
           </a>
           <a
             href="tel:+919429415057"
-            className="font-body font-normal text-xs text-bark no-underline transition-colors duration-300 hover:text-deep"
+            className="footer-contact-link"
           >
             +91 94294 15057
           </a>
-          <p className="font-body font-normal text-xs leading-relaxed text-bark max-w-[240px]">
+          <p className="footer-address">
             Shop-1, Prayosha Complex, Opp. BAPS Swaminarayan Temple, Pramukh Swami Marg, Near Chakdol Ground, Khambhat, 388620, Gujarat
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="footer-socials">
           {SOCIALS.map(({ label, Icon, href }) => (
             <a
               key={label}
@@ -49,7 +49,7 @@ const Footer: FC = () => (
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Follow us on ${label}`}
-              className="w-[44px] h-[44px] border border-bark/20 flex items-center justify-center text-bark no-underline transition-[border-color,color] duration-300 hover:border-gold hover:text-deep"
+              className="footer-social-link"
             >
               <Icon size={16} />
             </a>
@@ -58,33 +58,28 @@ const Footer: FC = () => (
       </div>
 
       {/* Link columns */}
-      {FOOTER_COLUMNS.map(col => (
-        <div key={col.heading}>
-          <h5 className="font-body text-label uppercase tracking-[0.05em] text-deep mb-4">
-            {col.heading}
-          </h5>
-          <ul className="list-none space-y-[0.55rem]">
-            {col.links.map(link => (
-              <li key={link.label}>
-                <Link
-                  to={link.href}
-                  className="font-body font-normal text-xs text-bark no-underline transition-colors duration-300 hover:text-deep"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div className="footer-link-groups">
+        {FOOTER_COLUMNS.map(col => (
+          <div key={col.heading} className={`footer-column${col.heading === 'Help' ? ' footer-column-help' : ''}`}>
+            <h5>{col.heading}</h5>
+            <ul className="footer-links">
+              {col.links.map(link => (
+                <li key={link.label}>
+                  <Link to={link.href}>{link.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
 
     {/* Bottom bar */}
-    <div className="bg-warm border-t border-bark/10 px-[clamp(1.25rem,5vw,4rem)] py-5 flex flex-col sm:flex-row justify-between items-center gap-2 flex-wrap">
-      <p className="font-body text-xs tracking-[0.04em] text-bark">
+    <div className="footer-bottom">
+      <p>
         © {new Date().getFullYear()} prayosha crystals. All rights reserved.
       </p>
-      <p className="font-body text-xs text-bark">Made with love &amp; moonlight ✦</p>
+      <p>Made with love &amp; moonlight ✦</p>
     </div>
   </footer>
 )

@@ -826,6 +826,7 @@ const Navbar: FC = () => {
   const cartItemCount = useCartStore(selectItemCount);
   const firstName = user?.name.trim().split(/\s+/)[0];
   const accountLabel = firstName ? `Hi! ${firstName}` : "Account";
+  const mobileGreeting = firstName ? `Hi, ${firstName}!` : "Hi, Guest!";
   const accountAvatar = <AccountAvatar src={user?.avatar} />;
 
   const [open, setOpen] = useState(false);
@@ -1082,7 +1083,7 @@ const Navbar: FC = () => {
         <div
           className={cn(
             "relative flex items-center justify-between",
-            "px-[clamp(1rem,5vw,4rem)] py-2 md:py-5",
+            "px-[clamp(1rem,5vw,4rem)] py-2 min-[1024px]:py-5",
             "transition-all duration-400",
             "bg-white backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]",
           )}
@@ -1096,13 +1097,13 @@ const Navbar: FC = () => {
             <img
               src="/prayosha-logo.png"
               alt="prayosha crystals"
-              className="h-14 w-auto flex-none object-contain mix-blend-multiply md:h-16"
+              className="h-12 w-auto flex-none object-contain mix-blend-multiply min-[1024px]:h-16"
             />
           </button>
 
           {/* Desktop nav links */}
           <ul
-            className="hidden md:flex flex-1 justify-center gap-8 list-none"
+            className="hidden min-[1024px]:flex flex-1 justify-center gap-8 list-none"
             role="list"
           >
             {NAV_ITEMS.map((item) => (
@@ -1179,7 +1180,7 @@ const Navbar: FC = () => {
           </ul>
 
           {/* Icon group */}
-          <div className="flex shrink-0 items-center gap-2 md:gap-4 text-bark">
+          <div className="flex shrink-0 items-center gap-1 min-[1024px]:gap-4 text-bark">
             <button
                 onClick={openSearch}
                 aria-label="Open search"
@@ -1191,7 +1192,7 @@ const Navbar: FC = () => {
               onClick={() => go("/account/wishlist")}
               aria-label="Go to wishlist"
               className={cn(
-                "hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center",
+                "hidden min-[1024px]:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center",
                 isActive("/account/wishlist") && "opacity-100",
               )}
             >
@@ -1201,7 +1202,7 @@ const Navbar: FC = () => {
               onClick={() => go("/cart")}
               aria-label={`Go to cart${cartItemCount > 0 ? `, ${cartItemCount} ${cartItemCount === 1 ? "item" : "items"}` : ""}`}
               className={cn(
-                "hidden md:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center",
+                "hidden min-[1024px]:flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center",
                 isActive("/cart") && "opacity-100",
               )}
             >
@@ -1211,7 +1212,7 @@ const Navbar: FC = () => {
               onClick={() => go("/account")}
               aria-label={firstName ? `${accountLabel}, go to account` : "Go to account"}
               className={cn(
-                "hidden md:flex gap-2 px-2 opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer min-h-[44px] items-center justify-center",
+                "hidden min-[1024px]:flex gap-2 px-2 opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer min-h-[44px] items-center justify-center",
                 (pathname.startsWith("/auth") ||
                   pathname.startsWith("/account")) &&
                   "opacity-100",
@@ -1226,18 +1227,20 @@ const Navbar: FC = () => {
             </button>
 
             <button
-              onClick={() => go("/cart")}
-              aria-label={`Go to cart${cartItemCount > 0 ? `, ${cartItemCount} ${cartItemCount === 1 ? "item" : "items"}` : ""}`}
-              className="flex opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 min-w-[44px] min-h-[44px] items-center justify-center md:hidden"
+              onClick={() => go(firstName ? "/account" : "/auth/login")}
+              aria-label={firstName ? `${mobileGreeting} Go to account` : "Sign in"}
+              className="min-[1024px]:hidden flex min-w-0 max-w-[80px] min-h-[44px] items-center border-none bg-transparent p-0 text-bark transition-opacity hover:opacity-75"
             >
-              <BagIcon count={cartItemCount} />
+              <span className="min-w-0 truncate font-body text-xs leading-tight whitespace-nowrap">
+                {mobileGreeting}
+              </span>
             </button>
 
             {/* Hamburger — mobile */}
             <button
               ref={menuButtonRef}
               onClick={toggleMenu}
-              className="md:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1 z-[201] min-w-[44px] min-h-[44px] items-center justify-center"
+              className="min-[1024px]:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1 z-[201] min-w-[44px] min-h-[44px] items-center justify-center"
               aria-label={
                 open ? "Close navigation menu" : "Open navigation menu"
               }
@@ -1268,7 +1271,7 @@ const Navbar: FC = () => {
 
         {/* Mega dropdown — desktop only */}
         <div
-          className="hidden md:block"
+          className="hidden min-[1024px]:block"
           onMouseEnter={handleDropdownMouseEnter}
           onMouseLeave={handleCollectionMouseLeave}
         >

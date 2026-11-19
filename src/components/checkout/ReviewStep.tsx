@@ -143,15 +143,22 @@ const ReviewStep: FC<Props> = ({
                   overflow: 'hidden',
                 }}
               >
-                {product.images.length > 0
-                  ? <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  : product.emoji}
+                <img
+                  src={product.images[0] || '/crystal-illustration.svg'}
+                  alt={product.images[0] ? product.name : ''}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={event => {
+                    if (!event.currentTarget.src.endsWith('/crystal-illustration.svg')) {
+                      event.currentTarget.src = '/crystal-illustration.svg'
+                    }
+                  }}
+                />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{
                   fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: '#1C1A17',
-                  margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                }}>
+                  margin: '0 0 3px',
+                }} className="ck-product-name">
                   {product.name}
                 </p>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638', margin: 0 }}>

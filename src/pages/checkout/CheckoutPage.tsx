@@ -67,17 +67,71 @@ const CHECKOUT_CSS = `
   /* Two-column checkout layout */
   .ck-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 380px;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
     gap: 48px;
     max-width: 1100px;
     margin: 0 auto;
   }
+  .ck-layout > * { min-width: 0; }
   .ck-sidebar-toggle { display: none; }
   .ck-sidebar-body   { display: block; }
+  .ck-sidebar-content {
+    box-sizing: border-box;
+    background: #EDE8DC;
+    border: 1px solid #E2DAC8;
+    border-radius: 6px;
+    padding: 32px;
+    position: sticky;
+    top: 96px;
+  }
+  .ck-sidebar-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .ck-sidebar-row > :first-child { min-width: 0; }
+  .ck-sidebar-row > :last-child { flex-shrink: 0; text-align: right; }
+  .ck-product-name { overflow-wrap: anywhere; }
+  .ck-page-header {
+    background: #EDE8DC;
+    border-bottom: 1px solid #E2DAC8;
+    padding: clamp(20px, 3vw, 32px) clamp(24px, 5vw, 80px);
+  }
+  .ck-main-content {
+    padding: clamp(24px, 4vw, 48px) clamp(24px, 5vw, 80px);
+  }
+  .ck-form-grid-contact {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .ck-form-grid-location {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .ck-address-form { padding: 24px; }
+  .ck-address-card { box-sizing: border-box; padding: 16px 20px; }
+  .ck-address-type-option,
+  .ck-address-default-option { min-height: 44px; }
+  .ck-step-indicator {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  .ck-step { min-width: 0; }
+  .ck-step-content { display: flex; align-items: center; gap: 8px; }
+  .ck-step-dot { width: 28px; height: 28px; }
+  .ck-step-label { white-space: nowrap; font-size: 13px; }
+  .ck-step-label-active { font-size: 18px; }
+  .ck-step-connector { flex: 1; height: 1px; margin: 0 12px; }
 
-  @media (max-width: 880px) {
+  @media (max-width: 960px) {
     .ck-layout {
       grid-template-columns: 1fr;
+      gap: 28px;
     }
     .ck-sidebar { order: -1; }
     .ck-sidebar-toggle {
@@ -88,6 +142,40 @@ const CHECKOUT_CSS = `
       border-bottom: none;
     }
     .ck-sidebar-body-collapsed { display: none; }
+    .ck-sidebar-content {
+      padding: 20px;
+      position: static;
+      border-radius: 0 0 6px 6px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .ck-page-header { padding: 20px 16px; }
+    .ck-main-content { padding: 20px 16px 32px; }
+    .ck-layout { gap: 24px; }
+    .ck-sidebar-toggle { min-height: 52px; padding: 12px; }
+    .ck-sidebar-content { padding: 16px; }
+    .ck-form-grid-contact,
+    .ck-form-grid-location {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+    }
+    .ck-address-form { padding: 16px; }
+    .ck-step-indicator { margin-bottom: 24px; }
+    .ck-step-content { gap: 5px; }
+    .ck-step-dot { width: 26px; height: 26px; }
+    .ck-step-connector { margin: 0 6px; }
+    .ck-step-label,
+    .ck-step-label-active { font-size: 12px; }
+    .acct-input { min-height: 48px; }
+    .acct-btn-gold,
+    .acct-btn-ghost { min-height: 48px; }
+    .ck-sidebar-row { align-items: flex-start; }
+  }
+
+  @media (max-width: 360px) {
+    .ck-step-indicator { margin-bottom: 20px; }
+    .ck-sidebar-content { padding: 14px; }
   }
 `
 
@@ -98,24 +186,24 @@ type Step = 1 | 2 | 3
 const STEP_LABELS = ['Address', 'Review', 'Payment'] as const
 
 const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
-  <div style={{ display: 'flex', alignItems: 'center', marginBottom: 32 }}>
+  <div className="ck-step-indicator">
     {STEP_LABELS.map((label, i) => {
       const n = (i + 1) as Step
       const done   = n < currentStep
       const active = n === currentStep
 
       return (
-        <div key={label} style={{ display: 'flex', alignItems: 'center', flex: n < 3 ? 1 : undefined }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div key={label} className="ck-step" style={{ display: 'flex', alignItems: 'center', flex: n < 3 ? 1 : undefined }}>
+          <div className="ck-step-content">
             {/* Dot */}
             <div style={{
-              width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+              borderRadius: '50%', flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: done ? '#5A8A6A' : active ? '#7B5EA7' : '#E2DAC8',
               color: done || active ? '#fff' : '#5A4638',
               fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
               transition: 'background 250ms',
-            }}>
+            }} className="ck-step-dot">
               {done ? '✓' : '✦'}
             </div>
             {/* Label */}
@@ -123,22 +211,19 @@ const StepIndicator: FC<{ currentStep: Step }> = ({ currentStep }) => (
               fontFamily: active
                 ? 'var(--font-heading)'
                 : 'var(--font-body)',
-              fontSize: active ? 18 : 13,
               fontWeight: active ? 400 : done ? 400 : 300,
               color: done ? '#5A8A6A' : active ? '#7B5EA7' : '#5A4638',
-              whiteSpace: 'nowrap',
               transition: 'color 200ms',
-            }}>
+            }} className={`ck-step-label${active ? ' ck-step-label-active' : ''}`}>
               {label}
             </span>
           </div>
           {/* Connector line */}
           {n < 3 && (
             <div style={{
-              flex: 1, height: 1, margin: '0 12px',
               background: n < currentStep ? '#5A8A6A' : '#E2DAC8',
               transition: 'background 300ms',
-            }} />
+            }} className="ck-step-connector" />
           )}
         </div>
       )
@@ -172,6 +257,7 @@ const OrderSidebar: FC<{
         className="ck-sidebar-toggle"
         onClick={() => setOpen(o => !o)}
         aria-expanded={open}
+        aria-controls="checkout-order-summary"
       >
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>Order Summary</span>
         <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -187,11 +273,8 @@ const OrderSidebar: FC<{
 
       {/* Sidebar body */}
       <div
-        className={open ? 'ck-sidebar-body' : 'ck-sidebar-body ck-sidebar-body-collapsed'}
-        style={{
-          background: '#EDE8DC', border: '1px solid #E2DAC8', borderRadius: 6,
-          padding: 32, position: 'sticky', top: 96,
-        }}
+        id="checkout-order-summary"
+        className={`${open ? 'ck-sidebar-body' : 'ck-sidebar-body ck-sidebar-body-collapsed'} ck-sidebar-content`}
       >
         <p style={{
           fontFamily: 'var(--font-heading)', fontWeight: 400,
@@ -218,15 +301,21 @@ const OrderSidebar: FC<{
                     overflow: 'hidden',
                   }}
                 >
-                  {product.images.length > 0
-                    ? <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    : product.emoji}
+                  <img
+                    src={product.images[0] || '/crystal-illustration.svg'}
+                    alt={product.images[0] ? product.name : ''}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    onError={event => {
+                      if (!event.currentTarget.src.endsWith('/crystal-illustration.svg')) {
+                        event.currentTarget.src = '/crystal-illustration.svg'
+                      }
+                    }}
+                  />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{
                     fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: '0 0 2px',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>
+                  }} className="ck-product-name">
                     {product.name}
                   </p>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A4638', margin: 0 }}>
@@ -246,11 +335,12 @@ const OrderSidebar: FC<{
           <SidebarRow label="Subtotal" value={`₹${subtotal.toLocaleString('en-IN')}`} />
           {discountAmount > 0 && coupon && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, flexWrap: 'wrap' }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A' }}>Discount</span>
                 <span style={{
                   background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 10,
                   padding: '1px 8px', fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A',
+                  overflowWrap: 'anywhere',
                 }}>
                   {coupon.code} ✕
                 </span>
@@ -317,7 +407,7 @@ const OrderSidebar: FC<{
 }
 
 const SidebarRow: FC<{ label: string; value: string; valueColor?: string }> = ({ label, value, valueColor = '#1C1A17' }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+  <div className="ck-sidebar-row">
     <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057' }}>{label}</span>
     <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: valueColor }}>{value}</span>
   </div>
@@ -451,7 +541,7 @@ const CheckoutPage: FC = () => {
       <main style={{ minHeight: '100vh', background: '#F5F0E8', paddingTop: 72 }}>
 
         {/* Page header */}
-        <div style={{ background: '#EDE8DC', borderBottom: '1px solid #E2DAC8', padding: 'clamp(20px, 3vw, 32px) clamp(24px, 5vw, 80px)' }}>
+        <div className="ck-page-header">
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#C49A3C', margin: '0 0 4px' }}>
             ✦ Checkout
           </p>
@@ -461,7 +551,7 @@ const CheckoutPage: FC = () => {
         </div>
 
         {/* Main content */}
-        <div style={{ padding: 'clamp(24px, 4vw, 48px) clamp(24px, 5vw, 80px)' }}>
+        <div className="ck-main-content">
           <div className="ck-layout">
 
             {/* Left: steps */}

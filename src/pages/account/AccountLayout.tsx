@@ -76,7 +76,7 @@ const ACCOUNT_CSS = `
   }
   .acct-shell {
     min-height: 100vh;
-    padding-top: 96px;
+    padding-top: 64px;
     display: flex;
     flex-direction: column;
     background: #F5F0E8;
@@ -88,13 +88,14 @@ const ACCOUNT_CSS = `
   }
   .acct-mobile-nav {
     position: sticky;
-    top: 96px;
-    z-index: 150;
+    top: 64px;
+    z-index: 199;
+    isolation: isolate;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     width: 100%;
     border-bottom: 1px solid #E2DAC8;
-    background: #EDE8DC;
+    background-color: #EDE8DC;
   }
   .acct-mobile-nav button {
     min-width: 0;
@@ -129,6 +130,63 @@ const ACCOUNT_CSS = `
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
   }
+  .order-status-tracker {
+    position: relative;
+    padding: 8px 0 4px;
+  }
+  .order-status-line,
+  .order-status-progress {
+    position: absolute;
+    top: 17px;
+    height: 2px;
+    z-index: 0;
+  }
+  .order-status-line {
+    left: 10%;
+    right: 10%;
+    background: #E2DAC8;
+  }
+  .order-status-progress {
+    left: 10%;
+    background: #7B5EA7;
+    transition: width 0.6s ease;
+  }
+  .order-status-steps {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .order-status-step {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .order-status-dot {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  .order-status-label {
+    color: #5A4638;
+    font-family: var(--font-body);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .order-status-label-compact { display: none; }
   @media (min-width: 768px) {
     .acct-shell {
       padding-top: 72px;
@@ -146,6 +204,18 @@ const ACCOUNT_CSS = `
       font-size: 9px;
       letter-spacing: 0.015em;
     }
+  }
+  @media (max-width: 480px) {
+    .order-status-tracker { padding-top: 6px; }
+    .order-status-line,
+    .order-status-progress { top: 15px; }
+    .order-status-step { gap: 9px; }
+    .order-status-label {
+      font-size: 11px;
+      letter-spacing: 0.015em;
+    }
+    .order-status-label-full { display: none; }
+    .order-status-label-compact { display: inline; }
   }
   @media (max-width: 480px) {
     .wallet-history-content {
