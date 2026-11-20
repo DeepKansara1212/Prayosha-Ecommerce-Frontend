@@ -2,6 +2,7 @@ import { useEffect, useState, type FC, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/authStore'
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton'
+import PasswordInput from '@/components/auth/PasswordInput'
 import { AuthShell, AuthLink, FormError } from './_AuthShell'
 
 const LoginPage: FC = () => {
@@ -62,9 +63,7 @@ const LoginPage: FC = () => {
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontFamily: 'var(--font-body)', fontSize: '13px', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6B6057' }}>
           Password
-          <input
-            className="auth-input"
-            type="password"
+          <PasswordInput
             autoComplete="current-password"
             required
             value={password}
