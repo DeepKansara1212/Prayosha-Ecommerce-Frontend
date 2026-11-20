@@ -464,6 +464,20 @@ const OrderDetailPage: FC<OrderDetailPageProps> = ({ orderNumber }) => {
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9A8F85', margin: '6px 0 0', textTransform: 'capitalize' }}>
                   Status: {order.paymentStatus}
                 </p>
+                {order.paymentMethod === 'razorpay' &&
+                  (order.refundStatus === 'initiating' || order.refundStatus === 'pending') && (
+                    <p
+                      role="status"
+                      style={{
+                        fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057',
+                        background: '#FEF9EC', border: '1px solid #E8D9B5', borderRadius: 4,
+                        lineHeight: 1.6, margin: '12px 0 0', padding: '10px 12px',
+                      }}
+                    >
+                      Your refund has been initiated. It will take 2–3 working days to process it.
+                      Once processed, the amount will be credited to your original payment method.
+                    </p>
+                  )}
               </Card>
             </div>
           </div>

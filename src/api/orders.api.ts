@@ -42,6 +42,7 @@ export interface Order {
   shippingAddress: Address
   paymentMethod: PaymentMethod
   paymentStatus: PaymentStatus
+  refundStatus?: 'initiating' | 'pending' | 'processed' | 'failed'
   status: OrderStatus
   statusHistory: OrderStatusEntry[]
   subtotal: number
