@@ -119,7 +119,7 @@ const STUDIO_ADDRESS = 'Shop-1, Prayosha Complex, Opp. BAPS Swaminarayan Temple,
 
 const INFO_ITEMS = [
   { icon: '📍', label: 'Studio', value: STUDIO_ADDRESS },
-  { icon: '📧', label: 'Email', value: 'prayoshacrytals@gmail.com' },
+  { icon: '📧', label: 'Email', value: 'prayoshacrystals@gmail.com' },
   { icon: '📞', label: 'Phone', value: '+91 94294 15057' },
 ]
 

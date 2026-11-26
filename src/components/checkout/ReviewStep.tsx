@@ -358,7 +358,7 @@ const ReviewStep: FC<Props> = ({
           background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 6,
         }}>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#315F40', margin: '0 0 4px' }}>
-            You will earn ₹{cashbackEarned.toFixed(2)} cashback
+            You will earn ₹{cashbackEarned.toFixed(2)} cashback after delivery
           </p>
           
         </div>

@@ -50,10 +50,7 @@ function menuItemPath(
     (candidate) =>
       normalizeMenuLabel(candidate.name) === normalizeMenuLabel(section ?? ""),
   );
-  if (
-    normalizeMenuLabel(section ?? "") === "rudraksha" &&
-    sectionCategory
-  ) {
+  if (normalizeMenuLabel(section ?? "") === "rudraksha" && sectionCategory) {
     const params = new URLSearchParams({
       category: sectionCategory.slug,
       rudrakshaFaces: item,
@@ -920,7 +917,7 @@ const Navbar: FC = () => {
           justifyContent: "flex-end",
           minHeight: "100dvh",
           boxSizing: "border-box",
-          paddingTop: "72px",
+          paddingTop: "64px",
         }}
         onClick={closeMenu}
         aria-hidden={!open}
@@ -934,141 +931,147 @@ const Navbar: FC = () => {
           className="flex flex-col items-stretch overflow-y-auto bg-[#F5F0E8] shadow-[-12px_0_32px_rgba(28,26,23,0.12)]"
           style={{
             width: "min(88vw, 380px)",
-            height: "calc(100dvh - 72px)",
+            height: "calc(100dvh - 64px)",
             boxSizing: "border-box",
             padding: "0.5rem 1.25rem max(1.25rem, env(safe-area-inset-bottom))",
           }}
           onClick={(event) => event.stopPropagation()}
         >
-        {/* Collections with accordion */}
-        <div className="w-full flex flex-col items-stretch">
-          <div
-            className="flex items-center justify-between min-h-[52px] border-b border-[#B8956A]/20"
-          >
-            <button
-              onClick={() => go("/collection")}
-              className={cn(
-                "flex-1 min-h-[52px] text-left font-display text-[1.1rem] font-light tracking-[0.02em] bg-transparent border-none cursor-pointer transition-all duration-200",
-                isActive("/collection")
-                  ? "text-deep opacity-100"
-                  : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
+          {/* Collections with accordion */}
+          <div className="w-full flex flex-col items-stretch">
+            <div className="flex items-center justify-between min-h-[52px] border-b border-[#B8956A]/20">
+              <button
+                onClick={() => go("/collection")}
+                className={cn(
+                  "flex-1 min-h-[52px] text-left font-display text-[1.1rem] font-light tracking-[0.02em] bg-transparent border-none cursor-pointer transition-all duration-200",
+                  isActive("/collection")
+                    ? "text-deep opacity-100"
+                    : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
+                )}
+              >
+                Collection
+              </button>
+              <button
+                onClick={() => setMobileCollectionOpen((v) => !v)}
+                className="bg-transparent border-none cursor-pointer text-bark opacity-90 hover:opacity-100 transition-all duration-200 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                aria-expanded={mobileCollectionOpen}
+                aria-label="Toggle collection categories"
+              >
+                <ChevronDownIcon open={mobileCollectionOpen} />
+              </button>
+            </div>
+
+            <div
+              style={{
+                maxHeight: mobileCollectionOpen ? "60vh" : "0",
+                overflow: "hidden",
+                transition: "max-height 0.4s ease",
+                width: "100%",
+              }}
+            >
+              <MobileCollectionAccordion onNavigate={go} />
+            </div>
+          </div>
+
+          {/* Other nav links */}
+          {NAV_ITEMS.filter(
+            (i) => !i.hasDropdown || i.path === "/bracelet-calculator",
+          ).map((item) => (
+            <div
+              key={item.path}
+              className="flex flex-col items-stretch border-b border-[#B8956A]/20"
+            >
+              <button
+                onClick={() =>
+                  item.path === "/bracelet-calculator"
+                    ? setMobileCalculatorOpen((v) => !v)
+                    : go(item.path)
+                }
+                className={cn(
+                  "font-display font-light text-[1.1rem] text-left tracking-[0.02em] bg-transparent border-none cursor-pointer transition-all duration-200 min-h-[52px]",
+                  isActive(item.path)
+                    ? "text-deep opacity-100"
+                    : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
+                )}
+                aria-expanded={
+                  item.path === "/bracelet-calculator"
+                    ? mobileCalculatorOpen
+                    : undefined
+                }
+              >
+                {item.label}
+              </button>
+              {item.path === "/bracelet-calculator" && mobileCalculatorOpen && (
+                <div className="flex flex-col items-stretch pb-2 pl-3">
+                  {[
+                    ["Bracelet Calculator", "/bracelet-calculator"],
+                    ["Rudraksha Calculator", "/rudraksha-calculator"],
+                  ].map(([label, path]) => (
+                    <button
+                      key={path}
+                      onClick={() => go(path)}
+                      className="min-h-[44px] bg-transparent border-none cursor-pointer text-left font-body text-xs tracking-[0.05em] uppercase text-bark"
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               )}
-            >
-              Collection
-            </button>
-            <button
-              onClick={() => setMobileCollectionOpen((v) => !v)}
-              className="bg-transparent border-none cursor-pointer text-bark opacity-90 hover:opacity-100 transition-all duration-200 p-1 min-w-[44px] min-h-[44px] flex items-center justify-center"
-              aria-expanded={mobileCollectionOpen}
-              aria-label="Toggle collection categories"
-            >
-              <ChevronDownIcon open={mobileCollectionOpen} />
-            </button>
-          </div>
+            </div>
+          ))}
 
           <div
-            style={{
-              maxHeight: mobileCollectionOpen ? "60vh" : "0",
-              overflow: "hidden",
-              transition: "max-height 0.4s ease",
-              width: "100%",
-            }}
-          >
-            <MobileCollectionAccordion onNavigate={go} />
-          </div>
-        </div>
+            className="h-px w-full bg-[#B8956A]/20 my-4"
+            aria-hidden="true"
+          />
 
-        {/* Other nav links */}
-        {NAV_ITEMS.filter(
-          (i) => !i.hasDropdown || i.path === "/bracelet-calculator",
-        ).map((item) => (
-          <div key={item.path} className="flex flex-col items-stretch border-b border-[#B8956A]/20">
+          {/* Mobile utility links */}
+          <div className="flex flex-wrap justify-between gap-x-2 gap-y-3 items-center">
             <button
-              onClick={() =>
-                item.path === "/bracelet-calculator"
-                  ? setMobileCalculatorOpen((v) => !v)
-                  : go(item.path)
-              }
-              className={cn(
-                "font-display font-light text-[1.1rem] text-left tracking-[0.02em] bg-transparent border-none cursor-pointer transition-all duration-200 min-h-[52px]",
-                isActive(item.path)
-                  ? "text-deep opacity-100"
-                  : "text-bark opacity-90 hover:opacity-100 hover:text-deep",
-              )}
-              aria-expanded={
-                item.path === "/bracelet-calculator"
-                  ? mobileCalculatorOpen
-                  : undefined
-              }
-            >
-              {item.label}
-            </button>
-            {item.path === "/bracelet-calculator" && mobileCalculatorOpen && (
-              <div className="flex flex-col items-stretch pb-2 pl-3">
-                {[
-                  ["Bracelet Calculator", "/bracelet-calculator"],
-                  ["Rudraksha Calculator", "/rudraksha-calculator"],
-                ].map(([label, path]) => (
-                  <button
-                    key={path}
-                    onClick={() => go(path)}
-                    className="min-h-[44px] bg-transparent border-none cursor-pointer text-left font-body text-xs tracking-[0.05em] uppercase text-bark"
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-
-        <div className="h-px w-full bg-[#B8956A]/20 my-4" aria-hidden="true" />
-
-        {/* Mobile utility links */}
-        <div className="flex flex-wrap justify-between gap-x-2 gap-y-3 items-center">
-          <button
-            onClick={() => {
-              closeMenu();
-              openSearch();
-            }}
-            className="flex flex-col items-center gap-1.5 text-bark opacity-90 hover:opacity-100 bg-transparent border-none cursor-pointer transition-opacity min-w-[44px] min-h-[44px] justify-center"
-            aria-label="Open search"
-          >
-            <SearchIcon />
-            <span className="font-body text-xs uppercase tracking-[0.05em]">
-              Search
-            </span>
-          </button>
-          {[
-            {
-              label: "Wishlist",
-              path: "/account/wishlist",
-              Icon: () => <HeartIcon filled={isActive("/account/wishlist")} />,
-            },
-            {
-              label: "Cart",
-              path: "/cart",
-              Icon: () => <BagIcon count={cartItemCount} />,
-            },
-            {
-              label: accountLabel,
-              path: "/account",
-              Icon: () => accountAvatar,
-            },
-          ].map(({ label, path, Icon }) => (
-            <button
-              key={label}
-              onClick={() => go(path)}
+              onClick={() => {
+                closeMenu();
+                openSearch();
+              }}
               className="flex flex-col items-center gap-1.5 text-bark opacity-90 hover:opacity-100 bg-transparent border-none cursor-pointer transition-opacity min-w-[44px] min-h-[44px] justify-center"
-              aria-label={label}
+              aria-label="Open search"
             >
-              <Icon />
+              <SearchIcon />
               <span className="font-body text-xs uppercase tracking-[0.05em]">
-                {label}
+                Search
               </span>
             </button>
-          ))}
-        </div>
+            {[
+              {
+                label: "Wishlist",
+                path: "/account/wishlist",
+                Icon: () => (
+                  <HeartIcon filled={isActive("/account/wishlist")} />
+                ),
+              },
+              {
+                label: "Cart",
+                path: "/cart",
+                Icon: () => <BagIcon count={cartItemCount} />,
+              },
+              {
+                label: accountLabel,
+                path: "/account",
+                Icon: () => accountAvatar,
+              },
+            ].map(({ label, path, Icon }) => (
+              <button
+                key={label}
+                onClick={() => go(path)}
+                className="flex flex-col items-center gap-1.5 text-bark opacity-90 hover:opacity-100 bg-transparent border-none cursor-pointer transition-opacity min-w-[44px] min-h-[44px] justify-center"
+                aria-label={label}
+              >
+                <Icon />
+                <span className="font-body text-xs uppercase tracking-[0.05em]">
+                  {label}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -1083,7 +1086,7 @@ const Navbar: FC = () => {
         <div
           className={cn(
             "relative flex items-center justify-between",
-            "px-[clamp(1rem,5vw,4rem)] py-2 min-[1024px]:py-5",
+            "h-16 px-[clamp(0.75rem,5vw,4rem)]",
             "transition-all duration-400",
             "bg-white backdrop-blur-[12px] shadow-[0_1px_0_rgba(61,43,31,0.16)]",
           )}
@@ -1091,14 +1094,32 @@ const Navbar: FC = () => {
           {/* Logo */}
           <button
             onClick={() => go("/")}
-            className="flex items-center z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
-            aria-label="prayosha crystals — go to home"
+            className="flex shrink-0 items-center gap-2 z-[201] bg-transparent border-none cursor-pointer opacity-100 hover:opacity-80 transition-opacity duration-200 min-h-[44px]"
+            aria-label="Prayosha Crystals — go to home"
           >
+            {/* Icon (unchanged) */}
             <img
-              src="/prayosha-logo.png"
-              alt="prayosha crystals"
-              className="h-12 w-auto flex-none object-contain mix-blend-multiply min-[1024px]:h-16"
+              src="/prayosha-icon.png"
+              alt=""
+              className="h-10 w-10 flex-none object-contain min-[1024px]:h-12 min-[1024px]:w-12"
             />
+
+            {/* Wordmark: the empty white space is cropped away in code */}
+            <span
+              role="img"
+              aria-label="Prayosha Crystals — The World of Crystals"
+              className="relative block h-6 flex-none overflow-hidden min-[1024px]:h-11"
+              style={{ aspectRatio: "1825 / 332" }}
+            >
+              <img
+                src="/prayosha-wordmark.png"
+                alt=""
+                aria-hidden="true"
+                draggable={false}
+                className="absolute max-w-none select-none"
+                style={{ width: "126%", left: "-9.6%", top: "-198%" }}
+              />
+            </span>
           </button>
 
           {/* Desktop nav links */}
@@ -1180,11 +1201,11 @@ const Navbar: FC = () => {
           </ul>
 
           {/* Icon group */}
-          <div className="flex shrink-0 items-center gap-1 min-[1024px]:gap-4 text-bark">
+          <div className="flex shrink-0 items-center gap-0 min-[1024px]:gap-4 text-bark">
             <button
-                onClick={openSearch}
-                aria-label="Open search"
-                className="flex opacity-90 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-bark min-w-[44px] min-h-[44px] items-center justify-center"
+              onClick={openSearch}
+              aria-label="Open search"
+              className="flex opacity-90 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer p-0 text-bark min-w-10 min-h-[44px] items-center justify-center"
             >
               <SearchIcon />
             </button>
@@ -1210,7 +1231,9 @@ const Navbar: FC = () => {
             </button>
             <button
               onClick={() => go("/account")}
-              aria-label={firstName ? `${accountLabel}, go to account` : "Go to account"}
+              aria-label={
+                firstName ? `${accountLabel}, go to account` : "Go to account"
+              }
               className={cn(
                 "hidden min-[1024px]:flex gap-2 px-2 opacity-75 hover:opacity-100 transition-opacity bg-transparent border-none cursor-pointer min-h-[44px] items-center justify-center",
                 (pathname.startsWith("/auth") ||
@@ -1228,10 +1251,12 @@ const Navbar: FC = () => {
 
             <button
               onClick={() => go(firstName ? "/account" : "/auth/login")}
-              aria-label={firstName ? `${mobileGreeting} Go to account` : "Sign in"}
-              className="min-[1024px]:hidden flex min-w-0 max-w-[80px] min-h-[44px] items-center border-none bg-transparent p-0 text-bark transition-opacity hover:opacity-75"
+              aria-label={
+                firstName ? `${mobileGreeting} Go to account` : "Sign in"
+              }
+              className="min-[1024px]:hidden flex min-w-0 max-w-[56px] min-h-[44px] items-center border-none bg-transparent p-0 text-bark transition-opacity hover:opacity-75"
             >
-              <span className="min-w-0 truncate font-body text-xs leading-tight whitespace-nowrap">
+              <span className="min-w-0 truncate font-body text-[10px] leading-tight whitespace-nowrap">
                 {mobileGreeting}
               </span>
             </button>
@@ -1240,7 +1265,7 @@ const Navbar: FC = () => {
             <button
               ref={menuButtonRef}
               onClick={toggleMenu}
-              className="min-[1024px]:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1 z-[201] min-w-[44px] min-h-[44px] items-center justify-center"
+              className="min-[1024px]:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1 z-[201] min-w-10 min-h-[44px] items-center justify-center"
               aria-label={
                 open ? "Close navigation menu" : "Open navigation menu"
               }

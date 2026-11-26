@@ -12,7 +12,6 @@ import Footer   from '@/components/layout/Footer'
 import Hero             from '@/components/sections/Hero'
 import Marquee          from '@/components/sections/Marquee'
 import Collections      from '@/components/sections/Collections'
-import Benefits         from '@/components/sections/Benefits'
 import FeaturedProducts from '@/components/sections/FeaturedProducts'
 import Testimonials     from '@/components/sections/Testimonials'
 
@@ -58,9 +57,10 @@ const HomePage: FC = () => (
     <main id="main-content">
       <Hero />
       <Marquee />
+      <FeaturedProducts title="Hot" accent="Selling" badge="HOT SELLING" id="hot-selling-title" warmBackground />
+      <FeaturedProducts title="Trending" accent="" badge="TRENDING" id="trending-title" />
+      <FeaturedProducts title="New" accent="Arrival" badge="NEW ARRIVAL" id="new-arrival-title" warmBackground />
       <Collections />
-      <Benefits />
-      <FeaturedProducts />
       <Testimonials />
     </main>
     <Footer />

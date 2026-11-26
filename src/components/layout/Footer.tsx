@@ -26,10 +26,10 @@ const Footer: FC = () => (
         </p>
         <div className="footer-contact">
           <a
-            href="mailto:prayoshacrytals@gmail.com"
+            href="mailto:prayoshacrystals@gmail.com"
             className="footer-contact-link"
           >
-            prayoshacrytals@gmail.com
+            prayoshacrystals@gmail.com
           </a>
           <a
             href="tel:+919429415057"

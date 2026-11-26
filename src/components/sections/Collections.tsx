@@ -1,18 +1,20 @@
-import { type FC } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useCategoryShowcase, type CategoryShowcase } from '@/hooks/useProducts'
-import SectionLabel from '@/components/ui/SectionLabel'
-import SectionTitle from '@/components/ui/SectionTitle'
-import { useScrollReveal } from '@/hooks/useScrollReveal'
-import { cn } from '@/lib/utils'
+import { type FC } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  useCategoryShowcase,
+  type CategoryShowcase,
+} from "@/hooks/useProducts";
+import SectionTitle from "@/components/ui/SectionTitle";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { cn } from "@/lib/utils";
 
 interface CrystalCardProps {
-  showcase: CategoryShowcase
-  onNavigate: (slug: string) => void
+  showcase: CategoryShowcase;
+  onNavigate: (slug: string) => void;
 }
 
 const CrystalCardItem: FC<CrystalCardProps> = ({ showcase, onNavigate }) => {
-  const hasImage = !!showcase.image
+  const hasImage = !!showcase.image;
 
   return (
     <article
@@ -24,15 +26,20 @@ const CrystalCardItem: FC<CrystalCardProps> = ({ showcase, onNavigate }) => {
       <div
         className={cn(
           !hasImage && showcase.bgClass,
-          'w-full aspect-square flex items-center justify-center overflow-hidden text-[clamp(3rem,6vw,5rem)]',
-          'transition-transform duration-[600ms] group-hover:scale-105',
+          "w-full aspect-square flex items-center justify-center overflow-hidden text-[clamp(3rem,6vw,5rem)]",
+          "transition-transform duration-[600ms] group-hover:scale-105",
         )}
         aria-hidden="true"
       >
-        {hasImage
-          ? <img src={showcase.image} alt="" className="w-full h-full object-cover" />
-          : showcase.emoji
-        }
+        {hasImage ? (
+          <img
+            src={showcase.image}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          showcase.emoji
+        )}
       </div>
 
       {/* Overlay */}
@@ -48,28 +55,31 @@ const CrystalCardItem: FC<CrystalCardProps> = ({ showcase, onNavigate }) => {
 
       {/* Arrow — appears on hover */}
       <button
-        onClick={e => { e.stopPropagation(); onNavigate(showcase.slug) }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onNavigate(showcase.slug);
+        }}
         className="absolute top-3 right-3 w-8 h-8 bg-gold text-deep flex items-center justify-center text-lg opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 font-light leading-none"
         aria-label={`Shop ${showcase.name}`}
       >
         +
       </button>
     </article>
-  )
-}
+  );
+};
 
 const SkeletonCard: FC = () => (
   <div className="animate-pulse bg-warm">
     <div className="w-full aspect-square" />
   </div>
-)
+);
 
 const Collections: FC = () => {
-  const navigate  = useNavigate()
-  const headerRef = useScrollReveal<HTMLDivElement>()
-  const gridRef   = useScrollReveal<HTMLDivElement>()
+  const navigate = useNavigate();
+  const headerRef = useScrollReveal<HTMLDivElement>();
+  const gridRef = useScrollReveal<HTMLDivElement>();
 
-  const { showcase, isLoading } = useCategoryShowcase()
+  const { showcase, isLoading } = useCategoryShowcase();
 
   return (
     <section
@@ -83,15 +93,10 @@ const Collections: FC = () => {
         className="reveal flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-8"
       >
         <div>
-          <SectionLabel>Our Collections</SectionLabel>
           <SectionTitle id="collections-title" className="text-deep">
-            Gems of the<br />
-            <em className="not-italic text-amethyst">Ancient Earth</em>
+            Our <em className="not-italic text-amethyst">Collection</em>
           </SectionTitle>
         </div>
-        <p className="font-body text-xs text-muted leading-relaxed max-w-[220px] sm:text-right">
-          Each crystal is hand-selected for clarity, energy, and beauty — arriving cleansed and ready for your ritual.
-        </p>
       </div>
 
       {/* Grid */}
@@ -106,17 +111,20 @@ const Collections: FC = () => {
       >
         {isLoading
           ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
-          : showcase.slice(0, 6).map(item => (
-              <CrystalCardItem
-                key={item.slug}
-                showcase={item}
-                onNavigate={slug => navigate(`/collection?category=${encodeURIComponent(slug)}`)}
-              />
-            ))
-        }
+          : showcase
+              .slice(0, 6)
+              .map((item) => (
+                <CrystalCardItem
+                  key={item.slug}
+                  showcase={item}
+                  onNavigate={(slug) =>
+                    navigate(`/collection?category=${encodeURIComponent(slug)}`)
+                  }
+                />
+              ))}
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Collections
+export default Collections;

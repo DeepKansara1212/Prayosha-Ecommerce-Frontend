@@ -1,8 +1,7 @@
 import type { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useFeaturedProducts } from '@/hooks/useProducts'
+import { useBadgeProducts } from '@/hooks/useProducts'
 import type { ProductDetail } from '@/types'
-import SectionLabel from '@/components/ui/SectionLabel'
 import SectionTitle from '@/components/ui/SectionTitle'
 import { useScrollReveal } from '@/hooks/useScrollReveal'
 import { cn } from '@/lib/utils'
@@ -11,8 +10,8 @@ import { cn } from '@/lib/utils'
 
 const SkeletonCard: FC = () => (
   <div className="animate-pulse bg-cream">
-    <div className="w-full aspect-square bg-warm" />
-    <div className="px-4 pt-4 pb-5 space-y-2">
+    <div className="w-full aspect-[4/3] bg-warm" />
+    <div className="px-3 pt-3 pb-3 space-y-2">
       <div className="h-2.5 bg-warm rounded w-1/2" />
       <div className="h-4 bg-warm rounded w-3/4" />
       <div className="h-3 bg-warm rounded w-1/3 mt-3" />
@@ -31,7 +30,7 @@ const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void
     <div
       className={cn(
         product.images.length === 0 && product.bgClass,
-        'w-full aspect-square flex items-center justify-center overflow-hidden',
+        'w-full aspect-[4/3] flex items-center justify-center overflow-hidden',
         'transition-transform duration-700 group-hover:scale-105',
       )}
       aria-hidden="true"
@@ -42,17 +41,16 @@ const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void
       }
     </div>
 
-    <div className="px-4 pt-4 pb-5 flex flex-1 flex-col">
-      <p className="font-body text-tag uppercase tracking-[0.05em] text-muted mb-1 min-h-[1.25rem]">
+    <div className="px-3 pt-3 pb-3 flex flex-1 flex-col">
+      <p className="font-body text-tag uppercase tracking-[0.05em] text-muted mb-1">
         {product.category}
       </p>
       <h3
-        className="font-display text-[1.1rem] font-normal text-deep mb-3 leading-[1.2]"
+        className="font-display text-base font-normal text-deep mb-2 leading-[1.2]"
         style={{
-          minHeight: '4.8em',
           display: '-webkit-box',
           WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 4,
+          WebkitLineClamp: 2,
           overflow: 'hidden',
         }}
       >
@@ -62,7 +60,7 @@ const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void
         <span className="font-body text-price text-bark">{product.priceDisplay}</span>
         <button
           onClick={e => { e.stopPropagation(); onNavigate(product.id) }}
-          className="w-7 h-7 bg-deep text-cream flex items-center justify-center text-lg transition-colors duration-200 group-hover:bg-gold leading-none font-light"
+          className="w-7 h-7 shrink-0 bg-deep text-cream flex items-center justify-center text-lg transition-colors duration-200 group-hover:bg-gold leading-none font-light"
           aria-label={`View ${product.name} details`}
         >
           +
@@ -74,22 +72,29 @@ const ProductCard: FC<{ product: ProductDetail; onNavigate: (id: string) => void
 
 // ─── Section ──────────────────────────────────────────────────────────────────
 
-const FeaturedProducts: FC = () => {
+interface FeaturedProductsProps {
+  title: string
+  accent: string
+  badge: 'HOT SELLING' | 'TRENDING' | 'NEW ARRIVAL'
+  id: string
+  warmBackground?: boolean
+}
+
+const FeaturedProducts: FC<FeaturedProductsProps> = ({ title, accent, badge, id, warmBackground = false }) => {
   const navigate = useNavigate()
   const headRef = useScrollReveal<HTMLDivElement>()
   const gridRef = useScrollReveal<HTMLDivElement>()
 
-  const { data: products = [], isLoading } = useFeaturedProducts()
+  const { data: products = [], isLoading } = useBadgeProducts(badge)
 
   return (
     <section
-      className="section-p bg-warm"
-      aria-labelledby="featured-title"
+      className={`section-p ${warmBackground ? 'bg-warm' : 'bg-cream'}`}
+      aria-labelledby={id}
     >
       <div ref={headRef} className="reveal">
-        <SectionLabel>Hand-Picked</SectionLabel>
-        <SectionTitle id="featured-title" className="text-deep">
-          New <em className="not-italic text-amethyst">Arrivals</em>
+        <SectionTitle id={id} className="text-deep">
+          {title} <em className="not-italic text-amethyst">{accent}</em>
         </SectionTitle>
       </div>
 

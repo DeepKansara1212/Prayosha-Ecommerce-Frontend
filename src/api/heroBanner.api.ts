@@ -10,6 +10,8 @@ export interface HeroBanner {
   subtitle?: string
   ctaText?: string
   ctaLink?: string
+  category?: string
+  subCategory?: string
   order: number
   isActive: boolean
   createdAt: string
@@ -22,6 +24,8 @@ export interface BannerFormData {
   subtitle?: string
   ctaText?: string
   ctaLink?: string
+  category?: string
+  subCategory?: string
   order?: number
   isActive?: boolean
 }
@@ -47,6 +51,8 @@ export async function createBanner(data: BannerFormData): Promise<HeroBanner> {
   if (data.subtitle) form.append('subtitle', data.subtitle)
   if (data.ctaText) form.append('ctaText', data.ctaText)
   if (data.ctaLink) form.append('ctaLink', data.ctaLink)
+  if (data.category !== undefined) form.append('category', data.category)
+  if (data.subCategory !== undefined) form.append('subCategory', data.subCategory)
   if (data.order !== undefined) form.append('order', String(data.order))
   if (data.isActive !== undefined) form.append('isActive', String(data.isActive))
 
@@ -61,6 +67,8 @@ export async function updateBanner(id: string, data: BannerFormData): Promise<He
   if (data.subtitle !== undefined) form.append('subtitle', data.subtitle)
   if (data.ctaText !== undefined) form.append('ctaText', data.ctaText)
   if (data.ctaLink !== undefined) form.append('ctaLink', data.ctaLink)
+  if (data.category !== undefined) form.append('category', data.category)
+  if (data.subCategory !== undefined) form.append('subCategory', data.subCategory)
   if (data.order !== undefined) form.append('order', String(data.order))
   if (data.isActive !== undefined) form.append('isActive', String(data.isActive))
 

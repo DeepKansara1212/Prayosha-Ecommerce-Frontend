@@ -31,7 +31,7 @@ export interface ApiProduct {
   beadSize?: string
   stone?: string
   noOfSticks?: number
-  badge?: 'BESTSELLER' | 'NEW' | 'LIMITED' | 'RARE' | 'GIFT SET'
+  badge?: 'HOT SELLING' | 'TRENDING' | 'NEW ARRIVAL' | 'OUR COLLECTION'
   stock: number
   lowStockThreshold: number
   useCategoryShipping?: boolean

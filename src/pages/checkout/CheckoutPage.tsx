@@ -385,7 +385,7 @@ const OrderSidebar: FC<{
             background: '#E8F0EA', border: '1px solid #B8D4BE', borderRadius: 6,
           }}>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#315F40', margin: 0 }}>
-              You will earn ₹{cashbackEarned.toFixed(2)} cashback
+              You will earn ₹{cashbackEarned.toFixed(2)} cashback after delivery
             </p>
           </div>
         )}

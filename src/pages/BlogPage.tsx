@@ -216,7 +216,7 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
     <>
       <Navbar />
       <main id="main-content">
-        <section className="bg-cream" style={{ padding: "clamp(3.5rem,7vw,6rem) clamp(1.25rem,5vw,4rem) clamp(2rem,4vw,3rem)" }}>
+        <section className="bg-cream" style={{ padding: "clamp(4rem,7vw,6rem) clamp(1.25rem,5vw,4rem) clamp(2rem,4vw,3rem)" }}>
           <p className="font-body text-xs uppercase tracking-[0.05em] text-gold mb-3">prayosha crystals Journal</p>
           <h1 className="font-display font-light text-deep leading-tight mb-3" style={{ fontSize: "clamp(2.3rem,5vw,4rem)" }}>
             Stories for a more <em className="not-italic text-amethyst">intentional life</em>
@@ -344,59 +344,6 @@ const BlogPage: FC<BlogPageProps> = ({ onNavigateToPost }) => {
             </div>
           </>
         )}
-
-        {/* ── Newsletter strip ── */}
-        <div
-          className="text-center"
-          style={{
-            padding: "clamp(3.5rem,7vw,6rem) clamp(1.25rem,5vw,4rem)",
-            background:
-              "radial-gradient(ellipse at 50% 50%, #3D1E4A 0%, #1C1410 100%)",
-          }}
-        >
-          <p className="font-body text-xs uppercase tracking-[0.05em] text-gold-light mb-3">
-            ✦ &nbsp;Stay Connected
-          </p>
-          <h2
-            className="font-display font-light text-cream mb-4"
-            style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)" }}
-          >
-            Subscribe to the <em className="italic text-gold-light">Journal</em>
-          </h2>
-          <p
-            className="font-body font-extralight text-[0.82rem] max-w-md mx-auto mb-7 leading-relaxed"
-            style={{ color: "rgba(245,240,232,0.55)" }}
-          >
-            New rituals, crystal guides, and moon cycle wisdom delivered to your
-            inbox every new moon.
-          </p>
-          <form
-            className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto"
-            onSubmit={(e) => e.preventDefault()}
-            aria-label="Subscribe to the Journal newsletter"
-          >
-            <input
-              type="email"
-              placeholder="your@email.com"
-              aria-label="Email address"
-              className="flex-1 bg-transparent font-body text-xs px-5 py-3 text-cream outline-none transition-colors"
-              style={{ border: "1px solid rgba(196,184,154,0.3)" }}
-              onFocus={(e) => {
-                (e.target as HTMLInputElement).style.borderColor = "#C49A3C";
-              }}
-              onBlur={(e) => {
-                (e.target as HTMLInputElement).style.borderColor =
-                  "rgba(196,184,154,0.3)";
-              }}
-            />
-            <button
-              type="submit"
-              className="font-body text-xs uppercase tracking-[0.05em] bg-gold text-deep px-7 py-3 hover:bg-gold-light transition-colors duration-200 border-none cursor-pointer whitespace-nowrap"
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
       </main>
       <Footer />
     </>

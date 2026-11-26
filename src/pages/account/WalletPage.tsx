@@ -23,7 +23,7 @@ function fmtPrice(n: number) {
 
 const HOW_STEPS = [
   { icon: '🛒', title: 'Shop', desc: 'Purchase any product' },
-  { icon: '✨', title: 'Earn', desc: 'Get 2% cashback after coupons' },
+  { icon: '✨', title: 'Earn', desc: 'Get 2% cashback after delivery and coupons' },
   { icon: '🎁', title: 'Use', desc: 'Amount is applied at checkout' },
 ] as const
 

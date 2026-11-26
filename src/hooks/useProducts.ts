@@ -26,11 +26,10 @@ function str(val: unknown, fallback = ''): string {
 }
 
 const BADGE_MAP: Record<string, string> = {
-  BESTSELLER: 'Bestseller',
-  NEW: 'New',
-  LIMITED: 'Limited',
-  RARE: 'Rare',
-  'GIFT SET': 'Gifting',
+  'HOT SELLING': 'Hot Selling',
+  TRENDING: 'Trending',
+  'NEW ARRIVAL': 'New Arrival',
+  'OUR COLLECTION': 'Our Collection',
 }
 
 export function adapt(p: ApiProduct): ProductDetail {
@@ -87,8 +86,8 @@ export function adapt(p: ApiProduct): ProductDetail {
     stockCount: p.stock ?? 0,
     rating: p.ratings?.average ?? 0,
     reviewCount: p.ratings?.count ?? 0,
-    isNew: p.badge === 'NEW',
-    isBestseller: p.badge === 'BESTSELLER',
+    isNew: p.badge === 'NEW ARRIVAL',
+    isBestseller: p.badge === 'HOT SELLING',
     hasFreeGift: p.hasFreeGift ?? false,
     relatedIds: p.relatedSlugs ?? [],
   }
@@ -164,6 +163,14 @@ export function useFeaturedProducts() {
     queryKey: ['products', 'featured'],
     queryFn: getFeaturedProducts,
     select: (data) => data.map(adapt),
+  })
+}
+
+export function useBadgeProducts(badge: 'HOT SELLING' | 'TRENDING' | 'NEW ARRIVAL') {
+  return useQuery({
+    queryKey: ['products', 'badge', badge],
+    queryFn: () => getProducts({ badge, limit: 8 }),
+    select: (data) => data.products.map(adapt),
   })
 }
 

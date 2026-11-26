@@ -76,7 +76,7 @@ const PaymentStep: FC<Props> = ({ onPlaceOrder, onBack, cashbackUsed, cashbackEa
           </div>
           {cashbackEarned > 0 && (
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#5A8A6A', margin: 0 }}>
-              After payment, you’ll earn ₹{cashbackEarned.toFixed(2)} cashback.
+              After delivery, you’ll earn ₹{cashbackEarned.toFixed(2)} cashback.
             </p>
           )}
         </div>

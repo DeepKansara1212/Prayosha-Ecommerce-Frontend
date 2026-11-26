@@ -235,7 +235,7 @@ const CheckoutSuccessPage: FC = () => {
                   <span style={{ fontSize: 20, flexShrink: 0 }}>✨</span>
                   <div style={{ flex: 1 }}>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#1C1A17', margin: '0 0 2px' }}>
-                      You earned <strong style={{ color: '#C49A3C' }}>₹{cashbackEarned.toFixed(2)} cashback</strong> on this order!
+                      You’ll receive <strong style={{ color: '#C49A3C' }}>₹{cashbackEarned.toFixed(2)} cashback</strong> when this order is delivered.
                     </p>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#6B6057', margin: 0 }}>
                       Your wallet balance: <strong>₹{cashbackBalance.toFixed(2)}</strong>

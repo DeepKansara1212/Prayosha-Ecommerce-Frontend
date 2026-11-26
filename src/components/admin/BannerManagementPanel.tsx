@@ -6,7 +6,10 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
+import { getCategories } from '@/api/categories.api'
+import { getSubCategories } from '@/api/subcategories.api'
 import {
   getAllBannersAdmin,
   createBanner,
@@ -25,6 +28,8 @@ interface FormState {
   subtitle: string
   ctaText: string
   ctaLink: string
+  category: string
+  subCategory: string
   order: string
   isActive: boolean
   imageFile: File | null
@@ -36,6 +41,8 @@ const EMPTY_FORM: FormState = {
   subtitle: '',
   ctaText: '',
   ctaLink: '',
+  category: '',
+  subCategory: '',
   order: '0',
   isActive: true,
   imageFile: null,
@@ -56,8 +63,8 @@ interface Props {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-const FieldLabel: FC<{ children: React.ReactNode }> = ({ children }) => (
-  <label className="block font-body text-xs tracking-[0.05em] uppercase text-cream/40 mb-1.5">
+const FieldLabel: FC<{ children: React.ReactNode; htmlFor?: string }> = ({ children, htmlFor }) => (
+  <label htmlFor={htmlFor} className="block font-body text-xs tracking-[0.05em] uppercase text-cream/40 mb-1.5">
     {children}
   </label>
 )
@@ -76,6 +83,15 @@ const TextInput: FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className,
 // ─── BannerManagementPanel ────────────────────────────────────────────────────
 
 const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
+  const {
+    data: categories = [],
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+    refetch: refetchCategories,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  })
   const [banners, setBanners] = useState<HeroBanner[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -89,6 +105,11 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
   const [deleting, setDeleting] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const subCategoriesQuery = useQuery({
+    queryKey: ['banner-subcategories', form.category],
+    queryFn: () => getSubCategories(form.category),
+    enabled: modalOpen && Boolean(form.category),
+  })
 
   // ── Stats sync ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -131,6 +152,8 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
       subtitle: b.subtitle ?? '',
       ctaText: b.ctaText ?? '',
       ctaLink: b.ctaLink ?? '',
+      category: b.category ?? '',
+      subCategory: b.subCategory ?? '',
       order: String(b.order),
       isActive: b.isActive,
       imageFile: null,
@@ -171,6 +194,8 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
         subtitle: form.subtitle || undefined,
         ctaText: form.ctaText || undefined,
         ctaLink: form.ctaLink || undefined,
+        category: form.category,
+        subCategory: form.subCategory,
         order: parseInt(form.order, 10) || 0,
         isActive: form.isActive,
         ...(form.imageFile ? { image: form.imageFile } : {}),
@@ -345,6 +370,12 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
                       CTA: {banner.ctaText}
                     </span>
                   )}
+                  {banner.category && (
+                    <p className="font-body text-[10px] text-cream/35 truncate mt-1">
+                      Shop: {categories.find(category => category.slug === banner.category)?.name ?? banner.category}
+                      {banner.subCategory ? ' · subcategory' : ''}
+                    </p>
+                  )}
                 </div>
 
                 {/* Action bar */}
@@ -470,6 +501,64 @@ const BannerManagementPanel: FC<Props> = ({ onStatsChange }) => {
               <div>
                 <FieldLabel>Subtitle <span className="text-cream/20 normal-case">(optional tagline)</span></FieldLabel>
                 <TextInput placeholder="e.g. New Arrivals 2026" value={form.subtitle} onChange={onField('subtitle')} />
+              </div>
+
+              {/* Product destination */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <FieldLabel htmlFor="banner-category">Product Category</FieldLabel>
+                  <select
+                    id="banner-category"
+                    value={form.category}
+                    disabled={categoriesLoading || categoriesError}
+                    onChange={event => setForm(f => ({
+                      ...f,
+                      category: event.target.value,
+                      subCategory: '',
+                    }))}
+                    className="w-full bg-[#1a1a1a] border border-cream/10 text-cream/80 font-body text-xs px-3 py-2.5 focus:outline-none focus:border-gold/40 transition-colors disabled:opacity-50"
+                  >
+                    <option value="">No category destination</option>
+                    {categories.map(category => (
+                      <option key={category._id} value={category.slug}>{category.name}</option>
+                    ))}
+                  </select>
+                  {categoriesError && (
+                    <button
+                      type="button"
+                      onClick={() => void refetchCategories()}
+                      className="mt-1 font-body text-[10px] text-rose-400 hover:text-rose-300"
+                    >
+                      Could not load categories. Retry
+                    </button>
+                  )}
+                </div>
+                <div>
+                  <FieldLabel htmlFor="banner-subcategory">Subcategory</FieldLabel>
+                  <select
+                    id="banner-subcategory"
+                    value={form.subCategory}
+                    disabled={!form.category || subCategoriesQuery.isLoading || subCategoriesQuery.isError}
+                    onChange={event => setForm(f => ({ ...f, subCategory: event.target.value }))}
+                    className="w-full bg-[#1a1a1a] border border-cream/10 text-cream/80 font-body text-xs px-3 py-2.5 focus:outline-none focus:border-gold/40 transition-colors disabled:opacity-50"
+                  >
+                    <option value="">
+                      {form.category ? 'All products in this category' : 'Select a category first'}
+                    </option>
+                    {(subCategoriesQuery.data ?? []).map(subCategory => (
+                      <option key={subCategory._id} value={subCategory._id}>{subCategory.name}</option>
+                    ))}
+                  </select>
+                  {subCategoriesQuery.isError && (
+                    <button
+                      type="button"
+                      onClick={() => void subCategoriesQuery.refetch()}
+                      className="mt-1 font-body text-[10px] text-rose-400 hover:text-rose-300"
+                    >
+                      Could not load subcategories. Retry
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* CTA */}
